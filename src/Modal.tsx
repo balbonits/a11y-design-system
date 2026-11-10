@@ -73,7 +73,7 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
     >
       <div className="em-modal-head">
         <h2 className="em-modal-title" id={titleId}>{title}</h2>
-        <Button variant="ghost" size="sm" iconOnly aria-label="Close dialog" onClick={onClose}>
+        <Button variant="ghost" iconOnly aria-label="Close dialog" onClick={onClose}>
           <span aria-hidden="true">✕</span>
         </Button>
       </div>
