@@ -3,7 +3,8 @@ import { Button } from './Button';
 import { cx } from './cx';
 
 export type ToastTone = 'info' | 'success' | 'error';
-export type ToastInput = { tone?: ToastTone; title: string; message?: string; duration?: number };
+export type ToastAction = { label: string; onAction: () => void };
+export type ToastInput = { tone?: ToastTone; title: string; message?: string; duration?: number; action?: ToastAction };
 type ToastItem = Required<Pick<ToastInput, 'tone' | 'title'>> & ToastInput & { id: number };
 
 const Ctx = createContext<((t: ToastInput) => void) | null>(null);
@@ -65,6 +66,11 @@ function Toast({ item, onDismiss }: { item: ToastItem; onDismiss: (id: number) =
         <span className="em-toast-title">{item.title}</span>
         {item.message}
       </p>
+      {item.action && (
+        <Button variant="secondary" size="sm" onClick={() => { item.action!.onAction(); onDismiss(item.id); }}>
+          {item.action.label}
+        </Button>
+      )}
       <Button variant="ghost" size="sm" iconOnly aria-label={`Dismiss: ${item.title}`} onClick={() => onDismiss(item.id)}>
         <span aria-hidden="true">✕</span>
       </Button>

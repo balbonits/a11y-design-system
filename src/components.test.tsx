@@ -120,4 +120,18 @@ describe('Toast', () => {
     expect(screen.getByRole('status')).not.toHaveTextContent('Short');
     vi.useRealTimers();
   });
+
+  it('runs an action like Undo and then dismisses', async () => {
+    const u = userEvent.setup();
+    const undo = vi.fn();
+    function Act() {
+      const show = useToast();
+      return <Button onClick={() => show({ tone: 'success', title: 'Reminder done', action: { label: 'Undo', onAction: undo } })}>Done</Button>;
+    }
+    render(<ToastProvider><Act /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Done' }));
+    await u.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(undo).toHaveBeenCalledOnce();
+    expect(screen.getByRole('status')).not.toHaveTextContent('Reminder done');
+  });
 });
