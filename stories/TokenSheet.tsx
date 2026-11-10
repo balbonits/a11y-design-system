@@ -57,7 +57,9 @@ export function ContrastTable({ theme }: { theme: 'light' | 'dark' }) {
     probe.remove();
   }, [theme]);
   return (
-    <div ref={ref} data-theme={theme} className="ember sb-unstyled" style={{ background: 'var(--color-bg)', color: 'var(--text)', padding: 16, marginBottom: 16 }}>
+    <div ref={ref} data-theme={theme} className="ember sb-unstyled" style={{ background: 'var(--color-bg)', color: 'var(--text)', padding: 16, marginBottom: 16, maxWidth: '100%' }}>
+      {/* The table can be wider than a narrow docs column, so it scrolls in its own focusable region. */}
+      <div role="region" tabIndex={0} aria-label={`${theme === 'light' ? 'Light' : 'Dark'} theme contrast table`} className="sb-scroll">
       <table className="em-table">
         <caption>{theme === 'light' ? 'Light' : 'Dark'} theme contrast</caption>
         <thead>
@@ -79,6 +81,7 @@ export function ContrastTable({ theme }: { theme: 'light' | 'dark' }) {
           })}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

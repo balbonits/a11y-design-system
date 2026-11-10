@@ -6,6 +6,19 @@ import '../src/ember.css';
 import { ToastProvider } from '../src';
 import { Title, Subtitle, Description, Primary, ArgTypes, Stories } from '@storybook/blocks';
 
+// Code samples scroll sideways on narrow screens. Make each scroll box reachable by
+// keyboard (WCAG 2.1.1) and give it a name, since Storybook's Source block doesn't.
+if (typeof window !== 'undefined') {
+  const mark = () => {
+    document.querySelectorAll<HTMLElement>('.docblock-source [data-radix-scroll-area-viewport]:not([tabindex])').forEach((el) => {
+      el.tabIndex = 0;
+      el.setAttribute('role', 'region');
+      el.setAttribute('aria-label', 'Code sample');
+    });
+  };
+  new MutationObserver(mark).observe(document.documentElement, { childList: true, subtree: true });
+}
+
 const preview: Preview = {
   globalTypes: {
     theme: {
