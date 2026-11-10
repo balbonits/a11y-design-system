@@ -28,11 +28,11 @@ const meta: Meta<typeof Trigger> = {
           avoid: ['It is the only place an error appears. Always show the error next to the field or item too.', 'People must act on it. Use a Modal or inline message.'],
           anatomy: ['Viewport fixed bottom right', 'Polite live region (`role="status"`) for info and success', 'Assertive live region (`role="alert"`) for errors', 'Toast: colored edge, title, message, optional action button (e.g. Undo), dismiss button'],
           variants: '`info`, `success`, `error`. Wrap the app in `<ToastProvider>` and call `useToast()`.',
-          states: 'Entering (fades up; none under reduced motion), shown, paused (hover or focus stops the timer), dismissed.',
+          states: 'Entering (fades up; none under reduced motion), shown, paused (hover or focus stops the timer), sticky (errors and toasts with an action stay until dismissed), dismissed.',
           keyboard: [['Tab', 'Reaches the dismiss button'], ['Enter / Space', 'Dismisses the toast']],
           a11y: [
             ['4.1.3 Status Messages', 'Info and success go to `role="status"`; errors go to `role="alert"`. The regions stay mounted so additions are announced.'],
-            ['2.2.1 Timing Adjustable', 'Auto-dismiss (5s by default) pauses while hovered or focused.'],
+            ['2.2.1 Timing Adjustable', 'Info and success toasts auto-dismiss (5s by default) and pause while hovered or focused. Error toasts and toasts with an action (e.g. Undo) never auto-dismiss.'],
             ['3.3.1 Error Identification', 'Toasts are never the only place an error is shown.'],
             FOCUS_NOTE,
           ],

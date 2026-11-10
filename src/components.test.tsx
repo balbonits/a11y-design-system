@@ -146,6 +146,29 @@ describe('Toast', () => {
     vi.useRealTimers();
   });
 
+  it('never auto-dismisses an error or a toast with an action (WCAG 2.2.1)', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const u = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    function Sticky() {
+      const show = useToast();
+      return (
+        <>
+          <Button onClick={() => show({ tone: 'error', title: 'Broke', duration: 1000 })}>Err</Button>
+          <Button onClick={() => show({ tone: 'success', title: 'Moved', duration: 1000, action: { label: 'Undo', onAction: () => {} } })}>Act</Button>
+        </>
+      );
+    }
+    render(<ToastProvider><Sticky /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Err' }));
+    await u.click(screen.getByRole('button', { name: 'Act' }));
+    act(() => { vi.advanceTimersByTime(60000); });
+    expect(screen.getByRole('alert')).toHaveTextContent('Broke');
+    expect(screen.getByRole('status')).toHaveTextContent('Moved');
+    await u.click(screen.getByRole('button', { name: 'Dismiss: Broke' }));
+    expect(screen.getByRole('alert')).not.toHaveTextContent('Broke');
+    vi.useRealTimers();
+  });
+
   it('runs an action like Undo and then dismisses', async () => {
     const u = userEvent.setup();
     const undo = vi.fn();

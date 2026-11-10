@@ -34,7 +34,9 @@
     border-color var(--duration-fast) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard);
 }
-.em-btn--sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--text-xs); }
+.em-btn--sm { position: relative; min-height: 36px; padding: 0 var(--space-3); font-size: var(--text-xs); }
+/* B-1: the small size looks 36px but its hit area is 44px. */
+.em-btn--sm::before { content: ''; position: absolute; inset: -4px; }
 .em-btn--lg { min-height: 48px; padding: 0 var(--space-6); font-size: var(--text-base); }
 .em-btn--icon { padding: 0; width: 44px; }
 .em-btn--sm.em-btn--icon { width: 36px; }
@@ -83,7 +85,11 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-check input { width: 20px; height: 20px; margin: 2px 0 0; accent-color: var(--accent); cursor: pointer; flex: none; }
 .em-check input:disabled { cursor: not-allowed; }
 .em-check-text { display: flex; flex-direction: column; gap: 2px; }
+.em-check { position: relative; }
 .em-check label { cursor: pointer; }
+/* B-1: the whole 44px-tall row toggles the box, not only the 20px input. */
+.em-check label::before { content: ''; position: absolute; inset: 0; }
+.em-check input { position: relative; z-index: 1; }
 .em-check--disabled label { cursor: not-allowed; color: var(--text-muted); }
 .em-check input[aria-invalid="true"] { outline: 2px solid var(--danger); outline-offset: 1px; }
 .em-fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; }
@@ -124,9 +130,10 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-table tbody tr:hover { background: var(--accent-soft); }
 .em-table--dense th, .em-table--dense td { padding: var(--space-1) var(--space-3); }
 .em-sort {
-  display: inline-flex; align-items: center; gap: var(--space-1); min-height: 32px; padding: 0 var(--space-1); margin-left: calc(-1 * var(--space-1));
+  display: inline-flex; align-items: center; gap: var(--space-1); position: relative; min-height: 32px; padding: 0 var(--space-1); margin-left: calc(-1 * var(--space-1));
   font: inherit; font-weight: inherit; color: inherit; background: transparent; border: 0; border-radius: var(--radius); cursor: pointer;
 }
+.em-sort::before { content: ''; position: absolute; inset: -6px 0; min-width: 44px; } /* B-1: 44px hit area */
 .em-sort:hover { background: var(--border-subtle); }
 .em-sort-icon { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--text-muted); }
 

@@ -44,15 +44,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 function Toast({ item, onDismiss }: { item: ToastItem; onDismiss: (id: number) => void }) {
   const [paused, setPaused] = useState(false);
   const left = useRef(item.duration ?? 5000);
+  // WCAG 2.2.1: a toast the user may need to act on (an action such as Undo, or an error) stays until dismissed.
+  const sticky = Boolean(item.action) || item.tone === 'error';
   useEffect(() => {
-    if (paused || left.current <= 0) return;
+    if (sticky || paused || left.current <= 0) return;
     const start = Date.now();
     const timer = window.setTimeout(() => onDismiss(item.id), left.current);
     return () => {
       window.clearTimeout(timer);
       left.current -= Date.now() - start;
     };
-  }, [paused, item.id, onDismiss]);
+  }, [sticky, paused, item.id, onDismiss]);
   return (
     <div
       className={cx('em-toast', `em-toast--${item.tone}`)}
