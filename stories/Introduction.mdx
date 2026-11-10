@@ -1,0 +1,26 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Introduction" />
+
+# Ember UI
+
+A small, accessible React design system starter by John Dilig. It has one token file, eight components, and a docs page for each that covers usage, keyboard behavior and WCAG notes.
+
+- **Tokens:** color, type, space, radius and motion in `src/tokens.css`, with light and dark themes. See [Tokens](?path=/docs/tokens--docs).
+- **Components:** Button, Input, Select, Checkbox, Modal, Tabs, Table and Toast.
+- **Checked automatically:** every story runs through axe in light and dark.
+
+Use the **Theme** button in the toolbar to switch light and dark. Every component works by keyboard, and motion turns off when `prefers-reduced-motion: reduce` is set.
+
+## Use it
+
+```tsx
+import { Button, ToastProvider } from 'ember-ui';
+import 'ember-ui/ember.css';
+
+<ToastProvider>
+  <Button onClick={save}>Save</Button>
+</ToastProvider>
+```
+
+Code: [github.com/balbonits/ember-ui](https://github.com/balbonits/ember-ui). Case study: [jdilig.me/ux/design-system](https://www.jdilig.me/ux/design-system).
