@@ -8,7 +8,7 @@
   "author": "John Dilig",
   "repository": {
     "type": "git",
-    "url": "https://github.com/balbonits/ember-ui.git"
+    "url": "https://github.com/balbonits/a11y-design-system.git"
   },
   "scripts": {
     "storybook": "storybook dev -p 6006",

@@ -2,7 +2,7 @@
 
 A small, accessible React design system: tokens for light and dark themes, eight components, and a docs page for every one.
 
-- **Storybook:** https://ember-ui-storybook.vercel.app
+- **Storybook:** https://jdilig.me/ux/design-system/storybook/
 - **Case study:** https://jdilig.me/ux/design-system
 - **Author:** John Dilig
 
