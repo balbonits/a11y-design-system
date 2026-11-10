@@ -15,7 +15,32 @@ function ModalDemo() {
   );
 }
 
+function MountedModalDemo() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      {open && (
+        <Modal open onClose={() => setOpen(false)} title="Edit role">
+          <Input label="Title" />
+        </Modal>
+      )}
+    </>
+  );
+}
+
 describe('Modal', () => {
+  it('returns focus to the trigger when the app unmounts it while open', async () => {
+    const u = userEvent.setup();
+    render(<MountedModalDemo />);
+    const trigger = screen.getByRole('button', { name: 'Open' });
+    await u.click(trigger);
+    expect(screen.getByRole('dialog', { name: 'Edit role' }).contains(document.activeElement)).toBe(true);
+    await u.keyboard('{Escape}');
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(trigger).toHaveFocus();
+  });
+
   it('is labelled by its title, moves focus in, and returns focus to the trigger on Esc', async () => {
     const u = userEvent.setup();
     render(<ModalDemo />);

@@ -14,7 +14,7 @@ const FOCUSABLE = 'a[href],button:not([disabled]),input:not([disabled]),select:n
 
 /**
  * Native <dialog> opened with showModal(): the page behind is inert, Esc closes,
- * Tab is kept inside, and focus goes back to whatever opened it.
+ * Tab is kept inside, and focus goes back to whatever opened it, also when the modal unmounts while open.
  */
 export function Modal({ open, onClose, title, children, actions }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
@@ -36,6 +36,14 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       returnTo.current?.focus();
     }
   }, [open]);
+
+  // Apps often unmount an open modal instead of setting open={false}; focus still goes back to the opener.
+  useEffect(() => {
+    const d = ref.current;
+    return () => {
+      if (d?.open) returnTo.current?.focus();
+    };
+  }, []);
 
   function onKeyDown(e: KeyboardEvent<HTMLDialogElement>) {
     if (e.key === 'Escape') {
