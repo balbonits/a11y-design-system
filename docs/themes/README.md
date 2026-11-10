@@ -1,5 +1,7 @@
 # jdilig.me UX themes: token spec v1.0 (Chief of Creatives, 2026-11-10)
 
+> **Superseded by [v1.1 (R-2 aligned)](r2/TOKENS-SPEC.md).** Keep this for the look and motion reference only.
+
 John (1:59 PM PT): ship A, B and C as three switchable themes. One token layer, same token names in every theme; switching is only attributes on `<html>`.
 
 - **Live prototype:** https://raw.githack.com/balbonits/a11y-design-system/main/docs/themes/index.html
