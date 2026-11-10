@@ -1,5 +1,7 @@
 # Visual directions for the UX section (pick one)
 
+> **Superseded by [v2](v2/README.md)**: modern references, live motion prototypes, Section 508 notes.
+
 John asked (2026-11-10) for less boxy, less stiff options. Three directions, each shown mobile-first at 375px and on desktop at 1280px, using the same real content: the Ember UI hero, the three UX case-study cards and a component sample. All three pass axe with 0 serious or critical issues and have no horizontal overflow at 375px. Motion only runs under `prefers-reduced-motion: no-preference`. Open the `.html` files for the live mockups.
 
 | Token | A. Soft editorial | B. Bold with motion | C. Warm and tactile |
