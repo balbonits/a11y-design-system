@@ -13,3 +13,4 @@ Dated log of how Ember UI was built. Screenshots are in `docs/screenshots/`.
 - First full axe sweep found serious issues only on docs pages (Storybook chrome contrast, the Controls JSON editor, and the token table picking up docs-page styles). Fixed: read-only ArgTypes table, darker docs link and code colors, `sb-unstyled` on the token sheet, themed story backgrounds in docs. Result: 120 runs (49 stories and 11 docs pages, light and dark), 0 serious or critical; reduced-motion check passes.
 - Milestone screenshots taken (tokens, Button, Tabs and Table docs, Modal light and dark).
 - Repo made public after a gitleaks secret scan; Storybook deployed.
+- Case study published at https://jdilig.me/ux/design-system, linking to this repo and the Storybook. Live checks: Storybook axe 0 serious or critical (120 runs); case study Lighthouse accessibility 100, axe 0 serious or critical at 1280px and 320px in light and dark.
