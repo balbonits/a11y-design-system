@@ -1,0 +1,117 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B. Bold with motion – jdilig.me UX direction</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>:root{--bg:#0b0a10;--surface:#15131c;--surface2:#1d1a26;--ink:#f4f1fa;--muted:#b3adc2;--accent:#ff7a3d;--on-accent:#1a0d05;--line:rgba(255,255,255,.09);--r-card:22px;--r-btn:12px;--r-input:12px;--gap:12px;--pad:22px;--elev:0 0 0 1px rgba(255,255,255,.07),0 24px 60px -20px rgba(0,0,0,.8);--blob1:#ff7a3d;--blob2:#7c5cff;--blob3:#20c3ff;--dur-1:100ms;--dur-2:180ms;--dur-3:360ms;--dur-4:640ms;--ease-out:cubic-bezier(.16,1,.3,1);--ease-press:cubic-bezier(.4,0,.2,1);--glass:rgba(11,10,16,.6)}
+*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit}:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:6px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:8px;z-index:50}.skip:focus{left:8px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+.mono{font:500 12px/1.2 'JetBrains Mono',monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+header.nav{position:sticky;top:0;z-index:20;background:var(--glass);backdrop-filter:blur(14px) saturate(1.4);-webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid var(--line)}
+header.nav .wrap{display:flex;align-items:center;justify-content:space-between;min-height:60px;gap:12px}
+header.nav nav{display:flex;gap:4px}header.nav nav a{text-decoration:none;padding:10px 12px;border-radius:999px;font-weight:500;font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+header.nav nav a[aria-current=page]{background:var(--surface2)}
+.hero{position:relative;padding-block:56px 40px;isolation:isolate}
+.blobs{position:absolute;inset:-40px 0 auto;height:620px;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent);z-index:-1;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;will-change:transform}
+.b1{width:340px;height:340px;background:var(--blob1);left:-60px;top:20px}.b2{width:300px;height:300px;background:var(--blob2);right:-40px;top:80px}.b3{width:260px;height:260px;background:var(--blob3);left:40%;top:220px}
+h1{font:800 clamp(2.6rem,1.6rem + 5.2vw,5.6rem)/1 Geist,system-ui,sans-serif;letter-spacing:-.02em;margin:14px 0 18px;max-width:14ch;text-wrap:balance}
+.grad{background:linear-gradient(100deg,var(--ink) 20%,var(--accent) 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:clamp(1.05rem,1rem + .4vw,1.25rem);color:var(--muted);max-width:56ch;margin:0 0 28px}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.btn{font:600 15px/1 Geist,system-ui,sans-serif;border:0;cursor:pointer;min-height:48px;padding:0 22px;border-radius:var(--r-btn);display:inline-flex;align-items:center;gap:10px;text-decoration:none;background:var(--accent);color:var(--on-accent);box-shadow:var(--btnsh,none);transition:transform var(--dur-2) var(--ease-out),box-shadow var(--dur-2) var(--ease-out),background var(--dur-2)}
+.btn.sec{background:var(--surface);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(1px) scale(.97);transition-duration:var(--dur-1);transition-timing-function:var(--ease-press)}
+.btn .arr{transition:transform var(--dur-2) var(--ease-out)}.btn:hover .arr{transform:translateX(4px)}
+.ticker{margin:28px 0 8px;display:flex;align-items:center;gap:12px;border-block:1px solid var(--line);padding:6px 0}
+.tk-view{overflow:hidden;flex:1;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.tk-track{display:flex;gap:40px;width:max-content;animation:tk 28s linear infinite}.tk-track span{white-space:nowrap;font-weight:600}
+.tk-track span::before{content:"\2726";margin-right:14px;color:var(--accent)}
+@keyframes tk{to{transform:translateX(-50%)}}
+.ticker[data-paused] .tk-track,.ticker:hover .tk-track,.ticker:focus-within .tk-track{animation-play-state:paused}
+.tk-btn{min-height:44px;min-width:44px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:600 14px/1 Geist,system-ui,sans-serif;cursor:pointer}
+section.blk{padding:40px 0}h2{font:800 clamp(1.8rem,1.3rem + 2vw,3rem)/1.05 Geist,system-ui,sans-serif;letter-spacing:-.015em;margin:8px 0 20px}
+.bento{display:grid;gap:var(--gap);grid-template-columns:1fr}
+@media (min-width:720px){.bento{grid-template-columns:repeat(6,1fr)}.t-big{grid-column:span 4;grid-row:span 2}.t-sm{grid-column:span 2}.t-md{grid-column:span 3}}
+.tile{background:var(--surface);border-radius:var(--r-card);padding:var(--pad);box-shadow:var(--elev);border:var(--tb,0);position:relative;overflow:hidden;transition:transform var(--dur-3) var(--ease-out),box-shadow var(--dur-3) var(--ease-out)}
+.tile h3{font:800 clamp(1.4rem,1.2rem + .8vw,2rem)/1.1 Geist,system-ui,sans-serif;margin:10px 0 6px}.tile p{margin:0 0 14px;color:var(--muted)}
+.tile a.cta{font-weight:600;color:var(--accent);text-decoration:none;display:inline-flex;gap:8px;min-height:44px;align-items:center}
+.tile a.cta::after{content:"";position:absolute;inset:0;border-radius:inherit}
+.tile:has(a.cta:hover){transform:translateY(-4px)}
+.thumb{height:160px;border-radius:calc(var(--r-card) - 10px);background:linear-gradient(135deg,var(--blob1),var(--blob2) 60%,var(--blob3));margin-bottom:6px;position:relative;overflow:hidden}
+.t-big .thumb{height:clamp(180px,30vw,300px)}
+.thumb .sheen{position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(-100%);transition:transform var(--dur-4) var(--ease-out)}
+.tile:hover .sheen{transform:translateX(100%)}
+.stat{font:800 clamp(2.4rem,2rem + 2vw,3.6rem)/1 Geist,system-ui,sans-serif;color:var(--accent);margin-top:6px}
+.ico{width:40px;height:40px;color:var(--accent)}.ico path{stroke-dasharray:60;stroke-dashoffset:60}
+.in .ico path{animation:draw var(--dur-4) var(--ease-out) forwards .15s}@keyframes draw{to{stroke-dashoffset:0}}
+.demo{display:grid;gap:16px}@media(min-width:720px){.demo{grid-template-columns:1fr 1fr}}
+.seg{display:inline-flex;padding:4px;border-radius:999px;background:var(--surface2);gap:2px}
+.seg button{border:0;background:transparent;color:var(--ink);font:600 14px/1 Geist,system-ui,sans-serif;min-height:40px;padding:0 16px;border-radius:999px;cursor:pointer;transition:background var(--dur-2),color var(--dur-2)}
+.seg button[aria-pressed=true]{background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.preview{border-radius:16px;padding:18px;background:var(--pv-bg,#fff);color:var(--pv-ink,#1c1a17);transition:background var(--dur-3) var(--ease-out),color var(--dur-3) var(--ease-out);border:1px solid var(--line)}
+.preview[data-t=dark]{--pv-bg:#16141b;--pv-ink:#f4f1fa}.preview .pbtn{display:inline-block;margin-top:10px;padding:10px 16px;border-radius:10px;background:var(--accent);color:var(--on-accent);font-weight:600}
+.sk{display:grid;gap:10px}.sk i{display:block;height:14px;border-radius:8px;background:linear-gradient(90deg,var(--surface2) 25%,var(--bg) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shim 1.4s linear infinite}
+.sk i:nth-child(1){width:60%;height:20px}.sk i:nth-child(3){width:80%}@keyframes shim{to{background-position:-200% 0}}
+.loaded{animation:fadeup var(--dur-3) var(--ease-out)}@keyframes fadeup{from{opacity:0;transform:translateY(8px)}}
+.js .reveal{opacity:0;transform:translateY(24px);transition:opacity var(--dur-4) var(--ease-out),transform var(--dur-4) var(--ease-out)}
+.js .reveal.in{opacity:1;transform:none}
+.view[hidden]{display:none}::view-transition-old(root),::view-transition-new(root){animation-duration:var(--dur-3)}
+.tokens{width:100%;border-collapse:collapse;font-size:14px}.tokens th,.tokens td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line)}
+.scroll{overflow-x:auto}.scroll:focus-visible{outline-offset:0}
+.refs a{color:var(--accent);font-weight:600}
+footer{padding:40px 0 60px;color:var(--muted);font-size:14px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+.tk-track{animation:none!important;flex-wrap:wrap;width:auto}.tk-track [aria-hidden]{display:none}.js .reveal{opacity:1;transform:none}.ico path{stroke-dashoffset:0}.blob{transform:none!important}.sk i{animation:none!important}}
+.btn{box-shadow:0 0 0 1px rgba(255,122,61,.4),0 8px 30px -6px rgba(255,122,61,.55)}.tile:has(a.cta:hover){box-shadow:0 0 0 1px rgba(255,255,255,.14),0 30px 70px -20px rgba(124,92,255,.45)}.blob{opacity:.35}</style><script>document.documentElement.classList.add('js')</script></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nav"><div class="wrap"><a href="#ux" style="text-decoration:none;font:600 15px 'JetBrains Mono',monospace" data-go="ux">jdilig.me</a>
+<nav aria-label="Main"><a href="#projects">Projects</a><a href="#ux" aria-current="page" data-go="ux">UX</a><a href="#resume">Resume</a></nav></div></header>
+<main id="main">
+<div class="view" id="v-ux">
+<div class="hero wrap"><div class="blobs" aria-hidden="true"><div class="blob b1" data-depth=".25"></div><div class="blob b2" data-depth=".45"></div><div class="blob b3" data-depth=".15"></div></div>
+<p class="mono">UX case studies · Direction B</p><h1>Design systems and product UI, <span class="grad">built to be used by everyone.</span></h1>
+<p class="lede">Three projects that show how I work through UX: research, flows, wireframes, prototypes, and accessible components that ship.</p>
+<div class="row"><button class="btn" data-go="cs">Read the Ember UI case study <span class="arr" aria-hidden="true">→</span></button><a class="btn sec" href="https://github.com/balbonits/a11y-design-system">View the code</a></div>
+<div class="ticker" role="region" aria-label="Skills"><div class="tk-view"><div class="tk-track"><span>Design tokens</span><span>Keyboard-first</span><span>Screen reader tested</span><span>WCAG 2.2 AA</span><span>Section 508</span><span>Storybook docs</span><span>Reduced-motion safe</span><span aria-hidden="true">Design tokens</span><span aria-hidden="true">Keyboard-first</span><span aria-hidden="true">Screen reader tested</span><span aria-hidden="true">WCAG 2.2 AA</span><span aria-hidden="true">Section 508</span><span aria-hidden="true">Storybook docs</span><span aria-hidden="true">Reduced-motion safe</span></div></div><button class="tk-btn" type="button" aria-pressed="false">Pause</button></div></div>
+<section class="blk wrap" aria-labelledby="h-proj"><p class="mono">Projects</p><h2 id="h-proj" class="reveal">Selected UX work</h2>
+<div class="bento">
+<article class="tile t-big reveal"><div class="thumb" aria-hidden="true"><div class="sheen"></div></div><p class="mono">01 · Design system</p><h3>Ember UI</h3><p>Tokens, eight components and docs for every one.</p><a class="cta" href="#cs" data-go="cs">Read case study <span aria-hidden="true">→</span></a></article>
+<article class="tile t-sm reveal"><svg class="ico" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 21l8 8 16-17" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="stat">0</div><p>serious axe issues across 120 automated runs</p></article>
+<article class="tile t-sm reveal"><svg class="ico" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 21l8 8 16-17" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="stat">100</div><p>Lighthouse accessibility score</p></article>
+<article class="tile t-md reveal"><div class="thumb" style="height:120px" aria-hidden="true"><div class="sheen"></div></div><p class="mono">02 · Product UI</p><h3>Job tracker</h3><p>Every application's stage at a glance, never a missed follow-up.</p><p class="mono">In progress</p></article>
+<article class="tile t-md reveal"><div class="thumb" style="height:120px" aria-hidden="true"><div class="sheen"></div></div><p class="mono">03 · Internal tool</p><h3>Dev dashboard</h3><p>What's failing, what changed, and the logs, in seconds.</p><p class="mono">Up next</p></article>
+</div></section>
+<section class="blk wrap" aria-labelledby="h-demo"><p class="mono">Try it</p><h2 id="h-demo" class="reveal">Interactive demos</h2>
+<div class="demo">
+<div class="tile reveal"><h3>Theme tokens</h3><p>Switch the theme; one set of tokens drives both.</p>
+<div class="seg" role="group" aria-label="Preview theme"><button type="button" aria-pressed="true" data-t="light">Light</button><button type="button" aria-pressed="false" data-t="dark">Dark</button></div>
+<div class="preview" data-t="light" style="margin-top:14px"><strong>Northwind Labs</strong><br>Frontend Engineer · Interviewing<br><span class="pbtn">Save role</span></div></div>
+<div class="tile reveal"><h3>Loading state</h3><p>Skeletons hold the layout while data loads.</p><button class="btn sec" type="button" id="ld">Reload card</button>
+<div id="ldbox" aria-live="polite" style="margin-top:14px"><div class="loaded"><strong>Dev dashboard</strong><br>3 checks failing · last deploy 12 min ago (example data)</div></div></div>
+</div></section>
+<section class="blk wrap" aria-labelledby="h-tok"><p class="mono">Tokens</p><h2 id="h-tok" class="reveal">Shape and motion tokens</h2>
+<div class="tile reveal"><div class="scroll" tabindex="0" role="region" aria-label="Token table"><table class="tokens"><caption class="mono" style="text-align:left;padding-bottom:8px">Direction B. Bold with motion</caption><tbody><tr><th scope=row><code>--r-card</code></th><td><code>22px</code></td></tr><tr><th scope=row><code>--r-btn</code></th><td><code>12px</code></td></tr><tr><th scope=row><code>--r-input</code></th><td><code>12px</code></td></tr><tr><th scope=row><code>--gap</code></th><td><code>12px</code></td></tr><tr><th scope=row><code>--pad</code></th><td><code>22px</code></td></tr><tr><th scope=row><code>--elev</code></th><td><code>0 0 0 1px rgba(255,255,255,.07),0 24px 60px -20px rgba(0,0,0,.8)</code></td></tr><tr><th scope=row><code>--dur-1</code></th><td><code>100ms</code></td></tr><tr><th scope=row><code>--dur-2</code></th><td><code>180ms</code></td></tr><tr><th scope=row><code>--dur-3</code></th><td><code>360ms</code></td></tr><tr><th scope=row><code>--dur-4</code></th><td><code>640ms</code></td></tr><tr><th scope=row><code>--ease-out</code></th><td><code>cubic-bezier(.16,1,.3,1)</code></td></tr><tr><th scope=row><code>--ease-press</code></th><td><code>cubic-bezier(.4,0,.2,1)</code></td></tr></tbody></table></div>
+<p class="refs" style="margin-top:14px">Inspired by: <a href="https://linear.app">Linear</a> · <a href="https://vercel.com">Vercel</a> · <a href="https://www.raycast.com">Raycast</a></p></div></section>
+</div>
+<div class="view" id="v-cs" hidden><div class="hero wrap"><p class="mono">UX case study 01</p><h1 tabindex="-1" id="cs-h">Ember UI: an accessible design system starter</h1>
+<p class="lede">I built a small design system from the ground up: tokens first, eight core components, and documentation that explains how each one works by keyboard and for screen readers.</p>
+<div class="row"><button class="btn sec" data-go="ux"><span aria-hidden="true">←</span> All projects</button><a class="btn" href="https://jdilig.me/ux/design-system/storybook/">View the Storybook</a></div></div>
+<section class="blk wrap"><div class="bento"><article class="tile t-md reveal"><p class="mono">Problem</p><h3>Accessibility arrives late</h3><p>Most teams bolt it on at the end.</p></article><article class="tile t-md reveal"><p class="mono">Approach</p><h3>Tokens first</h3><p>Every component built and documented against WCAG 2.2 AA.</p></article></div></section></div>
+</main><footer class="wrap">Prototype for review. Motion respects your reduced-motion setting. Marquee pauses on hover, focus, or the Pause button.</footer>
+<script>
+const R=matchMedia('(prefers-reduced-motion: reduce)');
+// view transitions between UX index and case study
+function go(v){const sw=()=>{document.getElementById('v-ux').hidden=v!=='ux';document.getElementById('v-cs').hidden=v!=='cs';scrollTo(0,0);const h=v==='cs'?document.getElementById('cs-h'):document.getElementById('h-proj');h&&h.focus&&v==='cs'&&h.focus();observe()};
+ if(document.startViewTransition&&!R.matches)document.startViewTransition(sw);else sw()}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){e.preventDefault();go(g.dataset.go)}});
+// ticker pause (WCAG 2.2.2)
+document.querySelectorAll('.ticker').forEach(t=>{const b=t.querySelector('.tk-btn');b.onclick=()=>{const p=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',p);b.textContent=p?'Play':'Pause';p?t.setAttribute('data-paused',''):t.removeAttribute('data-paused')}});
+// scroll reveal
+let io;function observe(){io&&io.disconnect();io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{rootMargin:'0px 0px -10% 0px'});document.querySelectorAll('.reveal:not(.in)').forEach(el=>io.observe(el))}observe();
+// parallax (transform only, rAF, off for reduced motion)
+const bl=[...document.querySelectorAll('.blob')];let tk=false;addEventListener('scroll',()=>{if(R.matches||tk)return;tk=true;requestAnimationFrame(()=>{const y=scrollY;bl.forEach(b=>b.style.transform=`translate3d(0,${y*b.dataset.depth}px,0)`);tk=false})},{passive:true});
+// theme demo
+document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{b.parentElement.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));b.closest('.tile').querySelector('.preview').dataset.t=b.dataset.t});
+// skeleton demo
+document.getElementById('ld').onclick=()=>{const bx=document.getElementById('ldbox');bx.setAttribute('aria-busy','true');bx.innerHTML='<div class="sk" aria-label="Loading"><i></i><i></i><i></i></div>';setTimeout(()=>{bx.removeAttribute('aria-busy');bx.innerHTML='<div class="loaded"><strong>Dev dashboard</strong><br>3 checks failing · last deploy 12 min ago (example data)</div>'},1400)};
+</script></body></html>
