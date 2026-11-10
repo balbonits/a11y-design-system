@@ -18,11 +18,26 @@ A small, accessible React design system: tokens for light and dark themes, eight
 - `npm test` runs unit tests for Modal focus return and focus trap, Tabs arrow/Home/End keys, and Toast roles.
 - Storybook's interactive Controls block is replaced by the read-only ArgTypes table on docs pages, because its JSON editor fails axe. Docs-chrome link and code colors are darkened in `.storybook/preview-head.html` for AA contrast.
 
+## Use it in an app
+Ember UI installs from a git tag and builds itself on install (the `prepare` script runs the library build). It isn't on npm.
+
+```sh
+npm install github:balbonits/a11y-design-system#v0.2.0
+```
+
+```tsx
+import 'ember-ui/styles.css';
+import { Button, ToastProvider } from 'ember-ui';
+```
+
+The package exports `ember-ui` (ESM and `.d.ts`), `ember-ui/styles.css` and `ember-ui/tokens.json`. React 19 is a peer dependency.
+
 ## Scripts
 
 | Script | What it does |
 | --- | --- |
-| `npm run build` | Generates tokens.json, type-checks, builds Storybook to `storybook-static/` |
+| `npm run build:lib` | Library build into `dist/`: ESM, `.d.ts` and one `ember.css` |
+| `npm run build` | Library build, type-check, then Storybook into `storybook-static/` |
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
 | `npm run test:a11y` | axe sweep of the built Storybook |
 | `node scripts/shots.mjs` | Milestone screenshots into `docs/screenshots/` |
