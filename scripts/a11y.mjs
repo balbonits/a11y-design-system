@@ -32,7 +32,6 @@ for (const motion of ['no-preference', 'reduce']) {
       }
       await page.addScriptTag({ content: axeSrc });
       const v = await page.evaluate(async () => {
-        // eslint-disable-next-line no-undef
         const r = await axe.run(document, { runOnly: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] });
         return r.violations.map((x) => ({ id: x.id, impact: x.impact, n: x.nodes.length, target: String(x.nodes[0]?.target) }));
       });
