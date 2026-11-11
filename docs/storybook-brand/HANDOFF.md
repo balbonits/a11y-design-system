@@ -216,6 +216,28 @@ Builder (BED): the three rules are in `mock/manager-head.html` between the `PANE
 
 - **The drawer's search field** (28px tall) and **sidebar tree rows**, and the Controls panel's own inputs, aren't toolbar controls and aren't in this card. They'd go in a separate follow-up if wanted.
 
+## 4b. Addon tab keyboard focus (FU-SB-PANEL-TABS-FOCUS)
+
+**The gap (VQA, corrected by CA and CTE, 2026-11-11):** in Storybook 8.6.19 an unselected addon tab shows keyboard focus only by turning on its 3px underline (8.88:1 light, 13.3:1 dark, unclipped). The selected tab already has that underline, so focusing it changes nothing on screen. That fails WCAG 2.4.7. Measured on main's build with this rule stripped: the focused selected tab differs from the unfocused one by **0 pixels** at 320, 599 and 1280, in both modes.
+
+**The fix** goes in `mock/manager-head.html` between the `PANEL-TABS-FOCUS` comments, outside the `max-width: 599px` media query so it applies at every width:
+
+| Rule | Why |
+|---|---|
+| `.sb-bar [role="tablist"] .tabbutton:focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: -3px !important; }` | It's the #52 focus ring, the same 3px solid `--eb-focus` the brand link and the drawer header buttons use. `--eb-focus` resolves to **`#e0217a`** in both modes; the gate reads it from the built manager and fails on anything else. Offset `-3px` draws the ring over the tab's own 3px top and bottom borders, inside its 40px border box. The tablist is `overflow: hidden` with only 4px of block padding (section 4a), so an outside ring would be clipped, which is the same trap as #52. It's on every tab, so focus looks the same everywhere. `:focus-visible` only, so a mouse click shows no ring. `!important` beats Storybook's `outline: none`. Selectors use `.sb-bar`, `role` and Storybook's stable `.tabbutton` class, never `css-*` hashes. |
+
+CA's four conditions, all verified by `panel-tabs.cjs` (focus rows, light and dark, at 320, 599 and 1280):
+1. **3:1 against the tab's own background.** Addon tabs have a transparent background in every state, hover included, so the gate walks up to the first opaque ancestor, which is the addon bar. Light is `#e0217a` on `#ffffff`, **4.50:1**. Dark is `#e0217a` on `#1c1c1c`, **3.79:1**. That holds for the unselected, selected and hovered tab.
+2. **Selected tab, ring on all four sides over the underline.** The pixel check needs ring colour (within 60 of `#e0217a`, summed over RGB) on at least 2 of the 4 pixel lines inside each edge of the tab's border box, corners excluded. A 3px ring meets that at any subpixel offset, because the tabs sit on fractional x such as 423.8px. Every side passes. While focused, the ring covers the selected tab's underline. Selection still shows in the label colour (`#1530d0` light, `#c6f432` dark), and the underline comes back on blur. So focused-and-selected, selected and focused are three distinct looks (shots).
+3. **Unclipped at 320, 599 and 1280, by pixels:** the same 4-side check on the selected, unselected and hovered tab. On the selected tab, focusing must also change at least half a ring's worth of pixels.
+4. **Keyboard only:** after a keyboard focus the tab matches `:focus-visible`. **Negative check:** a mouse click on an unselected tab doesn't match `:focus-visible` and has 0 ring lines on every side.
+
+Results: as served, **148 pass, 0 fail**, exit 0 (`results/panel-tabs-focus.txt`). That's section 4a's 88 rows plus 60 focus rows. Negative control `--strip-focus` removes the `PANEL-TABS-FOCUS` block and runs only the focus rows: **24 fail**, exit 1 (`results/panel-tabs-strip-focus.txt`). At each width and mode, 4 fail: no ring on the selected, unselected and hovered tab, and the focused selected tab changes 0 px. The 36 passing rows are the `--eb-focus` read, `:focus-visible` matching, contrast and the click negative, none of which depend on the rule. Section 4a's `--strip` is unchanged: 14 fail, the same 14 lines (`results/panel-tabs-strip.txt`). `overrides.cjs` passes all checks ("all override checks pass").
+
+Shots: `handoff/sb-panel-tabs-focus-{320,599,1280}-{light,dark}-annotated.png`, truecolor RGB. Each shows the addon bar at 2x: 1 the selected tab unfocused (underline), then 2 the same tab with keyboard focus (ring), inside a dashed box around the 48px row. 1280 is cropped to the left 760px.
+
+Builder (BED): copy the rule between the `PANEL-TABS-FOCUS` comments into `.storybook/manager-head.html` along with the rest of `mock/manager-head.html` (it's in `mock/manager-head.html.diff`). Build with `mock/build.sh <node_modules> origin/main`, then run `node docs/storybook-brand/panel-tabs.cjs <url>` (exit 0, 148 pass), `--strip-focus` (exit 1, 24 fail) and `--strip` (exit 1, 14 fail). In the real build, Tab into the addon panel and focus the selected tab: it shows a pink 3px ring inside the tab. Clicking a tab with the mouse shows no ring.
+
 ## 5. Motion
 
 Nothing new moves. The brand mark doesn't animate, and the focus ring appears instantly.
@@ -232,6 +254,7 @@ Storybook 8.6's manager has no `prefers-reduced-motion` handling (#45 didn't add
 | `sb-toolbar-hit-320-light.png`, `sb-toolbar-hit-320-dark.png`, `sb-toolbar-hit-599-light.png`, `sb-toolbar-hit-599-dark.png` | Section 4a, story view: dashed green boxes are each control's 44px hit area in the 48px top and bottom bars, on a 50px or wider pitch; 1 Zoom in with its focus ring; 2 the bars, 48px; 3 the scroll affordance at the right edge (the toolbar is at its scroll start) |
 | `sb-toolbar-hit-320-drawer-light.png`, `sb-toolbar-hit-599-drawer-light.png` | Section 4a, drawer open: 1 About Storybook and Close menu with 44x44 hit areas |
 | `sb-toolbar-hit-320-addons-light.png`, `sb-toolbar-hit-599-addons-light.png` | Section 4a, addon panel open: 1 the 48px addon bar with Close addon panel at 44x44 and the content starting under it; the tabs stay 40px visually; their 44px areas are in `sb-panel-tabs-*.png` (FU-SB-PANEL-TABS-44) |
+| `sb-panel-tabs-focus-320-light-annotated.png`, `sb-panel-tabs-focus-320-dark-annotated.png`, `sb-panel-tabs-focus-599-light-annotated.png`, `sb-panel-tabs-focus-599-dark-annotated.png`, `sb-panel-tabs-focus-1280-light-annotated.png`, `sb-panel-tabs-focus-1280-dark-annotated.png` | Section 4b, the addon bar at 2x: 1 the selected tab unfocused, with its 3px underline; 2 the same tab with keyboard focus, with the 3px `#e0217a` ring inset over the underline. Dashed box: the 48px row (the ring isn't clipped). |
 
 The annotation boxes (green for targets and hit areas, purple for color callouts) are an overlay added at capture time, not part of the design. The docs content inside the preview iframe isn't part of this card (Known issue 4).
 

@@ -1,6 +1,6 @@
 --- pr45/manager-head.html	2026-11-11 02:06:34.019783929 -0800
 +++ mock/manager-head.html	2026-11-11 02:07:07.379740573 -0800
-@@ -1,9 +1,82 @@
+@@ -1,9 +1,88 @@
  <title>Ember UI · Storybook</title>
  <style>
    /* SB-MANAGER-AA: Storybook paints the selected sidebar item's label white on colorSecondary. In dark, colorSecondary is
@@ -82,6 +82,12 @@
 +    /* The 40px-tall menu button sits 4px inside the 48px bar, so its ring uses offset 0 (3px ring, 1px to spare) to stay inside the bar. */
 +    .sb-bar button[title="Open navigation menu"]:focus-visible { outline-offset: 0; }
 +  }
++  /* PANEL-TABS-FOCUS start (FU-SB-PANEL-TABS-FOCUS, CA/CTE 2026-11-11): Storybook 8.6.19 shows keyboard focus on an unselected addon tab
++     only as its 3px underline, so the selected tab (underline already on) shows no change when focused (WCAG 2.4.7). Every addon tab gets the
++     #52 focus ring, 3px solid --eb-focus (#e0217a), on :focus-visible only (no ring on mouse click). Offset -3px puts the ring inside the tab's
++     border box, over its 3px top and bottom borders, so the tablist's overflow: hidden can't clip it at any width. All widths, not only below 600. */
++  .sb-bar [role="tablist"] .tabbutton:focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: -3px !important; }
++  /* PANEL-TABS-FOCUS end */
 +  /* Reduced motion: Storybook 8.6's manager has no prefers-reduced-motion handling (mobile drawer slide, sidebar and control transitions). Neo's rule is motion off under reduce, so zero it here. */
 +  @media (prefers-reduced-motion: reduce) {
 +    *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
