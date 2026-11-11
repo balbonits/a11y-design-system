@@ -14,9 +14,9 @@ class MediaCopies(unittest.TestCase):
 
     def test_clip_is_the_record_and_under_10_mb(self):
         """The player's clip is a byte copy of the record, the only video, and <= 10 MB (ARCH-REVIEW R-4)."""
-        self.assertEqual([p.name for p in DST.glob("*.mp4")], ["sintel.mp4"])
-        self.assertEqual((DST / "sintel.mp4").read_bytes(), (SRC / "sintel-excerpt.mp4").read_bytes())
-        self.assertLessEqual((DST / "sintel.mp4").stat().st_size, 10 * 1000 * 1000)
+        self.assertEqual([p.name for p in DST.glob("*.mp4")], ["sintel-excerpt.mp4"])
+        self.assertEqual((DST / "sintel-excerpt.mp4").read_bytes(), (SRC / "sintel-excerpt.mp4").read_bytes())
+        self.assertLessEqual((DST / "sintel-excerpt.mp4").stat().st_size, 10 * 1000 * 1000)
 
     def test_credit_ships_with_the_media(self):
         text = (DST / "ATTRIBUTION.md").read_text(encoding="utf-8")

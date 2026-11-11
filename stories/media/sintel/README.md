@@ -9,7 +9,7 @@ part of the core `ember-ui` bundle. Credit and license are in
 
 | File | Size (bytes) | What it is | Player use |
 |---|---:|---|---|
-| `sintel.mp4` | 3,002,474 (2.9 MiB) | 52 s excerpt, 1126×480 H.264 High at 24 fps, AAC-LC 96 kb/s stereo, `+faststart` | `source.src` |
+| `sintel-excerpt.mp4` | 3,002,474 (2.9 MiB) | 52 s excerpt, 1126×480 H.264 High at 24 fps, AAC-LC 96 kb/s stereo, `+faststart` | `source.src` |
 | `captions.vtt` | 1,035 | English captions, 12 cues | `tracks`: `{ kind: 'captions', lang: 'en', label: 'English' }` |
 | `ad.vtt` | 873 | Audio description, 6 cues placed in the dialogue gaps | `tracks`: `{ kind: 'descriptions', lang: 'en' }` |
 | `transcript.txt` | 386 | Transcript, one cue per line (same as the player's `.txt` download, `toTxt`) | static download and reference |
@@ -21,12 +21,12 @@ The clip is well under the 10 MB limit (ARCH-REVIEW R-4).
 
 Every file here is a **byte-for-byte copy** of the record in
 [`tools/transcribe/samples/sintel/`](../../../tools/transcribe/samples/sintel/).
-`sintel.mp4` is a copy of `sintel-excerpt.mp4`, and git stores both as one blob,
+`sintel-excerpt.mp4` has the same name as the record, and git stores both as one blob,
 so the repo doesn't grow. Never edit the copies by hand:
 `tools/transcribe/tests/test_media_copies.py` fails if a copy differs from the
 record.
 
-- **`sintel.mp4`**: cut from Blender's 1080p master with ffmpeg (command below).
+- **`sintel-excerpt.mp4`**: cut from Blender's 1080p master with ffmpeg (command below).
 - **`captions.vtt`**: `tools/transcribe/transcribe.py` runs faster-whisper 1.2.1
   (`small.en`, CPU float32, beam 5, temperature 0), so the output is
   repeatable. Cue starts are snapped to the voice onset found by Silero VAD, and
@@ -36,12 +36,15 @@ record.
   Blender's hand-made French subtitles. They change text only, never timings.
   All 12 starts fall within 0.68 s early and 0.38 s late of Blender's
   hand-timed subtitles (`spotcheck.py`).
+  **Correction level: machine-checked (Whisper confidences, speech spans, Blender FR
+  subtitles); no human listening pass yet.**
 - **`ad.vtt`**: written by hand from the frames, `kind="descriptions"`. Each cue
   is short and factual and sits in a gap between lines of dialogue, so voicing
   never talks over a character. A unit test checks that no AD cue overlaps a caption.
 - **`transcript.txt` and `transcript.vtt`**: rendered by `transcribe.py` from the
-  same corrected cue list as `captions.vtt`, in the formats the player's
-  transcript downloads produce.
+  same corrected cue list as `captions.vtt`. They equal
+  `toTxt(parseVtt(captions.vtt))` and `toVtt(parseVtt(captions.vtt))` from
+  `src/video/vtt.ts` (R-4, PR #33), the player's two transcript downloads.
 
 ## How to regenerate
 
@@ -56,12 +59,19 @@ tools/transcribe/run.sh
 
 # 3. Refresh the copies the player reads
 S=tools/transcribe/samples/sintel D=stories/media/sintel
-cp $S/sintel-excerpt.mp4 $D/sintel.mp4
+cp $S/sintel-excerpt.mp4 $D/
 cp $S/captions.vtt $S/ad.vtt $S/transcript.txt $S/transcript.vtt $D/
 ```
 
 `ad.vtt` is hand-written. To change it, edit the record in
 `tools/transcribe/samples/sintel/ad.vtt` and copy it here.
+
+## TODO
+
+- A human listening pass over `captions.vtt` (optional, non-blocking).
+- Speaker-change cues (for example a leading "- " or a speaker label where the
+  speaker isn't on screen), once the listening pass confirms who says each line.
+- Non-speech sound cues (music, fire, footsteps) in `captions.vtt`, from the same pass.
 
 ## Checks (CI, `transcribe` job)
 

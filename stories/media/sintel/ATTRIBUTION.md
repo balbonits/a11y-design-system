@@ -8,7 +8,7 @@ The credit line above is the one Blender asks for when you use part of the film
 
 | File | Source and changes |
 |---|---|
-| `sintel.mp4` | Excerpt 01:45-02:37 of `Sintel.2010.1080p.mkv` from [download.blender.org](https://download.blender.org/durian/movies/). Changes: trimmed to 52 s, scaled to 480p and re-encoded (H.264 and AAC). |
+| `sintel-excerpt.mp4` | Excerpt 01:45-02:37 of `Sintel.2010.1080p.mkv` from [download.blender.org](https://download.blender.org/durian/movies/). Changes: trimmed to 52 s, scaled to 480p and re-encoded (H.264 and AAC). |
 | `captions.vtt` | English captions for the excerpt, made by this project: machine-generated with faster-whisper, then 4 cues corrected by hand. |
 | `ad.vtt` | Text audio description for the excerpt, written by this project. |
 | `transcript.txt`, `transcript.vtt` | Transcript of the excerpt, made by this project from the same cues as `captions.vtt`. |
