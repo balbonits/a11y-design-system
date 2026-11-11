@@ -3,10 +3,10 @@
 John's order (via ECOS, 5:09 PM PT): make the design way different across all 3 UX projects (Ember UI + Storybook, job tracker, dev dashboard).
 
 ## Banned (no reuse)
-A Editorial, B Bold and C Tactile: their palettes (stone/ember, night/flare/violet, oat/forest), type pairings, layouts, blobs and glass, and every v1/v2 direction file. Don't reuse the reference sites from v2 either (Stripe, Apple, Godly, Linear, Vercel, Raycast, Arc, Framer, Awwwards).
+The three earlier candidate directions, A, B and C: their palettes (stone/ember, night/flare/violet, oat/forest), type pairings, layouts, blobs and glass, and every v1/v2 direction file. Don't reuse the reference sites from v2 either (Stripe, Apple, Godly, Linear, Vercel, Raycast, Arc, Framer, Awwwards).
 
 ## Kept
-The R-2 infrastructure: data-theme x data-mode, primitive/semantic/component layers, Ember's semantic token names (see docs/themes/r2/semantic.css), contrast.mjs, the ThemeSwitcher and the storage keys. Only token values and the art direction change. New theme ids replace editorial|bold|tactile.
+The R-2 infrastructure: data-theme x data-mode, primitive/semantic/component layers, Ember's semantic token names (ARCH-REVIEW Addendum 5; see src/themes/neo.css), contrast.mjs, the ThemeSwitcher and the storage keys. Only token values and the art direction change. New theme ids replace the A/B/C ids.
 
 ## Directions (one theme id each; each must be clearly unlike the others)
 - **D `kinetic`, Kinetic Swiss.** Big variable-weight type (e.g. Inter Tight / Space Grotesk alternatives; pick fresh: "Bricolage Grotesque" or "Instrument Sans"), an asymmetric 12-col grid with lots of air and no cards (content separated by rules and whitespace, not boxes). Cobalt plus warm white, with a signal red accent. Motion: type that reveals per line, scroll-linked weight shifts, and a marquee ticker. Refs: Pentagram, Collins, Locomotive.

@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useEffect } from 'react';
 import { Button, useToast, type ToastInput } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 function Trigger(t: ToastInput & { auto?: boolean }) {
   const show = useToast();
@@ -51,4 +52,20 @@ export const Error: S = { args: { tone: 'error', title: 'Could not save', messag
 export const Interactive: S = { args: { tone: 'success' } };
 export const WithAction: S = {
   args: { tone: 'success', title: 'Reminder done', action: { label: 'Undo', onAction: () => {} }, auto: true },
+};
+
+/** Each tone in all 6 theme x mode combos (R-2), shown statically (no live region, no timer). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => (
+    <AllThemes>{() => (
+      <div style={{ display: 'grid', gap: 8 }}>
+        {(['info', 'success', 'error'] as const).map((t) => (
+          <div key={t} className={`em-toast em-toast--${t}`} style={{ pointerEvents: 'auto' }}>
+            <span className="em-toast-text"><strong className="em-toast-title">{t === 'error' ? 'Could not save' : t === 'success' ? 'Role saved' : 'Reminder set'}</strong> {t === 'error' ? 'Check the form.' : 'All good.'}</span>
+          </div>
+        ))}
+      </div>
+    )}</AllThemes>
+  ),
 };

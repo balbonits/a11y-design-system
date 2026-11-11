@@ -1,9 +1,13 @@
 import type { Preview } from '@storybook/react';
-import '@fontsource-variable/geist';
-import '@fontsource-variable/jetbrains-mono';
-import '@fontsource/instrument-serif';
+// Fonts named by the registered themes (neo: Archivo Black, Archivo, JetBrains Mono).
+import '@fontsource/archivo-black';
+import '@fontsource/archivo/400.css';
+import '@fontsource/archivo/500.css';
+import '@fontsource/archivo/600.css';
+import '@fontsource/jetbrains-mono';
+import { addons } from '@storybook/preview-api';
 import '../src/ember.css';
-import { ToastProvider } from '../src';
+import { ToastProvider, applyTheme, DEFAULT_THEME, THEME_REGISTRY, type Theme, type Mode } from '../src';
 import { Title, Subtitle, Description, Primary, ArgTypes, Stories } from '@storybook/blocks';
 
 // Code samples scroll sideways on narrow screens. Make each scroll box reachable by
@@ -19,17 +23,31 @@ if (typeof window !== 'undefined') {
   new MutationObserver(mark).observe(document.documentElement, { childList: true, subtree: true });
 }
 
+// Theme and Mode toolbar globals (R-2). The Theme items come from the registry, so a new theme shows up
+// here with no Storybook change. Theme and Mode set data-theme and data-mode on <html>, for stories and
+// for docs-only pages too (those render no decorator, so listen for global changes as well).
+const setThemeGlobals = (g: Record<string, unknown>) => applyTheme((g.theme as Theme) ?? DEFAULT_THEME, (g.mode as Mode) ?? 'auto');
+if (typeof window !== 'undefined') {
+  const ch = addons.getChannel();
+  ch.on('globalsUpdated', ({ globals }: { globals: Record<string, unknown> }) => setThemeGlobals(globals));
+  ch.on('setGlobals', ({ globals }: { globals: Record<string, unknown> }) => setThemeGlobals(globals));
+}
+
 const preview: Preview = {
   globalTypes: {
     theme: {
-      description: 'Color theme',
-      toolbar: { title: 'Theme', icon: 'mirror', items: [{ value: 'light', title: 'Light' }, { value: 'dark', title: 'Dark' }], dynamicTitle: true },
+      description: 'Theme',
+      toolbar: { title: 'Theme', icon: 'paintbrush', items: THEME_REGISTRY.map((t) => ({ value: t.id, title: t.label })), dynamicTitle: true },
+    },
+    mode: {
+      description: 'Color mode',
+      toolbar: { title: 'Mode', icon: 'mirror', items: [{ value: 'auto', title: 'Auto (system)' }, { value: 'light', title: 'Light' }, { value: 'dark', title: 'Dark' }], dynamicTitle: true },
     },
   },
-  initialGlobals: { theme: 'light' },
+  initialGlobals: { theme: DEFAULT_THEME, mode: 'auto' },
   decorators: [
     (Story, ctx) => {
-      document.documentElement.setAttribute('data-theme', ctx.globals.theme ?? 'light');
+      setThemeGlobals(ctx.globals);
       document.body.style.background = 'var(--color-bg)';
       return (
         <ToastProvider>
@@ -57,7 +75,7 @@ const preview: Preview = {
       ),
     },
     a11y: { config: { rules: [] } },
-    options: { storySort: { order: ['Introduction', 'Principles', 'Tokens', 'Components', ['Button', 'Input', 'Select', 'Checkbox', 'Modal', 'Tabs', 'Table', 'Toast']] } },
+    options: { storySort: { order: ['Introduction', 'Principles', 'Tokens', 'Components', ['Button', 'Input', 'Select', 'Checkbox', 'Modal', 'Tabs', 'Table', 'Toast', 'ThemeSwitcher']] } },
   },
 };
 export default preview;

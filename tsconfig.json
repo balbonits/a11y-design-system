@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022", "lib": ["ES2023", "DOM", "DOM.Iterable"], "module": "ESNext", "moduleResolution": "bundler",
     "jsx": "react-jsx", "strict": true, "noEmit": true, "skipLibCheck": true, "verbatimModuleSyntax": true,
-    "noUnusedLocals": true, "noUnusedParameters": true, "types": ["vitest/globals", "@testing-library/jest-dom"]
+    "resolveJsonModule": true, "noUnusedLocals": true, "noUnusedParameters": true, "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
   "include": ["src", "stories", ".storybook", "vitest.config.ts", "test"]
 }

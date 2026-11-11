@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Tabs } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 const tabs = [
   { id: 'overview', label: 'Overview', content: <p style={{ margin: 0 }}>Role summary and current stage.</p> },
@@ -43,3 +44,9 @@ export const SecondSelected: S = { args: { defaultTab: 'notes' } };
 export const WithDisabledTab: S = { args: { tabs: [...tabs.slice(0, 2), { ...tabs[2], disabled: true }] } };
 export const Hover: S = { parameters: { pseudo: { hover: true } } };
 export const FocusVisible: S = { parameters: { pseudo: { focusVisible: true } } };
+
+/** Tabs in all 6 theme x mode combos (R-2). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => <AllThemes>{(l) => <Tabs label={`Role details (${l})`} tabs={tabs} />}</AllThemes>,
+};

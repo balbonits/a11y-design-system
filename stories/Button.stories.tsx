@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
@@ -52,3 +53,17 @@ export const FocusVisible: S = { parameters: { pseudo: { focusVisible: true } } 
 export const Active: S = { parameters: { pseudo: { active: true } } };
 export const Disabled: S = { args: { disabled: true } };
 export const Loading: S = { args: { loading: true, children: 'Saving…' } };
+
+/** Every variant in all 6 theme x mode combos (R-2). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => (
+    <AllThemes>{(l) => (
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Button>Save</Button><Button variant="secondary">Cancel</Button><Button variant="ghost">Skip</Button>
+        <Button variant="danger">Delete</Button><Button size="sm" variant="secondary">Small</Button>
+        <Button variant="secondary" iconOnly aria-label={`Add role (${l})`}><span aria-hidden="true">+</span></Button>
+      </div>
+    )}</AllThemes>
+  ),
+};

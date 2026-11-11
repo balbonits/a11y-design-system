@@ -7,3 +7,5 @@ export { Modal, type ModalProps } from './Modal';
 export { Tabs, type TabsProps, type TabItem } from './Tabs';
 export { Table, type TableProps, type Column } from './Table';
 export { ToastProvider, useToast, type ToastInput, type ToastTone, type ToastAction } from './Toast';
+export { ThemeSwitcher, type ThemeSwitcherProps } from './ThemeSwitcher';
+export { applyTheme, readTheme, saveTheme, prepaintScript, PREPAINT_SCRIPT, THEME_REGISTRY, THEMES, DEFAULT_THEME, MODES, THEME_KEY, MODE_KEY, type Theme, type ThemeEntry, type Mode, type ThemeStorage } from './theme';

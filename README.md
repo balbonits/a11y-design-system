@@ -9,13 +9,16 @@ A small, accessible React design system: tokens for light and dark themes, eight
 
 ## What's inside
 
-- `src/tokens.css`: one file of design tokens (raw palette, then semantic roles) for light and dark. Dark applies with `data-theme="dark"`, or follows the system when no theme is set. Reduced motion sets every duration to 0. `src/tokens.json` is generated from it.
-- Components: Button, Input, Select, Checkbox (and CheckboxGroup), Modal, Tabs, Table, Toast. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
+- **Themes are registered data.** `src/themes/registry.json` lists the themes, default first (Ember ships `neo`). Each theme is one token file, `src/themes/<id>.css`, with its own palette and every token in the theme contract (ARCH-REVIEW Addendum 5: `--radius-sm/md/lg/full`, `--border-width(-strong)`, `--shadow-raised/press`, `--focus-ring-color/width/offset/style`, `--control-height/padding-x/gap`, `--target-min`, `--divider-shape`, `--highlight(-contrast)`, `--tilt`, `--lift`, plus the semantic colors). **Adding a theme takes a token file and a registry entry, then `npm run tokens`.** No component, Storybook or CI code names a theme.
+- Two axes: `data-theme` takes a registered id (absent = the default theme) and `data-mode="light|dark"` (absent = follows the system), on `<html>` or any `.em-scope` element. Every registered theme is checked in light and dark for AA contrast and axe in CI.
+- Tokens in three layers: shared primitives (type and space), the registered themes (generated into `src/tokens/themes.css`), and component tokens (`--button-*`, `--field-*` and so on, only `var()` of theme tokens). `src/tokens.css` imports all three, and `src/tokens.json` is generated. Reduced motion sets every duration, `--tilt` and `--lift` to 0.
+- `ThemeSwitcher`: native radio groups (Theme, Color mode) that persist to `jdilig:theme` and `jdilig:mode`. It reads the registry, takes an app's own themes through `themes`, and hides the Theme group when only one theme is registered. Put `PREPAINT_SCRIPT` (or `prepaintScript(themes)`) inline in `<head>` so there's no flash of the wrong theme. neo uses Archivo Black, Archivo and JetBrains Mono; load them in your app (Storybook uses `@fontsource/archivo-black`, `@fontsource/archivo` and `@fontsource/jetbrains-mono`).
+- Components: Button, Input, Select, Checkbox (and CheckboxGroup), Modal, Tabs, Table, Toast, ThemeSwitcher. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
 - Docs pages in a fixed order: usage, anatomy, variants, states, keyboard, accessibility notes, code.
 
 ## Accessibility checks
 
-- `npm run test:a11y` builds nothing itself; run `npm run build` first, serve `storybook-static` on port 6007 (`npx http-server storybook-static -p 6007 -s`), then run it. It runs axe-core on every story and docs page in light and dark and fails on any serious or critical issue. It also checks that the modal, toast and loading stories run no animations under reduced motion.
+- `npm run test:a11y` builds nothing itself; run `npm run build` first, serve `storybook-static` on port 6007 (`npx http-server storybook-static -p 6007 -s`), then run it. It runs axe-core on every story and docs page in every registered theme in light and dark, plus every docs page with the OS in dark mode, and fails on any serious or critical issue. It also checks that the modal, toast and loading stories run no animations under reduced motion.
 - `npm test` runs unit tests for Modal focus return and focus trap, Tabs arrow/Home/End keys, and Toast roles.
 - Storybook's interactive Controls block is replaced by the read-only ArgTypes table on docs pages, because its JSON editor fails axe. Docs-chrome link and code colors are darkened in `.storybook/preview-head.html` for AA contrast.
 
@@ -23,7 +26,7 @@ A small, accessible React design system: tokens for light and dark themes, eight
 Ember UI installs from a git tag and builds itself on install (the `prepare` script runs the library build). It isn't on npm.
 
 ```sh
-npm install github:balbonits/a11y-design-system#v0.2.0
+npm install github:balbonits/a11y-design-system#v0.3.0
 ```
 
 ```tsx
@@ -40,7 +43,11 @@ The package exports `ember-ui` (ESM and `.d.ts`), `ember-ui/styles.css` and `emb
 | `npm run build:lib` | Library build into `dist/`: ESM, `.d.ts` and one `ember.css` |
 | `npm run build` | Library build, type-check, then Storybook into `storybook-static/` |
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
-| `npm run test:a11y` | axe sweep of the built Storybook |
+| `npm run tokens` | Checks every registered theme against the contract, builds `src/tokens/themes.css` and `src/tokens.json` |
+| `npm run lint:colors` | Token lint: raw colors, literal radius/border width/box-shadow/outline in component CSS, non-`var()` component tokens, retired token names |
+| `npm run contrast` | Contrast and theme-contract gate for every registered theme; writes `docs/CONTRAST.md` |
+| `npm run test:a11y` | axe sweep of the built Storybook (every theme and mode, OS dark, reduced motion) |
+| `npm run test:mobile` | Docs pages at 320 to 1440px: overflow, `--target-min` hit areas, axe, 1.4.12 text spacing |
 | `node scripts/shots.mjs` | Milestone screenshots into `docs/screenshots/` |
 
 ## Progress

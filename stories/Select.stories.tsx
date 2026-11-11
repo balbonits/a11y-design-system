@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Select } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 const options = (
   <>
@@ -47,3 +48,16 @@ export const Hover: S = { parameters: { pseudo: { hover: true } } };
 export const FocusVisible: S = { parameters: { pseudo: { focusVisible: true } } };
 export const Disabled: S = { args: { disabled: true } };
 export const Error: S = { args: { required: true, error: 'Choose a stage.' } };
+
+/** Default and error in all 6 theme x mode combos (R-2). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => (
+    <AllThemes>{() => (
+      <div style={{ display: 'grid', gap: 12 }}>
+        <Select label="Stage">{options}</Select>
+        <Select label="Next step" required error="Choose a stage.">{options}</Select>
+      </div>
+    )}</AllThemes>
+  ),
+};
