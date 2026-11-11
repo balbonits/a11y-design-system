@@ -29,6 +29,7 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | `--info` | `sky-700` | `#0b5cad` | `sky-300` | `#7fb6ff` |
 | `--highlight` | `lime-400` | `#c6f432` | `blue-600` | `#1f3dff` |
 | `--highlight-contrast` | `ink` | `#111111` | `paper` | `#ffffff` |
+| `--scrim` | `scrim` | `#11111173` | `scrim-dark` | `#1111118c` |
 
 New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. The set follows ARCH-REVIEW Addendum 5 (locked 5:20 PM PT): `--focus-ring-color/width/offset/style`, `--control-height/padding-x/gap` and `--target-min` (44px hit area) are defined here too. Ember's old `--radius` and `--focus` are removed, with no aliases. All other names are Ember's existing ones.
 
