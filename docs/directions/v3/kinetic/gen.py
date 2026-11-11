@@ -1,5 +1,5 @@
 import sys; sys.path.insert(0,'../shared'); from tokgen import build
-P={'scrim':'#06123F99','warm-50':'#FBF8F1','warm-100':'#F3EEE2','warm-200':'#E8E1D0','white':'#FFFFFF',
+P={'scrim':'#06123F66','scrim-dark':'#00000080','warm-50':'#FBF8F1','warm-100':'#F3EEE2','warm-200':'#E8E1D0','white':'#FFFFFF',
  'cobalt-950':'#06123F','cobalt-900':'#0A1B5C','cobalt-800':'#0E2580','cobalt-700':'#1434B8','cobalt-600':'#1D44D6','cobalt-500':'#3A5EE8',
  'cobalt-300':'#9AB0FF','cobalt-200':'#C2CFFF','cobalt-100':'#E4E9FB','slate-600':'#45507A','slate-300':'#C3C9E0','slate-400':'#8C96BE',
  'night-900':'#070F33','night-800':'#0D1844','night-700':'#152255',
@@ -9,7 +9,7 @@ L={'scrim':'scrim','color-bg':'warm-50','surface':'white','surface-muted':'warm-
  'accent':'red-700','accent-hover':'red-800','accent-soft':'red-100','accent-contrast':'white','focus-ring-color':'cobalt-700',
  'success':'green-700','warning':'amber-800','danger':'crimson-700','danger-hover':'crimson-800','danger-contrast':'white','info':'cobalt-700',
  'highlight':'cobalt-700','highlight-contrast':'warm-50'}
-D={'scrim':'scrim','color-bg':'night-900','surface':'night-800','surface-muted':'night-700','text':'warm-50','text-muted':'slate-300','border':'cobalt-300','border-subtle':'slate-600',
+D={'scrim':'scrim-dark','color-bg':'night-900','surface':'night-800','surface-muted':'night-700','text':'warm-50','text-muted':'slate-300','border':'cobalt-300','border-subtle':'slate-600',
  'accent':'red-400','accent-hover':'red-300','accent-soft':'red-950','accent-contrast':'night-900','focus-ring-color':'cobalt-200',
  'success':'green-300','warning':'amber-300','danger':'crimson-300','danger-hover':'crimson-200','danger-contrast':'night-900','info':'cobalt-300',
  'highlight':'cobalt-600','highlight-contrast':'warm-50'}

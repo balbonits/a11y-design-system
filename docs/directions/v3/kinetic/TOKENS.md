@@ -9,7 +9,7 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 ## Semantic colors (R-2 names)
 | Token | Light primitive | Light | Dark primitive | Dark |
 |---|---|---|---|---|
-| `--scrim` | `scrim` | <span style="display:inline-block;width:1em;height:1em;background:#06123F99;border:1px solid #777;vertical-align:middle"></span> `#06123F99` | `scrim` | <span style="display:inline-block;width:1em;height:1em;background:#06123F99;border:1px solid #777;vertical-align:middle"></span> `#06123F99` |
+| `--scrim` | `scrim` | <span style="display:inline-block;width:1em;height:1em;background:#06123F66;border:1px solid #777;vertical-align:middle"></span> `#06123F66` | `scrim-dark` | <span style="display:inline-block;width:1em;height:1em;background:#00000080;border:1px solid #777;vertical-align:middle"></span> `#00000080` |
 | `--color-bg` | `warm-50` | <span style="display:inline-block;width:1em;height:1em;background:#FBF8F1;border:1px solid #777;vertical-align:middle"></span> `#FBF8F1` | `night-900` | <span style="display:inline-block;width:1em;height:1em;background:#070F33;border:1px solid #777;vertical-align:middle"></span> `#070F33` |
 | `--surface` | `white` | <span style="display:inline-block;width:1em;height:1em;background:#FFFFFF;border:1px solid #777;vertical-align:middle"></span> `#FFFFFF` | `night-800` | <span style="display:inline-block;width:1em;height:1em;background:#0D1844;border:1px solid #777;vertical-align:middle"></span> `#0D1844` |
 | `--surface-muted` | `warm-100` | <span style="display:inline-block;width:1em;height:1em;background:#F3EEE2;border:1px solid #777;vertical-align:middle"></span> `#F3EEE2` | `night-700` | <span style="display:inline-block;width:1em;height:1em;background:#152255;border:1px solid #777;vertical-align:middle"></span> `#152255` |
@@ -36,7 +36,8 @@ Color names are Ember's, plus `--highlight` and `--highlight-contrast` (a featur
 ## Primitives
 | Token | Value |
 |---|---|
-| `--palette-scrim` | <span style="display:inline-block;width:1em;height:1em;background:#06123F99;border:1px solid #777;vertical-align:middle"></span> `#06123F99` |
+| `--palette-scrim` | <span style="display:inline-block;width:1em;height:1em;background:#06123F66;border:1px solid #777;vertical-align:middle"></span> `#06123F66` |
+| `--palette-scrim-dark` | <span style="display:inline-block;width:1em;height:1em;background:#00000080;border:1px solid #777;vertical-align:middle"></span> `#00000080` |
 | `--palette-warm-50` | <span style="display:inline-block;width:1em;height:1em;background:#FBF8F1;border:1px solid #777;vertical-align:middle"></span> `#FBF8F1` |
 | `--palette-warm-100` | <span style="display:inline-block;width:1em;height:1em;background:#F3EEE2;border:1px solid #777;vertical-align:middle"></span> `#F3EEE2` |
 | `--palette-warm-200` | <span style="display:inline-block;width:1em;height:1em;background:#E8E1D0;border:1px solid #777;vertical-align:middle"></span> `#E8E1D0` |
