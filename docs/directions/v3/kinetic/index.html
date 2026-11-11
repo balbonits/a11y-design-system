@@ -197,13 +197,27 @@ dialog.drawer{max-width:min(680px,calc(100vw - 2rem));width:100%;max-height:calc
 .num{padding:1.2rem 1rem 1.4rem 0;border-top:var(--border-width) solid var(--border)}
 .num:nth-child(even){padding-left:1rem;border-left:var(--rule) solid var(--border-subtle)}
 @media(min-width:900px){.num+.num{padding-left:1rem;border-left:var(--rule) solid var(--border-subtle)}}
-.num b{display:block;font:800 clamp(3.5rem,12vw,6.5rem)/.9 var(--font-display);letter-spacing:-.05em;margin:.4rem 0}
-.spark{width:100%;height:150px;display:block}
-.spark path{fill:none;stroke:var(--text);stroke-width:2.5}
-.spark .last{fill:var(--accent)}
-.spark line{stroke:var(--border-subtle);stroke-width:1}
-.deploys{list-style:none;padding:0;margin:0}
-.deploys li{display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:baseline;padding:.9rem 0;border-bottom:var(--rule) solid var(--border-subtle)}
+.num{container-type:inline-size;min-width:0}
+.num b{display:block;font:800 clamp(1.75rem,20cqi,6.5rem)/.9 var(--font-display);letter-spacing:-.05em;margin:.4rem 0;overflow-wrap:anywhere}
+.num .nsub{display:block;font-size:.92rem;color:var(--text-muted)}
+.num .nlab{display:flex;align-items:center;gap:.45rem}
+/* v1.1 run duration bars (V11-DASHBOARD.md H-1, H-4) */
+.rbar-sum{margin:0 0 .4rem;font-weight:600}.rbar-scale{margin:0 0 1rem}
+.rbars{list-style:none;margin:0;padding:0;border-left:var(--border-width) solid var(--border)}
+.rb{display:grid;grid-template-columns:minmax(0,1fr);gap:.25rem;padding:.5rem 0 .5rem .75rem}
+.rb-lab{min-width:0;overflow-wrap:anywhere;font-size:.95rem}.rb-lab .sha{margin-left:.4rem;white-space:nowrap}.rb-lab .st{margin-left:.5rem}
+.rb-trk{display:flex;align-items:center;gap:.5rem;min-width:0}
+.rb-bar{flex:0 0 calc((100% - 8ch) * var(--w));min-width:4px;height:1.1rem;background:var(--text);border:var(--border-width) solid var(--text);box-sizing:border-box;transform-origin:left;animation:rbgrow var(--duration-base) var(--ease-standard) both}
+.rb-bar.bad{background:repeating-linear-gradient(135deg,var(--danger) 0 3px,transparent 3px 7px);border-color:var(--danger)}
+.rb-bar.cancel{background:repeating-linear-gradient(45deg,var(--text-muted) 0 2px,transparent 2px 7px);border-color:var(--text-muted)}
+.rb-val{font:600 .85rem var(--font-mono);white-space:nowrap}
+@keyframes rbgrow{from{transform:scaleX(0)}}
+@media (prefers-reduced-motion:reduce){.rb-bar{animation:none}}
+@media(min-width:900px){.rb{grid-template-columns:minmax(0,15rem) minmax(0,1fr);align-items:center;gap:1rem}}
+.rbtog{margin-top:1rem}
+.rbtab{min-width:0;margin-top:1rem}.rbtab th,.rbtab td{padding:.5rem .8rem .5rem 0;overflow-wrap:anywhere}.rbtab caption{text-align:left;font:600 .8rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--text-muted);padding-bottom:.5rem}
+.rbtab td:last-child,.rbtab th:last-child{text-align:right;white-space:nowrap}
+.v11note{border-top:var(--border-width) solid var(--border);padding-top:1rem;font-weight:600;margin:0}
 /* v1.1 recent deploys (V11-DASHBOARD.md H-1, H-4) */
 .v11prev{margin:1rem 0 0;display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:center}
 .v11prev button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0 .1rem;min-height:var(--target-min);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em;cursor:pointer}
@@ -353,21 +367,23 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 
  <div class="v11" aria-labelledby="h-v11">
   <h2 id="h-v11" class="v11h">v1.1 candidates (not in scope)</h2>
-  <p class="muted">Specced in <a href="V11-DASHBOARD.md">V11-DASHBOARD.md</a>. Example data from the runs above. Not for build until Chief Architect signs.</p>
-  <div class="v11prev mono muted" role="group" aria-label="v1.1 preview states"><span>v1.1 states:</span><button type="button" data-v11="" aria-pressed="true">Populated</button><button type="button" data-v11="loading" aria-pressed="false">Loading</button><button type="button" data-v11="error" aria-pressed="false">Load error</button><button type="button" data-v11="empty" aria-pressed="false">Empty</button><button type="button" data-v11="long" aria-pressed="false">Long values</button></div>
-  <div class="nums">
-   <div class="num"><span class="mono muted">Builds today</span><b>12</b><span class="st ok">All green</span></div>
-   <div class="num"><span class="mono muted">Open PRs</span><b>4</b><span class="st info">2 need review</span></div>
-   <div class="num"><span class="mono muted">a11y issues</span><b>0</b><span class="st ok">Serious or critical</span></div>
-   <div class="num"><span class="mono muted">Flaky tests</span><b>1</b><span class="st warn">Watch</span></div>
+  <p class="muted doclinks">Specced in <a href="V11-DASHBOARD.md">V11-DASHBOARD.md</a>. Example data from the runs above. Not for build until Chief Architect signs.</p>
+  <div class="v11prev mono muted" role="group" aria-label="v1.1 preview states"><span>v1.1 states:</span><button type="button" data-v11="" aria-pressed="true">Populated</button><button type="button" data-v11="loading" aria-pressed="false">Loading</button><button type="button" data-v11="error" aria-pressed="false">Load error</button><button type="button" data-v11="empty" aria-pressed="false">Empty</button><button type="button" data-v11="nofin" aria-pressed="false">No finished runs</button><button type="button" data-v11="one" aria-pressed="false">One finished run</button><button type="button" data-v11="long" aria-pressed="false">Long values</button></div>
+ <div class="v11alert" id="v11alert"></div>
+  <p class="sr" role="status" id="v11status"></p>
+  <div class="nums" id="v11stats" role="group" aria-labelledby="h-v11stats"><h3 class="sr" id="h-v11stats">Run stats</h3>
+   <div class="num"><span class="mono muted nlab" id="s-runs-l">Runs</span><b id="s-runs"></b><span class="nsub" id="s-runs-s"></span></div>
+   <div class="num"><span class="mono muted nlab">Failed</span><b id="s-fail"></b><span class="nsub" id="s-fail-s"></span></div>
+   <div class="num"><span class="mono muted nlab">Running</span><b id="s-run"></b><span class="nsub" id="s-run-s"></span></div>
+   <div class="num"><span class="mono muted nlab">Median duration</span><b id="s-med"></b><span class="nsub" id="s-med-s"></span></div>
   </div>
- <div class="blk g rule reveal" style="margin-top:2rem">
-  <div class="rail"><span class="mono muted">Trend</span><h2>Build time</h2><p class="muted">Example, last 7 days. Down 38%.</p></div>
-  <div class="body off"><svg class="spark" viewBox="0 0 600 150" preserveAspectRatio="none" role="img" aria-label="Example line chart: build time trending down over 7 days"><line x1="0" y1="149" x2="600" y2="149"/><line x1="0" y1="75" x2="600" y2="75"/><path d="M5 30 L100 48 L200 40 L300 78 L400 70 L500 104 L592 112" vector-effect="non-scaling-stroke"/><rect class="last" x="584" y="104" width="16" height="16"/></svg></div>
+ <div class="blk g rule reveal" id="v11-chart" style="margin-top:2rem">
+  <div class="rail"><span class="mono muted">Builds</span><h2 id="h-rbar">Run duration</h2><p class="muted" id="rbar-sub"></p></div>
+  <div class="body off"><figure style="margin:0" aria-labelledby="h-rbar" id="rbar-fig"><figcaption><p class="rbar-sum" id="rbar-sum"></p><p class="rbar-scale mono muted" id="rbar-scale"></p></figcaption><div id="rbar-view"></div></figure><button class="btn rbtog" type="button" id="rbar-tog" aria-pressed="false" aria-controls="rbar-view">Show as table</button></div>
  </div>
  <div class="blk g rule reveal" id="v11-dep">
   <div class="rail"><span class="mono muted">Log</span><h2 id="h-rdep">Recent deploys</h2><p class="muted" id="rdep-sub"></p></div>
-  <div class="body off" id="rdep-body"><p class="sr" role="status" id="rdep-status"></p><ol class="rdep" id="rdep" aria-labelledby="h-rdep"></ol><a class="rdmore" href="#runs" id="rdep-all"></a></div>
+  <div class="body off" id="rdep-body"><span hidden id="rdep-status"></span><ol class="rdep" id="rdep" aria-labelledby="h-rdep"></ol><a class="rdmore" href="#runs" id="rdep-all"></a></div>
  </div>
  </div>
 </section>
@@ -500,16 +516,51 @@ const LONG=[R('Production','Failed','notifications-worker-eu-west','a41c9e2','Re
  R('Production','Succeeded','checkout-api','18cf3b4','Show tax line on receipt','main','mjones',611,233)];
 const fin=r=>r.status!=='Running'&&r.status!=='In progress';
 const durT=r=>fin(r)&&r.dur!=null?dur(r.dur):'In progress';
-function v11Runs(){if(v11==='empty')return[];if(v11==='long')return LONG;return RUNS.filter(r=>r.env===env)}
-function renderV11(){const ol=$('#rdep'),st=$('#rdep-status'),body=$('#rdep-body'),all=$('#rdep-all');
- $$('#rdep-body .v11err,#rdep-body .v11empty').forEach(n=>n.remove());ol.hidden=false;all.hidden=false;ol.removeAttribute('aria-busy');
+
+const FIN=['Succeeded','Failed','Canceled'];const isFin=r=>FIN.includes(r.status)&&r.dur!=null;
+const nf=n=>n.toLocaleString('en-US');
+const med=a=>{const v=a.map(r=>r.dur).sort((x,y)=>x-y),m=v.length>>1;return v.length%2?v[m]:Math.round((v[m-1]+v[m])/2)};
+let FILL=null;function filler(){if(FILL)return FILL;const st=['Succeeded','Succeeded','Succeeded','Succeeded','Succeeded','Succeeded','Succeeded','Succeeded','Failed','Canceled'];FILL=Array.from({length:12477},(_,i)=>R('Production',i<34?'Running':st[i%10],SV[i%5],(1e6+i).toString(16),'Batch '+i,'main','bot',700+i,60+(i*37)%340));return FILL}
+function v11Data(){if(v11==='empty')return[];if(v11==='long')return LONG.concat(filler());
+ if(v11==='nofin')return RUNS.filter(r=>r.env===env&&!isFin(r));if(v11==='one'){const f=RUNS.filter(r=>r.env===env&&isFin(r)).sort((a,b)=>a.ago-b.ago)[0];return RUNS.filter(r=>r.env===env&&!isFin(r)).concat(f?[f]:[])}
+ return RUNS.filter(r=>r.env===env)}
+let rbTable=false;
+function renderStats(runs){const set=(id,v)=>{$('#'+id).textContent=v};
+ if(v11==='loading'||v11==='error'){['s-runs','s-fail','s-run','s-med'].forEach(i=>{$('#'+i).innerHTML=v11==='loading'?'<span class="skel" aria-hidden="true" style="height:3rem;width:60%"></span>':'\u2014'});['s-runs-s','s-fail-s','s-run-s','s-med-s'].forEach(i=>set(i,v11==='error'?'Not available':''));$('#v11stats').toggleAttribute('aria-busy',v11==='loading');return}
+ $('#v11stats').removeAttribute('aria-busy');
+ const fails=runs.filter(r=>r.status==='Failed').sort((a,b)=>a.ago-b.ago),going=runs.filter(r=>!isFin(r)),fin=runs.filter(isFin);
+ set('s-runs',nf(runs.length));set('s-runs-s',`in ${v11==='long'?'Production':env}`);
+ $('#s-fail').innerHTML=fails.length?`<span class="st bad" aria-hidden="true" style="font-size:.3em;vertical-align:middle;margin-right:.15em"></span>${nf(fails.length)}`:'0';
+ set('s-fail-s',fails.length?`Newest ${ago(fails[0].ago)}`:'None');
+ set('s-run',nf(going.length));set('s-run-s',going.length?'Not finished yet':'None now');
+ if(fin.length){set('s-med',dur(med(fin)));set('s-med-s',`of ${nf(fin.length)} finished`)}else{set('s-med','\u2014');set('s-med-s','No finished runs')}}
+function renderChart(runs){const view=$('#rbar-view'),tog=$('#rbar-tog'),envN=v11==='long'?'Production':env;
+ $('#rbar-sub').textContent=`Newest 8 finished runs in ${envN}.`;view.removeAttribute('aria-busy');tog.hidden=false;
+ if(v11==='loading'){view.setAttribute('aria-busy','true');$('#rbar-sum').textContent='';$('#rbar-scale').textContent='';view.innerHTML='<div aria-hidden="true">'+[70,45,90,30].map(w=>`<div class="skel" style="width:${w}%;margin:.9rem 0"></div>`).join('')+'</div>';tog.hidden=true;return}
+ if(v11==='error'){$('#rbar-sum').textContent='';$('#rbar-scale').textContent='';view.innerHTML='<p class="v11note">Run duration isn\u2019t available.</p>';tog.hidden=true;return}
+ const fin=runs.filter(isFin).sort((a,b)=>a.ago-b.ago).slice(0,8);
+ if(!fin.length){$('#rbar-sum').textContent='';$('#rbar-scale').textContent='';view.innerHTML=`<p class="v11note">No finished runs in ${envN} yet. Durations show up here when a run finishes.</p>`;tog.hidden=true;return}
+ const ds=fin.map(r=>r.dur),max=Math.max(...ds);
+ $('#rbar-sum').textContent=fin.length===1?`1 finished run, ${dur(fin[0].dur)}.`:`Fastest ${dur(Math.min(...ds))}, slowest ${dur(max)}, median ${dur(med(fin))} across ${fin.length} finished runs.`;
+ $('#rbar-scale').textContent=`Scale: 0 to ${dur(max)}, the longest run shown in ${envN}.`;
+ tog.setAttribute('aria-pressed',String(rbTable));
+ if(rbTable){view.innerHTML=`<table class="rbtab"><caption>Run duration, ${esc(envN)}, newest first</caption><thead><tr><th scope="col">Run</th><th scope="col">Status</th><th scope="col">Duration</th></tr></thead><tbody>${fin.map(r=>`<tr><th scope="row">${esc(r.service)} <span class="sha">${r.sha}</span></th><td><span class="st ${CLS[r.status]}">${r.status}</span></td><td>${dur(r.dur)}</td></tr>`).join('')}</tbody></table>`;return}
+ view.innerHTML=`<ol class="rbars">${fin.map(r=>{const k=r.status==='Failed'?'bad':r.status==='Canceled'?'cancel':'';return `<li class="rb"><span class="rb-lab"><b>${esc(r.service)}</b><span class="sha">${r.sha}</span>${k?`<span class="st ${CLS[r.status]}">${r.status}</span>`:''}</span><span class="rb-trk"><span class="rb-bar ${k}" style="--w:${(r.dur/max).toFixed(4)}" aria-hidden="true"></span><span class="rb-val">${dur(r.dur)}</span></span></li>`}).join('')}</ol>`}
+$('#rbar-tog').onclick=()=>{rbTable=!rbTable;renderChart(v11Data())};
+function renderV11All(){const runs=v11Data(),al=$('#v11alert'),vs=$('#v11status');al.innerHTML='';
+ vs.textContent=v11==='loading'?'Loading dashboard':'';
+ if(v11==='error'){al.innerHTML='<div class="v11err" role="alert"><h3>Couldn\u2019t load the dashboard</h3><p>Check your connection, then try again.</p><button class="btn primary" type="button" id="v11retry">Retry</button></div>';
+  $('#v11retry').onclick=e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Retrying\u2026';vs.textContent='Loading dashboard';setTimeout(()=>{v11='';renderV11();vs.textContent='';const h=$('#h-v11');h.setAttribute('tabindex','-1');h.focus()},1200)}}
+ renderStats(runs);renderChart(runs)}
+function v11Runs(){return v11Data().filter(r=>v11!=='long'||LONG.includes(r)||r.ago<700)}
+function renderV11(){renderV11All();const ol=$('#rdep'),st=$('#rdep-status'),body=$('#rdep-body'),all=$('#rdep-all');
+ $$('#rdep-body .v11err,#rdep-body .v11empty,#rdep-body .v11note').forEach(n=>n.remove());ol.hidden=false;all.hidden=false;ol.removeAttribute('aria-busy');
  $$('.v11prev button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v11===v11)));
  const runs=v11Runs().slice().sort((a,b)=>a.ago-b.ago).slice(0,5);
  $('#rdep-sub').textContent=v11==='long'?'Newest 5 in Production (long values).':`Newest 5 in ${env}.`;all.textContent=`View all ${env} runs`;
- if(v11==='loading'){ol.setAttribute('aria-busy','true');ol.innerHTML=Array.from({length:3},()=>'<li class="rd sk" aria-hidden="true"><div class="skel" style="width:30%"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:55%"></div></li>').join('');all.hidden=true;st.textContent='Loading recent deploys';return}
+ if(v11==='loading'){ol.setAttribute('aria-busy','true');st.textContent='';ol.innerHTML=Array.from({length:3},()=>'<li class="rd sk" aria-hidden="true"><div class="skel" style="width:30%"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:55%"></div></li>').join('');all.hidden=true;return}
  st.textContent='';
- if(v11==='error'){ol.hidden=true;all.hidden=true;ol.innerHTML='';body.insertAdjacentHTML('afterbegin','<div class="v11err" role="alert"><h3>Couldn\u2019t load recent deploys</h3><p>Check your connection, then try again.</p><button class="btn primary" type="button" id="rdep-retry">Retry</button></div>');
-  $('#rdep-retry').onclick=e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Retrying\u2026';st.textContent='Loading recent deploys';setTimeout(()=>{v11='';renderV11();st.textContent='';$('#h-rdep').setAttribute('tabindex','-1');$('#h-rdep').focus()},1200)};return}
+ if(v11==='error'){ol.hidden=true;all.hidden=true;ol.innerHTML='';body.insertAdjacentHTML('afterbegin','<p class="v11note">Recent deploys aren\u2019t available.</p>');return}
  if(!runs.length){ol.hidden=true;ol.innerHTML='';body.insertAdjacentHTML('afterbegin',`<p class="v11empty">No deploys in ${env} yet.</p>`);all.hidden=true;return}
  ol.innerHTML=runs.map(r=>`<li class="rd"><span class="st ${CLS[r.status]}">${r.status}</span><span class="rd-ago mono muted"><span class="sr">Started </span>${ago(r.ago)}</span><p class="rd-main"><b>${esc(r.service)}</b><span class="sha">${r.sha}</span><span class="cmsg">${esc(r.msg)}</span></p><p class="rd-meta mono muted"><span><span class="sr">Branch </span>${esc(r.branch)}</span><span><span class="sr">by </span>${esc(r.author)}</span><span><span class="sr">Duration </span>${durT(r)}</span></p><button class="btn" type="button" data-rsha="${r.sha}" aria-label="Open log for ${esc(r.service)} ${r.sha}">Open log</button></li>`).join('');
  $$('#rdep button').forEach(b=>b.onclick=()=>openLog(runs.find(r=>r.sha===b.dataset.rsha),b))}
