@@ -22,12 +22,15 @@ Lowest UI contrast by mode and kind:
   dark code-block border: 16.05
   dark focus ring on code block: 3.32
   dark focus ring on page: 3.79
+  dark touch icon at rest: 10.18
   dark zoom icon: 10.18
   light Canvas border: 18.88
   light Copy/Show code border: 18.88
   light code-block border: 18.88
   light focus ring on code block: 3.80
   light focus ring on page: 4.50
+  light touch icon at rest: 10.86
   light zoom icon: 10.86
 
-docs-check http://127.0.0.1:8999: 5509 pass, 0 fail
+docs-check http://127.0.0.1:9003: 5977 pass, 0 fail
+EXIT 0

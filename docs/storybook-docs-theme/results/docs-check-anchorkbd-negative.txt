@@ -622,6 +622,30 @@ FAIL K dark 1280 components-table--docs H3 name "null" want "Link to Dense" aria
 FAIL K dark 1280 components-table--docs H3 name "null" want "Link to Empty" aria-hidden false tabIndex null href null
 FAIL K dark 1280 components-table--docs H3 name "null" want "Link to Focus Visible" aria-hidden false tabIndex null href null
 FAIL K dark 1280 components-table--docs H3 name "null" want "Link to All themes" aria-hidden false tabIndex null href null
+FAIL L light 320 touch introduction--docs (hover: none) true, icons 0
+FAIL L light 320 touch tokens--docs (hover: none) true, icons 0
+FAIL L light 320 touch components-button--docs (hover: none) true, icons 0
+FAIL L light 320 touch components-table--docs (hover: none) true, icons 0
+FAIL L light 375 touch introduction--docs (hover: none) true, icons 0
+FAIL L light 375 touch tokens--docs (hover: none) true, icons 0
+FAIL L light 375 touch components-button--docs (hover: none) true, icons 0
+FAIL L light 375 touch components-table--docs (hover: none) true, icons 0
+FAIL L light 1280 mouse introduction--docs (hover: none) false, icons 0
+FAIL L light 1280 mouse tokens--docs (hover: none) false, icons 0
+FAIL L light 1280 mouse components-button--docs (hover: none) false, icons 0
+FAIL L light 1280 mouse components-table--docs (hover: none) false, icons 0
+FAIL L dark 320 touch introduction--docs (hover: none) true, icons 0
+FAIL L dark 320 touch tokens--docs (hover: none) true, icons 0
+FAIL L dark 320 touch components-button--docs (hover: none) true, icons 0
+FAIL L dark 320 touch components-table--docs (hover: none) true, icons 0
+FAIL L dark 375 touch introduction--docs (hover: none) true, icons 0
+FAIL L dark 375 touch tokens--docs (hover: none) true, icons 0
+FAIL L dark 375 touch components-button--docs (hover: none) true, icons 0
+FAIL L dark 375 touch components-table--docs (hover: none) true, icons 0
+FAIL L dark 1280 mouse introduction--docs (hover: none) false, icons 0
+FAIL L dark 1280 mouse tokens--docs (hover: none) false, icons 0
+FAIL L dark 1280 mouse components-button--docs (hover: none) false, icons 0
+FAIL L dark 1280 mouse components-table--docs (hover: none) false, icons 0
 
 Lowest text contrast by mode and kind:
   dark ArgTypes table: 5.69
@@ -654,4 +678,4 @@ Lowest UI contrast by mode and kind:
   light focus ring on page: 4.50
   light zoom icon: 10.86
 
-docs-check http://127.0.0.1:8996: 4245 pass, 624 fail
+docs-check http://127.0.0.1:9002: 4425 pass, 648 fail

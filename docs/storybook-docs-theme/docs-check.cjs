@@ -10,7 +10,7 @@
 //  H. heading anchor targets (FU-SB-DOCS-ANCHOR-KBD): at every width each [data-eb-anchor] link is at least 44x44,
 //     elementFromPoint lands on it at the centre, 4 edge midpoints and 4 corners, and its box is inside the docs
 //     content column and the viewport (x >= 0, right edge <= viewport): no clipping, no overflow; no other interactive
-//     target (link, button, field, tabbable) intersects the box, e.g. a link in the paragraph below. Widths include
+//     target (link, button, field, tabbable) intersects the box, nor does the block right after the heading. Widths include
 //     641, 800, 900, 1040 and 1095, where the old gutter anchor sat at x -4..10 (VQA's follow-up on #58)
 //  I. Canvas bar never covers its story: the story starts at or below the bar's bottom edge, every width
 //  J. heading anchor placement (FU-SB-DOCS-ANCHOR-KBD, replaces the NITS gutter check): at every width the heading text
@@ -22,9 +22,11 @@
 //     order, and Tab reaches the links in document order; on focus the icon is visible, the ring (drawn on the icon) is the
 //     --focus-ring-color token, solid, at least 2px, and the icon stays visible after the pointer leaves; a click lands
 //     on #<id>. An h1, h2 and h3 from the real pages and an injected h4 fixture (added after load, so the observer
-//     path is tested) are asserted by exact name.
+//     path is tested) are asserted by exact name. Each heading's own accessible name is exactly its text (getByRole).
+//  L. touch (Creatives): in a hasTouch + isMobile context ((hover: none)) at 320 and 375, light and dark, every link's icon
+//     is shown at rest in --text-muted at 3:1 or more against its background; with a mouse at 1280 it stays hidden at rest.
 // --no-has: strips every rule whose selector uses :has() from the served preview head (a browser without :has()), then
-//     runs E, F, H, I and J (K is skipped) with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
+//     runs E, F, H, I and J (K and L are skipped) with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
 //     centre and the 4 edge midpoints (corners may be clipped by the 12px radius there, as on main). A-D and G are skipped.
 // Usage: NODE_PATH=<dir with playwright-core> node docs-check.cjs <baseUrl> [--no-has]   exits 1 on any failure.
 //     Tokens default to the repo's src/tokens.json; TOKENS=<path> overrides it (resolved from the current directory).
@@ -161,8 +163,11 @@ const PAGE_FNS = () => {
             // No other interactive target (link, button, field, tabbable) may intersect the 44px box, e.g. a link in the paragraph below.
             near: [...document.querySelectorAll('a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter((o) => o !== el && !el.contains(o) && !o.contains(el) && o.offsetParent !== null && getComputedStyle(o).visibility !== 'hidden')
               .flatMap((o) => [...o.getClientRects()].filter((q) => q.width > 0 && q.height > 0 && q.left < b.right - 0.5 && q.right > b.left + 0.5 && q.top < b.bottom - 0.5 && q.bottom > b.top + 0.5).map(() => `${o.tagName.toLowerCase()}${o.getAttribute('aria-label') ? '[' + o.getAttribute('aria-label') + ']' : ''}`)).slice(0, 3).join(' '),
+            // Nor may it reach the block right after the heading (the next paragraph, list or table).
+            next: (() => { const h = el.closest('h1, h2, h3, h4'); const n = h.nextElementSibling || (h.parentElement.matches('.sb-anchor') ? h.parentElement.nextElementSibling : null); if (!n) return ''; const q = n.getBoundingClientRect();
+              return q.height > 0 && q.left < b.right && q.right > b.left && q.top < b.bottom - 0.5 && q.bottom > b.top ? `${n.tagName.toLowerCase()} by ${(b.bottom - q.top).toFixed(1)}px` : ''; })(),
             miss: P.map(([x, y]) => { const h = document.elementFromPoint(x, y); return h && !(h === el || el.contains(h)) ? `${h.tagName.toLowerCase()}${h.id ? '#' + h.id : ''}.${String(h.className.baseVal ?? h.className).split(' ')[0]}@${Math.round(x)},${Math.round(y)}` : null; }).filter(Boolean).slice(0, 2).join(' ') }; });
-        ok(r.w >= 44 && r.h >= 44 && r.hits === '111111111' && r.inCol && !r.near, `H ${w} ${id} "${r.t}" ${r.w.toFixed(1)}x${r.h.toFixed(1)} hits ${r.hits} inside column ${r.inCol} overlaps targets [${r.near}] ${r.miss}`);
+        ok(r.w >= 44 && r.h >= 44 && r.hits === '111111111' && r.inCol && !r.near && !r.next, `H ${w} ${id} "${r.t}" ${r.w.toFixed(1)}x${r.h.toFixed(1)} hits ${r.hits} inside column ${r.inCol} overlaps targets [${r.near}] next block [${r.next}] ${r.miss}`);
       }
       await page.close();
     }
@@ -182,6 +187,10 @@ const PAGE_FNS = () => {
         const a = h.querySelector('a[data-eb-anchor]'); return { tag: h.tagName, want: 'Link to ' + c.textContent.replace(/\s+/g, ' ').trim(), got: a && a.getAttribute('aria-label'), hidden: !!(a && a.closest('[aria-hidden="true"]')), tab: a ? a.tabIndex : null, href: a && a.getAttribute('href'), id: h.id }; }));
       for (const n of names) { seen[n.tag]++; ok(n.got === n.want && !/#|\s$/.test(n.got) && !n.hidden && n.tab === 0 && n.href === '#' + n.id, `${tag} ${n.tag} name "${n.got}" want "${n.want}" aria-hidden ${n.hidden} tabIndex ${n.tab} href ${n.href}`); }
       if (id === 'components-button--docs') ok(names.some((n) => n.tag === 'H4' && n.got === 'Link to Fixture heading four'), `${tag} h4 fixture not enhanced`);
+      // Heading names (VQA): the heading's accessible name is its text alone, not "<text> Link to <text>".
+      for (const n of names) { const want = n.want.slice('Link to '.length); const c = await page.getByRole('heading', { name: want, exact: true }).count();
+        const dbl = await page.getByRole('heading', { name: `${want} Link to ${want}`, exact: true }).count();
+        ok(c >= 1 && dbl === 0, `${tag} heading ${n.tag} accessible name "${want}" (exact, found ${c}; doubled "${want} Link to ${want}" found ${dbl})`); }
       // Tab order: from the top of the page, the anchors come in document order.
       const order = await page.evaluate(() => [...document.querySelectorAll('.sbdocs-content a[data-eb-anchor]')].map((a) => a.getAttribute('aria-label')));
       await page.evaluate(() => { document.activeElement && document.activeElement.blur(); window.scrollTo(0, 0); }); const got = [];
@@ -204,6 +213,25 @@ const PAGE_FNS = () => {
       await page.close();
     }
     ok(seen.H1 > 0 && seen.H2 > 0 && seen.H3 > 0 && seen.H4 > 0, `K ${mode} ${w} named headings by level ${JSON.stringify(seen)}`);
+    await ctx.close();
+  }
+  // L. touch (Creatives' condition 4): with (hover: none) there is no hover to reveal the icon, so it shows at rest in
+  // --text-muted at 3:1 or more against the docs background; with a mouse it stays hidden at rest (hover unchanged).
+  if (!NO_HAS) for (const mode of ['light', 'dark']) for (const [w, touch] of [[320, true], [375, true], [1280, false]]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: 800 }, ...(touch ? { hasTouch: true, isMobile: true } : {}) });
+    for (const id of PAGES) {
+      const page = await open(ctx, id, mode); const tag = `L ${mode} ${w} ${touch ? 'touch' : 'mouse'} ${id}`;
+      await page.mouse.move(1, 1);
+      const r = await page.evaluate(() => { const { parse, ratio, bgOf } = window.__dc; const muted = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim();
+        return { hn: matchMedia('(hover: none)').matches, muted, icons: [...document.querySelectorAll('.sbdocs-content a[data-eb-anchor] > svg')].map((sv) => { const cs = getComputedStyle(sv); const c = parse(cs.color);
+          return { n: sv.parentElement.getAttribute('aria-label'), vis: cs.visibility, col: cs.color, r: ratio(c, bgOf(sv)) }; }) }; });
+      ok(r.hn === touch && r.icons.length > 0, `${tag} (hover: none) ${r.hn}, icons ${r.icons.length}`);
+      for (const i of r.icons) {
+        if (touch) { ok(i.vis === 'visible' && i.col === hex(r.muted) && i.r >= 3, `${tag} "${i.n}" icon ${i.vis} ${i.col} want ${hex(r.muted)} (--text-muted) contrast ${i.r.toFixed(2)}`); const k = `${mode} touch icon at rest`; minUi[k] = Math.min(minUi[k] ?? 99, i.r); }
+        else ok(i.vis === 'hidden', `${tag} "${i.n}" icon ${i.vis} at rest (hover reveal unchanged)`);
+      }
+      await page.close();
+    }
     await ctx.close();
   }
   // G. reduced motion.

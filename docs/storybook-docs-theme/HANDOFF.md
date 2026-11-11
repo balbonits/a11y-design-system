@@ -123,7 +123,14 @@ never wraps alone and never uses the gutter. The heading text keeps the body's l
 Why no breakpoint: 44px does not fit a 12px or 20px gutter, and indenting every heading would break the left edge the
 body text shares (CTE's Q1 ruling A: no clipping, no overflow, the hit area never covers text to its left, extends right
 and vertically only). Hover: Storybook's heading `:hover` rule still reveals the icon. Focus reveals it and keeps it
-shown while focused, pointer or not.
+shown while focused, pointer or not. Touch (`(hover: none)`, Creatives' condition 4): there is no hover, so the icon is
+shown at rest in `--text-muted` (10.86 light, 10.18 dark against the docs background; gate L, floor 3:1); with keyboard
+focus it gets the ring like everywhere else. With a mouse it stays hidden at rest (L asserts that too).
+
+No layout shift (Creatives' condition 2): the icon keeps main's 14px and the 44px box sits on the line with negative
+vertical margins, so heading heights, the gap to the next block and wrap points equal #58 (measured, shot
+`docs-light-anchor-before-after.png`: "Usage" 31px tall, next block +47px, at 1280 and 320; "Shape (the theme contract)"
+31px and one line at 1280, 57px and two lines at 320, before and after).
 
 ## Contrast (`node docs/storybook-docs-theme/contrast.mjs`, exit 1 on any failure)
 
@@ -154,16 +161,17 @@ Pages: introduction, tokens, components-button docs, components-table docs; widt
 | E | 9-point probes, 44px minimum below 600 |
 | F | No page-level sideways scroll |
 | G | Reduced motion: 0 running animations |
-| H | Heading links, every width: each box is at least 44x44, all 9 probe points hit it (no other target over it), no other interactive target (link, button, field, tabbable) intersects it (e.g. a link in the paragraph below), and it sits inside the content column and the viewport (x ≥ 0, right edge ≤ column and ≤ viewport; VQA's #58 follow-up at 641, 800, 900, 1040, 1095) |
+| H | Heading links, every width: each box is at least 44x44, all 9 probe points hit it (no other target over it), no other interactive target (link, button, field, tabbable) intersects it (e.g. a link in the paragraph below), it doesn't reach the block right after the heading (next paragraph, list or table), and it sits inside the content column and the viewport (x ≥ 0, right edge ≤ column and ≤ viewport; VQA's #58 follow-up at 641, 800, 900, 1040, 1095) |
 | I | Every Canvas bar: the story starts at or below the bar's bottom edge (no hidden content) |
 | J | Heading links, every width: exactly one link per heading, Storybook's anchor not shown, heading text at the content's left edge, link at or after the last word's right edge on the same line (never over the letters to its left), target reaches at most 8px into the line above (KI-9), and the focus ring around the icon touches no letter |
-| K | Keyboard, light and dark at 375 and 1280: exact names `Link to <heading text>` (no `#`, no trailing space), not `aria-hidden`, `tabIndex` 0, `href` = `#id`; at least one named heading per level h1 to h4 (h4 from an injected fixture on the Button page, KI-10); Tab order = document order; on focus (after a hover, pointer then moved away) `:focus-visible`, icon visible, ring solid ≥2px in the token colour; clicking a link sets the hash |
+| K | Keyboard, light and dark at 375 and 1280: exact names `Link to <heading text>` (no `#`, no trailing space), not `aria-hidden`, `tabIndex` 0, `href` = `#id`; at least one named heading per level h1 to h4 (h4 from an injected fixture on the Button page, KI-10); each heading's own accessible name is exactly its text (not doubled with the link's, VQA); Tab order = document order; on focus (after a hover, pointer then moved away) `:focus-visible`, icon visible, ring solid ≥2px in the token colour; clicking a link sets the hash |
+| L | Touch, light and dark: in a touch context (`(hover: none)` true) at 320 and 375 every icon is visible at rest, its colour is the `--text-muted` token and it holds 3:1 or more against its background; with a mouse at 1280 every icon is hidden at rest (hover unchanged). Skipped with `--no-has` |
 
 | Build | Pass | Fail |
 |---|---|---|
-| This design (FU-SB-DOCS-ANCHOR-KBD, on main 2d59d7b, `results/docs-check-anchorkbd.txt`) | **5509** | **0** |
+| This design (FU-SB-DOCS-ANCHOR-KBD, on main 2d59d7b, `results/docs-check-anchorkbd.txt`) | **5977** | **0** |
 | This design, `--no-has` (fallback, below; `results/docs-check-anchorkbd-no-has.txt`) | **1240** | **0** |
-| This design without `useDocsAnchors()` (negative for H, J, K, `results/docs-check-anchorkbd-negative.txt`) | 4245 | 624 (440 J: no link on any heading; 184 K: names, Tab order, focus; H has nothing to measure) |
+| This design without `useDocsAnchors()` (negative for J, K, L, `results/docs-check-anchorkbd-negative.txt`) | 4425 | 648 (440 J: no link on any heading; 184 K: names, Tab order, focus; 24 L: no touch icon; H has nothing to measure) |
 | #58 (FU-SB-DOCS-NITS), for reference | 4353 | 0 |
 | This design without the anchor-gutter rule (negative for J, `results/docs-check-nits-negative.txt`) | 4177 | 176 (all J, at 320, 375, 599 and 600: icon x -12..2) |
 | main 80f782d (negative control) | 3891 | 144 (A 37, B 12, D 2, E 30 — e.g. zoom 44×44 with probe hits `100111111`, clipped by the 40px bar) |
@@ -174,7 +182,7 @@ The main run is the negative control: the gate catches every defect this card fi
 
 - `axe-docs.cjs`: 78 runs (13 docs pages × 375/1280 × light/dark/auto-OS-dark), **0 failing**, 168 minor/moderate (`results/axe-docs-anchorkbd.txt`; #58: `results/axe-docs-new.txt`).
 - Repo `scripts/a11y.mjs` (test:a11y) on the FU-SB-DOCS-ANCHOR-KBD build on main 2d59d7b: 366 runs plus 8 manager runs, **0 failing, 0 serious or critical**, exit 0 (`results/a11y-full-anchorkbd.txt`). The heading-link names are asserted by docs-check K.
-- Repo `scripts/mobile.mjs`: 468 runs, 0 failing (`results/mobile-anchorkbd.txt`). `scripts/target-size.mjs`: 576 runs, 1824 targets, 0 failing (`results/target-size-anchorkbd.txt`). `scripts/contrast.mjs`: 190 pairs + 10 assertions, 0 failures.
+- Repo `scripts/mobile.mjs`: 468 runs, 0 failing, run one width at a time under box load (`results/mobile-anchorkbd.txt`). The full single run twice hit 1 load-dependent failure: kinetic dark Checkbox docs at 375, `aria-conditional-attr`. It doesn't reproduce at 375 alone on this build, the pre-fix build or #58's build. VQA, please rerun it in one pass. `scripts/target-size.mjs`: 576 runs, 1824 targets, 0 failing (`results/target-size-anchorkbd.txt`). `scripts/contrast.mjs`: 190 pairs + 10 assertions, 0 failures.
 
 ## Fallback without `:has()` (SPIKE-DOCS-2, CA ruling)
 
@@ -213,31 +221,37 @@ These selectors depend on Storybook 8.6.19's docs DOM. On any Storybook upgrade,
   rule fits it in the 12px gutter; that rule stays as the no-JS fallback). Now `useDocsAnchors()` in `mock/preview.tsx`
   hides Storybook's anchor (`data-eb-anchor-src`, left in the DOM untouched) and adds our own link per heading:
   `<a href="#id" aria-label="Link to <heading text>" data-eb-anchor>` with a copy of the icon (`aria-hidden`,
-  `focusable="false"`). A click is forwarded to Storybook's anchor, so its scroll and hash behaviour is unchanged. The name
+  `focusable="false"`). Because the link is inside the heading, the heading would be named "Usage Link to Usage"; the
+  heading gets `aria-label` = its text (only when it has none of its own; marked `data-eb-named`, removed on undo), so
+  heading lists read it once (VQA's rev-1 finding, gated in K). A click is forwarded to Storybook's anchor, so its scroll and hash behaviour is unchanged. The name
   is the heading's text without the anchor (no "Foo#"). The link and the heading's last word go in a nowrap
   `span[data-eb-anchor-tail]`, so it wraps with the word. A `MutationObserver` on `body` (childList, subtree,
   characterData) re-runs it on every docs render, and it's idempotent: a heading whose split is still current is
   skipped; if React rewrites the heading's text node, the split is undone and rebuilt. It disconnects on unmount.
   React safety: we split React's last text node of the heading and append a span; React only ever replaces that text
   node's value or the whole heading, both of which the rebuild check catches.
-- **KI-9, target reaches into the line above on wrapped headings (informational).** The 44px box is taller than a
+- **KI-9, target reaches into the line above on wrapped headings (accepted, Creatives' ruling 2026-11-11).** The 44px box is taller than a
   heading line (26px at 24px type). On a heading that wraps (at 320 and 375: "Shape (the theme contract)" on tokens,
   "Accessibility notes" on Button and Table), the box reaches up to 7.3px into the previous line's text box. That
   area is plain heading text, not a target, and a tap there lands on the same heading's link. The focus ring is drawn
-  around the icon (not the box) for this reason, so it never covers a letter. Gated by J (max 8px; ring touches 0 letters).
+  around the icon (not the box) for this reason, so it never covers a letter. Accepted because the spill only reaches
+  the same heading's own previous line, which isn't interactive; it must never reach the next paragraph, another
+  heading or any other target (gated by H). Measured max **7.3px**; J asserts a **ceiling of 8px** (fails above it), so a
+  later font or line-height change can't grow it silently. No box shift, no padding (ruling). Ring touches 0 letters (J). The ring
+  only borders the docs background, so its contrast is the "focus ring on page" row: 4.50 light, 3.79 dark (CA: 3:1 floor).
 - **KI-10, no real h4 in the docs.** No docs page has an h4 today. Check K injects one h4 (with a Storybook-style
   anchor) on the Button docs page and asserts its name, so the h4 path is covered.
 - **Deviations from the card (for CA).** (1) Inline-end at every width instead of the gutter: 44px can't fit the 12px or
   20px gutters (CTE's ruling A). (2) A real 44px box instead of a `::before` hit area, so it wraps with the text rather
   than overflowing. (3) The ring goes around the icon instead of the box (KI-9). (4) 10px more space above a heading that
   directly follows another heading (the autodocs "Stories" h2, then the first story's h3), because their 44px targets
-  overlapped by about 8px.
+  overlapped by about 8px. (5) On touch screens the icon is always shown in `--text-muted` (Creatives' condition 4).
 - Base 80f782d instead of 1a57bd1 (accepted by Creatives; the `.storybook` files are identical).
 
 ## Motion
 
 No motion added. Link underline thickness change on hover is instant (no transition). The heading link's icon reveal
-on hover and on focus is a `visibility` swap, also instant. G confirms 0 running animations under
+on hover and on focus is a `visibility` swap, also instant; on touch it's shown at rest, no transition. G confirms 0 running animations under
 `prefers-reduced-motion: reduce`, with a heading link focused. Nothing to fall back.
 
 ## Shots (`handoff/`, lossless 8-bit RGB PNG)
@@ -251,7 +265,10 @@ FU-SB-DOCS-ANCHOR-KBD (`anchor-shots.cjs` then `anchor-compose.py`, 2x, keyboard
 `docs-{320,375,1280}-{light,dark}-anchor-focus.png` (Button "Usage") and `docs-320-{light,dark}-anchor-longest.png`
 (the longest heading, "Shape (the theme contract)", wrapped). Cyan dashes are drawn 8px outside the 44x44 target, so the
 ring stays visible; the legend gives the name, ring colour, target x, column and scrollWidth. 1280 shots are cropped to
-the left 640px. The `anchor-hover` shots show #58's no-JS fallback.
+the left 640px. `docs-light-anchor-before-after.png` (`anchor-beforeafter.cjs`, 2x, mouse hover so both show the
+icon): the same headings on #58 and on this card at 1280 and 320, each labelled with the heading's height, the next
+block's offset and its line count, all equal. `docs-320-{light,dark}-anchor-touch.png` (`anchor-touch.cjs`, 2x, touch context, at rest): the icon shown in `--text-muted`
+on "Usage" and on the wrapped tokens heading. The `anchor-hover` shots show #58's no-JS fallback.
 
 ## Builder steps (BED)
 
@@ -286,4 +303,4 @@ Negative for check J: serve a copy of the build whose `iframe.html` has the `FU-
 (That negative is from #58, before heading links; with the enhancer on, Storybook's anchor is hidden.)
 
 Negative for H, J and K (FU-SB-DOCS-ANCHOR-KBD): build with the `useDocsAnchors();` line in `EmberDocsContainer`
-commented out. docs-check then fails 624, 440 J and 184 K (`results/docs-check-anchorkbd-negative.txt`; that negative build is on #58's head 29f0a0e, which has the same `.storybook` as main).
+commented out. docs-check then fails 648: 440 J, 184 K and 24 L (`results/docs-check-anchorkbd-negative.txt`; that negative build is on #58's head 29f0a0e, which has the same `.storybook` as main).

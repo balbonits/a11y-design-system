@@ -872,3 +872,4 @@ kinetic~auto(OS dark) components-themeswitcher--docs moderate landmark-one-main
 kinetic~auto(OS dark) components-themeswitcher--docs moderate region
 kinetic~auto(OS dark) components-switch--docs moderate landmark-one-main
 kinetic~auto(OS dark) components-switch--docs moderate region
+EXIT 0

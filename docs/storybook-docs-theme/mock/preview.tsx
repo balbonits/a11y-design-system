@@ -67,6 +67,8 @@ const docsMode = (): DocsMode => {
 // a click on the new link is forwarded to it, so Storybook's own navigation still runs.
 // The last word is split off the heading's last direct text node. If React ever rewrites that text node, the next
 // pass sees the change, removes the wrapper and redoes it, so text is never duplicated or lost.
+// The link sits inside the heading, so the heading's own name would read "Usage Link to Usage"; the heading gets
+// aria-label = its text (only if it has no aria-label of its own; marked data-eb-named and removed on undo).
 // Idempotent: an up-to-date heading is skipped, so the observer's own writes never loop; it disconnects on unmount.
 const HEADING_SEL = '.sbdocs-content :is(h1, h2, h3, h4)';
 const SPLIT = new WeakMap<HTMLElement, { text: Text | null; head: string }>();
@@ -84,6 +86,7 @@ function lastDirectText(h: HTMLElement): Text | null {
 }
 function undo(h: HTMLElement) {
   h.querySelector(':scope > [data-eb-anchor-tail]')?.remove();
+  if (h.hasAttribute('data-eb-named')) { h.removeAttribute('aria-label'); h.removeAttribute('data-eb-named'); }
   SPLIT.delete(h);
 }
 function enhanceHeading(h: HTMLElement) {
@@ -119,6 +122,7 @@ function enhanceHeading(h: HTMLElement) {
   }
   tail.append(a);
   h.append(tail);
+  if (!h.hasAttribute('aria-label')) { h.setAttribute('aria-label', name); h.setAttribute('data-eb-named', ''); }
   SPLIT.set(h, { text, head });
 }
 function enhanceAnchors(root: ParentNode) {

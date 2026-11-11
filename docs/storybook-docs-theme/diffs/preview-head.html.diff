@@ -54,7 +54,7 @@
    /* Mobile-first docs: nothing may push the page sideways. Wide tables and code scroll inside their own box. */
    .sbdocs-wrapper { overflow-x: hidden; }
    .sbdocs-content { max-width: 100%; min-width: 0; }
-@@ -20,4 +53,39 @@
+@@ -20,4 +53,44 @@
    /* Storybook's own docs buttons (Copy, Show code, zoom) get 44px targets too. */
    .sbdocs button:not(.em-btn):not(.em-sort):not([role="tab"]) { min-height: 44px; min-width: 44px; }
    @media (max-width: 640px) { .sbdocs-wrapper { padding-left: 12px !important; padding-right: 12px !important; } }
@@ -93,4 +93,9 @@
 +  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor]:focus-visible { outline: none !important; }
 +  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor]:focus-visible > svg {
 +    visibility: visible !important; outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color) !important; outline-offset: 2px; }
++  /* Touch (Creatives' condition 4): with (hover: none) nothing can reveal the icon, so it shows at rest in --text-muted
++     (gated 3:1 against the docs background, check L). Keyboard focus there still gets the ring and the link colour. */
++  @media (hover: none) {
++    .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor]:not(:focus-visible) > svg { visibility: visible !important; color: var(--text-muted) !important; }
++  }
  </style>
