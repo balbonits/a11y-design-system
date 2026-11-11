@@ -10,12 +10,15 @@
 //  H. heading anchors (aria-hidden, tabindex -1, under the WCAG 2.5.8 spacing exception): at 320 and 1280 the 24px circle
 //     centred on each anchor overlaps no other target (elementFromPoint at the centre and 16 points on the circle)
 //  I. Canvas bar never covers its story: the story starts at or below the bar's bottom edge, every width
+//  J. heading anchors on-canvas (FU-SB-DOCS-NITS c): at every width the anchor's icon starts at x >= 0, ends at or before
+//     the heading text, and the heading text starts at the content's left edge (the anchor never indents the heading)
 // --no-has: strips every rule whose selector uses :has() from the served preview head (a browser without :has()), then
-//     runs E, F, H and I with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
+//     runs E, F, H, I and J with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
 //     centre and the 4 edge midpoints (corners may be clipped by the 12px radius there, as on main). A-D and G are skipped.
 // Usage: NODE_PATH=<dir with playwright-core> node docs-check.cjs <baseUrl> [--no-has]   exits 1 on any failure.
+//     Tokens default to the repo's src/tokens.json; TOKENS=<path> overrides it (resolved from the current directory).
 const { chromium } = require('playwright-core');
-const tokens = require(process.env.TOKENS || require('path').resolve(__dirname, '../../src/tokens.json')).themes.neo;
+const tokens = require(process.env.TOKENS ? require('path').resolve(process.env.TOKENS) : require('path').resolve(__dirname, '../../src/tokens.json')).themes.neo;
 const base = (process.argv[2] || 'http://127.0.0.1:6007').replace(/\/$/, '');
 const NO_HAS = process.argv.includes('--no-has');
 // Removes each `selector { ... }` rule whose selector contains :has( from <style> blocks (comments must not contain that text).
@@ -118,6 +121,11 @@ const PAGE_FNS = () => {
       }
       for (const c of await page.evaluate(() => [...document.querySelectorAll('.sbdocs-preview > .sb-bar')].map((bar) => { const st = bar.parentElement.querySelector(':scope > .docs-story'); return st ? st.getBoundingClientRect().top - bar.getBoundingClientRect().bottom : null; })))
         if (c !== null) ok(c >= -0.5, `I ${w} ${id} Canvas bar covers the story's top ${(-c).toFixed(1)}px`);
+      for (const j of await page.evaluate(() => { const c = document.querySelector('.sbdocs-content').getBoundingClientRect().left;
+        return [...document.querySelectorAll('.sbdocs-content :is(h1, h2, h3, h4) > a[aria-hidden="true"]')].map((el) => { const s = (el.querySelector('svg') || el).getBoundingClientRect(), r = document.createRange();
+          r.selectNodeContents(el.parentElement); r.setStartAfter(el); const t = r.getBoundingClientRect().left;
+          return { name: el.parentElement.textContent.trim().slice(0, 20), sl: +s.left.toFixed(1), sr: +s.right.toFixed(1), t: +t.toFixed(1), c: +c.toFixed(1) }; }); }))
+        ok(j.sl >= -0.5 && j.sr <= j.t + 0.5 && Math.abs(j.t - j.c) <= 0.5, `J ${w} ${id} anchor "${j.name}" icon x ${j.sl}..${j.sr}, heading text at ${j.t}, content left ${j.c}`);
       if (w === 320 || w === 1280) for (const a of await page.$$('.sbdocs-content :is(h1, h2, h3, h4) a[aria-hidden="true"]')) {
         await a.scrollIntoViewIfNeeded();
         const bad = await a.evaluate((el) => { const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2; const out = [];
