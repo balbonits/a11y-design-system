@@ -22,4 +22,23 @@ for(const [w,h] of [[320,640],[768,800],[1280,800]])for(const cs of ['light','da
  }
  await p.mouse.move(w-2,h/2);await p.evaluate(ANN,items);await p.waitForTimeout(150);
  const f=path.join(dir,`sb-brand-${w}-${cs}.png`);await p.screenshot({path:f});console.log(f);await p.close();}
+// FU-SB-TOOLBAR-44: hit-area shots below 600 (story view). Dashed green = each control's 44px ::before hit area; no labels on the boxes.
+const HIT=()=>{const box=(l,t,w,h,c)=>{const d=document.createElement('div');Object.assign(d.style,{position:'fixed',left:l+'px',top:t+'px',width:w+'px',height:h+'px',outline:`1px dashed ${c}`,outlineOffset:'-1px',zIndex:2147483647,pointerEvents:'none'});document.body.appendChild(d)};
+ for(const x of document.querySelectorAll('.sb-bar button[title], .sb-bar a[title], .sidebar-header button[title]')){const r=x.getBoundingClientRect();if(!r.width)continue;const s=getComputedStyle(x,'::before');if(s.content==='none')continue;const t=parseFloat(s.top),l=parseFloat(s.left);box(r.left+l,r.top+t,r.width-2*l,r.height-2*t,'#008a5a')}};
+for(const w of [320,599])for(const cs of ['light','dark']){
+ const p=await b.newPage({viewport:{width:w,height:640},colorScheme:cs});
+ await p.goto(base+'?path=/story/components-button--primary',{waitUntil:'networkidle'});await p.waitForTimeout(1200);
+ await p.evaluate(()=>document.querySelector('.sb-bar button[title="Zoom in"]').focus({focusVisible:true}));
+ await p.mouse.move(w-2,320);await p.evaluate(HIT);
+ await p.evaluate(ANN,[['.sb-bar button[title="Zoom in"]','1 focus ring 3px, offset 2',G,'below'],['.sb-bar:has(button[title="Open navigation menu"])','2 both bars 48px; dashed = 44px hit',P]]);
+ await p.evaluate(()=>document.querySelector('.sb-bar button[title="Zoom in"]').focus({focusVisible:true}));await p.waitForTimeout(150);
+ const f=path.join(dir,`sb-toolbar-hit-${w}-${cs}.png`);await p.screenshot({path:f});console.log(f);await p.close();}
+// The drawer header (About Storybook, Close menu) and the addon panel's Close button, light only (same CSS in dark).
+for(const w of [320,599])for(const [open,name,ann] of [['button[title="Open navigation menu"]','drawer',[['.sidebar-header','1 About + Close menu: 44x44 hit',G,'below']]],['button[title="Open addon panel"]','addons',[['.sb-bar:has(button[title="Close addon panel"])','1 addon bar 48px, Close 44x44; tabs: spike',P]]]]){
+ const p=await b.newPage({viewport:{width:w,height:640},colorScheme:'light',reducedMotion:'reduce'});
+ await p.goto(base+'?path=/story/components-button--primary',{waitUntil:'networkidle'});await p.waitForTimeout(1200);
+ await p.click(open);await p.waitForTimeout(900);
+ await p.evaluate(()=>document.querySelectorAll('*').forEach(e=>{if(e.scrollTop>0&&e.closest('body'))e.scrollTop=0}));
+ await p.mouse.move(w-2,100);await p.evaluate(HIT);await p.evaluate(ANN,ann);await p.waitForTimeout(150);
+ const f=path.join(dir,`sb-toolbar-hit-${w}-${name}-light.png`);await p.screenshot({path:f});console.log(f);await p.close();}
 await b.close();})();

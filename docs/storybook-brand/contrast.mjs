@@ -30,8 +30,10 @@ const cr = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); re
 const toHsl = h => { const [r, g, b] = [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16) / 255); const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2; if (mx === mn) return [0, 0, l]; const d = mx - mn, s = l > .5 ? d / (2 - mx - mn) : d / (mx + mn); const hh = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; return [hh * 60, s, l]; };
 const fromHsl = ([h, s, l]) => { const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2; const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x]; return '#' + [r, g, b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join(''); };
 const shift = (amt, h) => { const [a, s, l] = toHsl(h); return fromHsl([a, s, Math.max(0, Math.min(1, l + amt))]); };
+const mix = (f, b, a) => '#' + [1, 3, 5].map(i => Math.round(parseInt(f.slice(i, i + 2), 16) * a + parseInt(b.slice(i, i + 2), 16) * (1 - a)).toString(16).padStart(2, '0')).join('');
 const rows = [];
-const baseHex = (mode, name) => { const b = B[mode]; if (name in b) return b[name]; if (name === '--eb-selected-text') return b.selectedText; if (name.startsWith('tree hover')) return mode === 'light' ? shift(.45, b.colorSecondary) : shift(-.35, b.colorSecondary); return null; };
+// #45's unselected boolean label is Storybook's transparentize(.5, textColor), composited on the track (booleanBg).
+const baseHex = (mode, name) => { const b = B[mode]; if (name in b) return b[name]; if (name === '--eb-selected-text') return b.selectedText; if (name === '--eb-boolean-label') return mix(b.textColor, b.booleanBg, .5); if (name.startsWith('tree hover')) return mode === 'light' ? shift(.45, b.colorSecondary) : shift(-.35, b.colorSecondary); return null; };
 for (const [mode, i] of [['light', 0], ['dark', 1]]) {
   const F = Object.fromEntries(Object.entries(M.fields).map(([f, p]) => [f, neo[mode][p[i]]]));
   const V = Object.fromEntries(Object.entries(M.cssVars).map(([v, t]) => [v, neo[mode][t]]));
@@ -50,7 +52,8 @@ for (const [mode, i] of [['light', 0], ['dark', 1]]) {
     ['text', 'Sidebar row text on hover (derived)', 'textColor', F.textColor, 'tree hover ' + (mode === 'light' ? 'lighten(.45)' : 'darken(.35)'), hover],
     ['text', 'Inverse text (tooltips, inverse surfaces)', 'textInverseColor', F.textInverseColor, 'textColor', F.textColor],
     ['text', 'Accent text and links in panels (colorSecondary)', 'colorSecondary', F.colorSecondary, 'appContentBg', F.appContentBg],
-    ['text', 'Boolean control selected label', 'textColor', F.textColor, 'booleanSelectedBg', F.booleanSelectedBg],
+    ['text', 'Boolean control selected label (Storybook default, no override)', 'textColor', F.textColor, 'booleanSelectedBg', F.booleanSelectedBg],
+    ['text', 'Boolean control unselected label (--eb-boolean-label, manager-head.html; #45 is 50% textColor on the track)', '--eb-boolean-label', V['--eb-boolean-label'], 'booleanBg', F.booleanBg],
     ['ui', 'Sidebar and panel borders', 'appBorderColor', F.appBorderColor, 'appBg', F.appBg],
     ['ui', 'Panel borders on content', 'appBorderColor', F.appBorderColor, 'appContentBg', F.appContentBg],
     ['ui', 'Input border', 'inputBorder', F.inputBorder, 'inputBg', F.inputBg],
@@ -61,6 +64,7 @@ for (const [mode, i] of [['light', 0], ['dark', 1]]) {
     ['ui', 'Brand mark outline (blob border)', '--eb-border', V['--eb-border'], 'appBg', F.appBg],
     ['focus', 'Brand link focus ring', '--eb-focus', V['--eb-focus'], 'appBg', F.appBg],
     ['focus', 'Brand link focus ring vs wordmark', '--eb-focus', V['--eb-focus'], '--eb-text', V['--eb-text']],
+    ['focus', 'Toolbar control focus ring below 600px (manager-head.html)', '--eb-focus', V['--eb-focus'], 'barBg', F.barBg],
     ['focus', "Storybook's own focus border (colorSecondary) in toolbar", 'colorSecondary', F.colorSecondary, 'barBg', F.barBg],
     ['focus', "Storybook's own focus border (colorSecondary) in sidebar", 'colorSecondary', F.colorSecondary, 'appBg', F.appBg],
   ];

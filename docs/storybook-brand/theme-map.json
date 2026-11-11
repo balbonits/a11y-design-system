@@ -26,7 +26,8 @@
     "--eb-border":         "--border",
     "--eb-blob":           "--highlight",
     "--eb-focus":          "--focus-ring-color",
-    "--eb-selected-text":  "--accent-contrast"
+    "--eb-selected-text":  "--accent-contrast",
+    "--eb-boolean-label":  "--text-muted"
   },
   "shape": {
     "appBorderRadius":     "--radius-md",

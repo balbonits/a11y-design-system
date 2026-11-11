@@ -55,6 +55,7 @@ const CSS_VARS = {
   '--eb-blob': '--highlight',
   '--eb-focus': '--focus-ring-color',
   '--eb-selected-text': '--accent-contrast',
+  '--eb-boolean-label': '--text-muted',
 } as const;
 
 const build = (mode: Mode) => {

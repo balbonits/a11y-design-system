@@ -1,6 +1,6 @@
 --- pr45/manager-head.html	2026-11-11 00:52:01.589348018 -0800
-+++ mock/manager-head.html	2026-11-11 00:52:01.589348018 -0800
-@@ -1,9 +1,20 @@
++++ mock/manager-head.html	2026-11-11 01:11:24.865274211 -0800
+@@ -1,9 +1,55 @@
  <title>Ember UI · Storybook</title>
  <style>
    /* SB-MANAGER-AA: Storybook paints the selected sidebar item's label white on colorSecondary. In dark, colorSecondary is
@@ -20,6 +20,41 @@
 +  /* The brand link: 44px target, neo focus ring (3px solid --focus-ring-color, 3px offset). Replaces Storybook's 1px colorSecondary border. */
 +  a:has(> .ember-brand) { display: inline-flex !important; align-items: center; min-height: 44px; min-width: 44px; margin: 0 !important; padding: 0 4px !important; border: 0 !important; border-radius: 12px !important; }
 +  a:has(> .ember-brand):focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: 3px; }
++  /* KI-2: the boolean control's unselected label is Storybook's transparentize(.5, textColor), 3.39:1 light on the track.
++     Use neo --text-muted (via --eb-boolean-label) instead: #3d3d3d on #f3ecd2 is 9.18:1 light, #cfc8b0 on #111111 is 11.28:1 dark.
++     The selected label keeps Storybook's textColor (18.88 light, 14.07 dark). Selector targets Storybook 8.6.19's BooleanControl
++     markup (label > input[role=switch] + span[aria-hidden] False + span[aria-hidden] True); re-check it on any Storybook bump. */
++  label:has(> input[role="switch"]:checked) > span[aria-hidden="true"]:first-of-type,
++  label:has(> input[role="switch"]:not(:checked)) > span[aria-hidden="true"]:last-of-type { color: var(--eb-boolean-label) !important; }
++  /* FU-SB-TOOLBAR-44: 44px hit areas below 600px only; at 600 and up everything stays Storybook's 28px. Covers the top toolbar, the bottom
++     bar (navigation-menu and addon-panel toggles), the drawer header (About Storybook, Close menu) and the addon panel's Close button.
++     Storybook 8.6.19 gives these controls no role or aria-label, only title, so the selectors use title attributes plus the stable
++     .sb-bar and .sidebar-header classes (no hashed css-* classes). Method: a transparent ::before overlay grows each control's hit area
++     without changing what it paints (none of these controls has a ::before or ::after in 8.6.19, and all but the menu button are already
++     position: relative). 28px controls get inset -8px (44x44) and 8px side margins, so the pitch is at least 50px and neighbouring
++     overlays never overlap. The bars go from 40px to 48px because the top bar scrolls on x (overflow-y computes to hidden) and the addon
++     bar is overflow: hidden, either of which would clip a 44px overlay in 40px. The 216x40 menu button only needs 2px top and bottom. */
++  @media (max-width: 599px) {
++    main > .sb-bar,
++    .sb-bar:has(button[title="Open navigation menu"]),
++    .sb-bar:has(button[title="Close addon panel"]) { box-sizing: border-box; height: 48px; }
++    main > .sb-bar,
++    .sb-bar:has(button[title="Close addon panel"]) { padding-block: 4px; }
++    main > .sb-bar :is(button, a)[title],
++    .sb-bar button[title="Open addon panel"],
++    .sb-bar button[title="Close addon panel"],
++    .sidebar-header button:is([title="About Storybook"], [title="Close menu"]) { margin-inline: 8px; }
++    main > .sb-bar :is(button, a)[title]::before,
++    .sb-bar button[title="Open addon panel"]::before,
++    .sb-bar button[title="Close addon panel"]::before,
++    .sidebar-header button:is([title="About Storybook"], [title="Close menu"])::before { content: ""; position: absolute; inset: -8px; }
++    .sb-bar button[title="Open navigation menu"] { position: relative; }
++    .sb-bar button[title="Open navigation menu"]::before { content: ""; position: absolute; inset: -2px 0; }
++    .sb-bar :is(button, a)[title]:focus-visible,
++    .sidebar-header button:is([title="About Storybook"], [title="Close menu"]):focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: 2px; }
++    /* The 40px-tall menu button sits 4px inside the 48px bar, so its ring uses offset 0 (3px ring, 1px to spare) to stay inside the bar. */
++    .sb-bar button[title="Open navigation menu"]:focus-visible { outline-offset: 0; }
++  }
 +  /* Reduced motion: Storybook 8.6's manager has no prefers-reduced-motion handling (mobile drawer slide, sidebar and control transitions). Neo's rule is motion off under reduce, so zero it here. */
 +  @media (prefers-reduced-motion: reduce) {
 +    *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }

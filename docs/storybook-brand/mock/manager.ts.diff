@@ -1,5 +1,5 @@
 --- pr45/manager.ts	2026-11-11 00:52:01.585348020 -0800
-+++ mock/manager.ts	2026-11-11 00:52:01.589348018 -0800
++++ mock/manager.ts	2026-11-11 01:02:33.477260989 -0800
 @@ -1,5 +1,10 @@
  import { addons } from '@storybook/manager-api';
  import { create } from '@storybook/theming';
@@ -11,7 +11,7 @@
  
  // Mobile-first: from 600px (where Storybook's own mobile nav stops) up to 1024px,
  // start with the sidebar collapsed so the docs get the full width. The toolbar's
-@@ -8,37 +13,79 @@
+@@ -8,37 +13,80 @@
  if (w >= 600 && w < 1024) addons.setConfig({ navSize: 0 });
  
  // SB-MANAGER-AA: Storybook's stock manager UI fails axe color-contrast (toolbar #029cfd on #f1f3f4 2.62:1, the selected
@@ -66,6 +66,7 @@
 +  '--eb-blob': '--highlight',
 +  '--eb-focus': '--focus-ring-color',
 +  '--eb-selected-text': '--accent-contrast',
++  '--eb-boolean-label': '--text-muted',
 +} as const;
 +
 +const build = (mode: Mode) => {
