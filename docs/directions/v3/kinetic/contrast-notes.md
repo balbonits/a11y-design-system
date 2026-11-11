@@ -10,3 +10,35 @@ Recorded, not gated:
 | kinetic-dark | focus-ring-color | text (inverted hover fill) | 3 | 1.45 | not adjacent by rule |
 
 By rule, the ring never touches the fill. On kinetic Buttons, `--focus-ring-offset` stays at 2px or more (it's 3px), and tilt, lift and press never reduce it. A hovered and focused Button never gets an inset ring. A band of `--color-bg` or `--surface` always sits between ring and fill, so the band pairs are the ones that count. If an offset-0 ring is ever added, it must use `--color-bg` on the fill, and that pair becomes gated.
+
+## Scrim (dialog backdrop)
+
+`--scrim` is per-mode, the same naming as neo (`--palette-scrim` / `--palette-scrim-dark`). Light is cobalt-950 at 40% (`#06123F66`). Dark is black at 50% (`#00000080`). Dark was previously cobalt-950 at 60% (`#06123F99`); that lightened `--color-bg` (night-900 `#070F33`) instead of dimming it, and `--text-muted` under the scrim, both composited, failed at 2.75:1. Black at 50% dims night-900 (composite `#030719`, luminance 0.39×) and keeps that pair at 3:1 or better (Chief of Creatives follow-up, 9:50 PM PT 2026-11-10). Light is unchanged from the 9:45 PM PT ruling (CA agreed).
+
+Gates, matching neo's method: the opaque dialog border against the scrim composited over `--color-bg` must be 3:1 or better (WCAG 1.4.11); `--text-muted` under the scrim, both composited, must be 3:1 or better; and the dark scrim must not lighten `--color-bg`. The opaque `--surface` against the composite is listed as informational only; the border is the 1.4.11 cue. The dialog is an opaque `--surface`, so its text contrast is the text/surface rows above and never depends on the scrim. There is no uncomposited "text-muted vs the composite" row: neo's Scrim section does not include one, and that pairing measures text that isn't drawn there.
+
+- Light: scrim `#06123F66` over `#FBF8F1` composites to `#999caa`. Border `#1434B8` against that composite is 3.47:1 (pass). `--text-muted` under the scrim, both composited, is 4.20:1 (pass). Opaque white `--surface` against the composite is 2.73:1 (informational, below 3:1).
+- Dark: scrim `#00000080` over `#070F33` composites to `#030719`. Border `#9AB0FF` against that composite is 9.57:1 (pass). `--text-muted` under the scrim, both composited, is 3.40:1 (pass). `--color-bg` dims (luminance 0.39×). Opaque `--surface` against the composite is 1.17:1 (informational).
+
+| Combo | Token or pair | Base | Under scrim | Rule | Ratio |
+|---|---|---|---|---|---|
+| kinetic-light | color-bg | `#FBF8F1` | `#999caa` | dims |  |
+| kinetic-light | surface | `#FFFFFF` | `#9ba0b2` | dims |  |
+| kinetic-light | surface-muted | `#F3EEE2` | `#9496a1` | dims |  |
+| kinetic-light | text | `#0A1B5C` | `#081750` | dims |  |
+| kinetic-light | text-muted | `#45507A` | `#2c3762` | dims |  |
+| kinetic-light | accent | `#C21807` | `#77161d` | dims |  |
+| kinetic-light | border | `#1434B8` | `#0e2688` | dims |  |
+| kinetic-light | border on color-bg (1.4.11, opaque border) | `#1434B8` | `#999caa` | 3:1 | 3.47 |
+| kinetic-light | surface on color-bg (opaque surface, informational) | `#FFFFFF` | `#999caa` | informational | 2.73 (below 3:1) |
+| kinetic-light | text-muted under scrim (both composited) | `#2c3762` | `#999caa` | 3:1 | 4.20 |
+| kinetic-dark | color-bg | `#070F33` | `#030719` | dims |  |
+| kinetic-dark | surface | `#0D1844` | `#060c22` | dims |  |
+| kinetic-dark | surface-muted | `#152255` | `#0a112a` | dims |  |
+| kinetic-dark | text | `#FBF8F1` | `#7d7c78` | dims |  |
+| kinetic-dark | text-muted | `#C3C9E0` | `#616470` | dims |  |
+| kinetic-dark | accent | `#FF6B57` | `#7f352b` | dims |  |
+| kinetic-dark | border | `#9AB0FF` | `#4d587f` | dims |  |
+| kinetic-dark | border on color-bg (1.4.11, opaque border) | `#9AB0FF` | `#030719` | 3:1 | 9.57 |
+| kinetic-dark | surface on color-bg (opaque surface, informational) | `#0D1844` | `#030719` | informational | 1.17 (below 3:1) |
+| kinetic-dark | text-muted under scrim (both composited) | `#616470` | `#030719` | 3:1 | 3.40 |

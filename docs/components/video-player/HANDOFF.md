@@ -28,7 +28,7 @@ The layout, states, keyboard, copy and targets in H-1 to H-7 are the same in eve
 | Error and ended dim (`--scrim`, light / dark) | `#11111173` / `#1111118c` | `#06123F66` / `#00000080` | `#1B0B1F80` / `#1B0B1F80` |
 | Motion (`--duration-fast` / `-base`, `--ease-press`) | 120 / 220ms, overshoot | 140 / 260ms, no overshoot | 200 / 420ms, slow ease |
 | `--tilt` / `--lift` on hover | -1.5deg / -3px | 0 / 0 | 0 / -2px |
-| Press and hover (copied from each direction's own `.btn` rules in `docs/directions/v3/<theme>/index.html`) | Hover lifts 1px up-left with tilt; press moves 3px into `--shadow-press` | Hover inverts to `--text` on `--color-bg`, no movement; press moves 1px down, no shadow | Hover rises by `--lift` with `--shadow-overlay`; press settles flat with no shadow |
+| Press and hover (copied from each direction's own `.btn` rules in `docs/directions/v3/<theme>/index.html`) | Hover lifts 1px up-left with tilt; press moves 3px into `--shadow-press` | Hover inverts to `--text` on `--color-bg`, no movement; press moves 1px down, no shadow | Hover rises by `--lift` with `--shadow-overlay`; press settles flat; no overlay shadow; the inset hover ring stays as the state cue |
 
 - The caption colors and bands (H-8) don't change by theme. Captions sit over video, not over a theme surface.
 - Contrast: every themed pair the player uses (text, text-muted, accent and accent-contrast, borders at 3:1 for 1.4.11, focus ring, scrim under text-muted) is a pair that theme's `CONTRAST.md` already checks. The 30 axe runs above found 0 contrast issues in any theme or mode.
@@ -55,7 +55,7 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 |---|---|---|---|---|---|
 | neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | `--press-offset` 3px into `--shadow-press` (1px), no tilt |
 | kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0). Label 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see below | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | `--press-offset` 1px, `--shadow-press` is none |
-| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0), plus the inset hover ring in `--color-bg` (see Dusk hover ring) | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--danger-hover`, the same lift and shadow, plus the inset ring in `--color-bg` | `--press-offset` 0 (settles flat), no shadow |
+| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0), plus the inset hover ring in `--color-bg` (see Dusk hover ring) | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--danger-hover`, the same lift and shadow, plus the inset ring in `--color-bg` | `--press-offset` 0: settles flat; no overlay shadow; the inset hover ring stays as the state cue (`--accent` on secondary, `--color-bg` on primary and big play, with the big play halo composed when focused). Primary hover and press keep the `--accent-hover` fill, never `--surface-muted` (label 11.90:1 light, 12.49:1 dark) |
 
 **Kinetic inverted hover and contrast.** The numbers below come from `docs/directions/v3/kinetic/tokens.json`. The label pair is already one of `shared/contrast.mjs`'s TEXT pairs, `['color-bg','text']`, at 4.5:1, so it's reported in `kinetic/CONTRAST.md` (lines 29 and 59). FSD's token PR carries the same pair into `scripts/contrast.mjs`.
 
@@ -147,6 +147,7 @@ Decisions (pushback, with reasons):
 - Popovers: anchored above the bar's right edge, `max-width: calc(100cqi - 1.1rem)`, `max-height: min(36rem, 80vh)`, scroll inside. Chips wrap.
 - Narrow bar: row 1 is current time, scrubber, duration (`.tnum`, tabular mono). Row 2 is Play, Mute, spacer, Captions, More, Full screen.
 - Wide bar: row 1 is the scrubber alone. Row 2 is Play, `0:00 / 0:52`, Mute, Volume slider, spacer, Captions, Speed, Transcript, More, Full screen.
+- The time readout (`.time`) may wrap onto two lines when space is tight (for example with WCAG 1.4.12 text spacing at 600 to 640px). The bar row stays 44px tall, and the readout never forces horizontal scroll.
 - Transcript button: icon only below a 720px player, icon plus visible "Transcript" from 720px. The copy says "from 480px"; on our layout the button is only in the bar from 560px, and at 560 to 720 the row can't fit the text without wrapping, so the visible text starts at 720 (player width, container query). Its name is "Transcript" at every size.
 - Captions-unavailable hint: a third bar row (`.cchint`, `--text-muted`) only when there is no usable captions track.
 - Transcript header: heading on the left, Download on the right, search on its own row. Downloads are an inline group (`Download` label, Text, Captions file) when the transcript is at least 440px wide, and collapse into a `Download` disclosure (button `aria-expanded` and a panel) below that. That covers 320 and 375 and the side column at 1024 to 1440.
@@ -365,6 +366,7 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
   - Horizontal overflow: 0 at 320, 375, 768, 1024 and 1440, in light and dark.
   - Touch targets: no target under 44px.
   - WCAG 1.4.12 text spacing: 0 overflow and 0 clipped. 200% zoom: 0 overflow.
+  - Text spacing at the bar's tight widths: 0 overflow at 600, 620 and 640, with text spacing, in all themes (the time readout wraps, the bar stays 44px).
   - `contrast.mjs`, with the caption pairs (`--caption-text` on `--caption-bg`, Solid and Translucent), is green.
   - Every keyboard row in H-6 is an e2e test.
   - Button motion DONE criteria 1 to 5 (H-0) pass, including the kinetic focus-ring check failing CI on an offset under 2px or an inset ring, and the six dusk hover-ring pairs at 3:1 or above.
@@ -373,7 +375,7 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
   - UX/UI Designer for the spec and layout.
   - Chief of Creatives for visuals and creative rulings.
   - Chief Architect for accessibility and architecture.
-- **ETA:** FSD starts once CA signs this HANDOFF and FSD's current cards ship (the #27 kinetic scrim, then SB-MANAGER-AA). The player-UI PR is open for QA, CA and VQA by Wed Nov 11, 6:00 PM PT. If it slips, escalate to CTE. The ETA was set by CTE on 2026-11-10.
+- **ETA:** FSD starts once CA signs this HANDOFF and FSD's current cards ship (the #27 kinetic scrim, then SB-MANAGER-AA). The player-UI PR is open for QA, CA and VQA within 4 hours of the last of #33, #38 and #27 merging, and no later than Wed Nov 11, 6:00 PM PT either way (FSD's commitment, inside CTE's deadline). If it slips, escalate to CTE. The ETA was set by CTE on 2026-11-10.
 
 
 1. Build controls, caption renderer and transcript **only on the core `Player` interface** (PR #33). No adapter-specific UI code.

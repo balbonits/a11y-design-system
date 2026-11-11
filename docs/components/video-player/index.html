@@ -85,7 +85,7 @@ main:focus{outline:none}
 .ib:active{background:var(--surface-muted);transform:translate(1px,1px)}
 .ib[aria-pressed=true],.ib[aria-expanded=true]{background:var(--highlight);color:var(--highlight-contrast);border-color:var(--border)}
 .ib[aria-disabled=true]{color:var(--text-muted);border:var(--border-width) dotted var(--border-subtle);background:transparent;cursor:not-allowed;transform:none}
-.time{display:none;font:700 .9rem var(--font-mono);padding:0 .35rem;white-space:nowrap}
+.time{display:none;font:700 .9rem var(--font-mono);padding:0 .35rem;white-space:normal}
 .w-only{display:none}
 .vol{display:none;align-items:center}
 .vp [data-cap=off]{display:none!important}
@@ -148,20 +148,25 @@ footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 .25rem
 /* ===== per-theme interaction (from each direction's own index.html .btn rules) ===== */
 [data-theme=kinetic] .btn:hover,[data-theme=kinetic] .ib:hover{background:var(--text);color:var(--color-bg);transform:none}
 [data-theme=kinetic] .btn.primary:hover,[data-theme=kinetic] .bigplay:hover{background:var(--text);color:var(--color-bg);transform:none}
-[data-theme=kinetic] .btn:active,[data-theme=kinetic] .bigplay:active,[data-theme=kinetic] .ib:active{transform:translateY(1px);box-shadow:none}
+[data-theme=kinetic] .btn:active,[data-theme=kinetic] .btn.primary:active,[data-theme=kinetic] .bigplay:active,[data-theme=kinetic] .ib:active{transform:translateY(1px);box-shadow:none}
 [data-theme=dusk] .btn:hover,[data-theme=dusk] .bigplay:hover{transform:translateY(var(--lift));box-shadow:var(--shadow-overlay)}
-[data-theme=dusk] .btn:hover{background:var(--surface-muted)}
+[data-theme=dusk] .btn:not(.primary):hover{background:var(--surface-muted)}
 [data-theme=dusk] .btn:active,[data-theme=dusk] .bigplay:active,[data-theme=dusk] .ib:active{transform:none;box-shadow:none}
-[data-theme=dusk] .btn:active{background:var(--surface-muted)}
+[data-theme=dusk] .btn:not(.primary):active{background:var(--surface-muted)}
 /* Dusk hover ring (Creatives ruling, CA signed 2026-11-10): inset box-shadow, never outline, so it cannot collide with the focus outline. Stays under reduced motion. */
 [data-theme=dusk]{--button-hover-border-width:var(--border-width-strong)}
 [data-theme=dusk] .btn:hover{box-shadow:inset 0 0 0 var(--button-hover-border-width) var(--accent),var(--shadow-overlay)}
 [data-theme=dusk] .btn.primary:hover,[data-theme=dusk] .bigplay:hover{box-shadow:inset 0 0 0 var(--button-hover-border-width) var(--color-bg),var(--shadow-overlay)}
 [data-theme=dusk] .stage .bigplay:hover:focus-visible{box-shadow:inset 0 0 0 var(--button-hover-border-width) var(--color-bg),0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width) + 2px) var(--surface)}
+/* Dusk primary hover/press label fix (VQA 9840ac0): primary keeps its accent fill family, never --surface-muted. */
+[data-theme=dusk] .btn.primary:hover,[data-theme=dusk] .btn.primary:active{background:var(--accent-hover)}
+/* Dusk press (Creatives ruling): settles flat, no overlay shadow; the inset hover ring stays as the state cue. Halo stays composed on the focused big play. */
+[data-theme=dusk] .btn:active{box-shadow:inset 0 0 0 var(--button-hover-border-width) var(--accent)}[data-theme=dusk] .btn.primary:active,[data-theme=dusk] .bigplay:active{box-shadow:inset 0 0 0 var(--button-hover-border-width) var(--color-bg)}
+[data-theme=dusk] .stage .bigplay:active:focus-visible{box-shadow:inset 0 0 0 var(--button-hover-border-width) var(--color-bg),0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-width) + 2px) var(--surface)}
 @media (forced-colors:active){[data-theme=dusk] .btn:hover,[data-theme=dusk] .bigplay:hover{border-color:Highlight}}
 .themes{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
 .themes .btn[aria-pressed=true]{background:var(--accent);color:var(--accent-contrast)}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0s!important;scroll-behavior:auto!important}.bigplay:hover,.btn:hover,.btn:active,.ib:active{transform:none}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0s!important;scroll-behavior:auto!important}.bigplay:hover,.btn:hover,.btn:active,.bigplay:active,.ib:active{transform:none!important}}
 /* ===== R-4 follow-up: copy fill, captions per approved copy, dialog, tooltips, transcript tools ===== */
 /* Caption colors per CA ARCH-REVIEW 9:35 (KI-7). TOKEN LAYER (shared, unthemed, FSD ships it in src/tokens):
    --palette-caption-* primitives, and [data-caption-color] selectors that set the two extras.
@@ -563,7 +568,7 @@ Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch('media/captions-f
  pad();new ResizeObserver(pad).observe(G)});
 const R=document.documentElement,mb=$('#mode');
 function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark)}
-document.querySelectorAll('[data-theme-pick]').forEach(b=>{const sync=()=>document.querySelectorAll('[data-theme-pick]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.themePick===R.dataset.theme));document.querySelectorAll('[data-theme-name]').forEach(n=>n.textContent=R.dataset.theme);b.onclick=()=>{R.dataset.theme=b.dataset.themePick;try{localStorage.setItem('ember:vp-theme',R.dataset.theme)}catch(e){}const u=new URL(location);u.searchParams.set('theme',R.dataset.theme);history.replaceState(null,'',u);sync()};sync()});
+document.querySelectorAll('[data-theme-pick]').forEach(b=>{const sync=()=>{document.querySelectorAll('[data-theme-pick]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.themePick===R.dataset.theme));document.querySelectorAll('[data-theme-name]').forEach(n=>n.textContent=R.dataset.theme)};b.onclick=()=>{R.dataset.theme=b.dataset.themePick;try{localStorage.setItem('ember:vp-theme',R.dataset.theme)}catch(e){}const u=new URL(location);u.searchParams.set('theme',R.dataset.theme);history.replaceState(null,'',u);sync()};sync()});
 mb.onclick=()=>{const dark=mb.getAttribute('aria-pressed')==='true';R.dataset.mode=dark?'light':'dark';try{localStorage.setItem('jdilig:mode',R.dataset.mode)}catch(e){}syncMode()};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMode);syncMode();
 </script>
