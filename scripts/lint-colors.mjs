@@ -51,7 +51,7 @@ for (const f of fs.readdirSync('src/themes').filter((n) => n.endsWith('.css')).m
 // 4: retired names
 const retired = new RegExp(`(${RETIRED.map((n) => n.replace(/-/g, '\\-')).join('|')})(?![\\w-])`);
 const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walk(path.join(d, e.name)) : [path.join(d, e.name)]);
-for (const f of ['src', 'stories', '.storybook'].flatMap(walk).filter((f) => /\.(css|tsx?|mdx|json)$/.test(f))) {
+for (const f of ['src', 'stories', '.storybook'].flatMap(walk).filter((f) => /\.(css|tsx?|mdx|json|html)$/.test(f))) {
   if (f === 'src/tokens.json') continue;
   fs.readFileSync(f, 'utf8').split('\n').forEach((line, i) => { if (retired.test(line)) fail(f, i, line, 'retired token name'); });
 }

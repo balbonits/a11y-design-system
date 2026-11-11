@@ -1,5 +1,5 @@
 // Mobile-first sweep of every Storybook docs page: page-level overflow, --target-min (44px) hit areas and axe,
-// at 320/375/414/768/920/1280px in every registered theme in light and dark. Usage: node scripts/mobile.mjs [baseUrl]
+// at 320/375/414/640/768/920/1024/1280/1440px (640 is a 1280px window at 200% zoom) in every registered theme in light and dark. Usage: node scripts/mobile.mjs [baseUrl]
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -13,7 +13,7 @@ const base = (process.argv[2] ?? 'http://127.0.0.1:6007').replace(/\/$/, '');
 const exe = process.env.CHROME_PATH ?? '/usr/bin/google-chrome';
 const index = await (await fetch(`${base}/index.json`)).json();
 const docs = Object.values(index.entries).filter((e) => e.type === 'docs');
-const widths = [320, 375, 414, 768, 920, 1024, 1280, 1440];
+const widths = process.env.WIDTHS ? process.env.WIDTHS.split(',').map(Number) : [320, 375, 414, 640, 768, 920, 1024, 1280, 1440];
 
 const browser = await chromium.launch({ executablePath: exe });
 let failures = 0;

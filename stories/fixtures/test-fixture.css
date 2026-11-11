@@ -40,7 +40,7 @@
 }
 [data-theme="test-fixture"][data-mode="dark"] {
   --color-bg: #0f1b2d; --surface: #16263d; --surface-muted: #1f324d; --text: #eef3f9; --text-muted: #b4c0d0;
-  --border: #61758f; --border-subtle: #4d5f78; --accent: #5fd3a6; --accent-hover: #85e0bd; --accent-soft: #143b30;
+  --border: #7088a6; --border-subtle: #4d5f78; --accent: #5fd3a6; --accent-hover: #85e0bd; --accent-soft: #143b30;
   --accent-contrast: #0f1b2d; --focus-ring-color: #ffffff; --success: #6fd68e; --warning: #f2b84b; --danger: #ff8a80;
   --danger-hover: #ffaba4; --danger-contrast: #0f1b2d; --info: #8ab4ff; --highlight: #ffe08a; --highlight-contrast: #0f1b2d;
   color-scheme: dark;

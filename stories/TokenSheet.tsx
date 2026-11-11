@@ -124,6 +124,7 @@ type ThemeJson = { shape: Record<string, string> };
 export function ShapeTable({ names }: { names: string[] }) {
   const themes = tokens.themes as Record<string, ThemeJson>;
   return (
+    <div className="em-scope ember sb-unstyled" style={{ background: 'var(--color-bg)', color: 'var(--text)', padding: 16, marginBottom: 16, maxWidth: '100%' }}>
     <div role="region" tabIndex={0} aria-label="Theme token values" className="sb-scroll">
       <table className="em-table">
         <thead><tr><th scope="col">Token</th>{THEME_REGISTRY.map((t) => <th key={t.id} scope="col">{t.label}</th>)}</tr></thead>
@@ -133,6 +134,7 @@ export function ShapeTable({ names }: { names: string[] }) {
           ))}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }

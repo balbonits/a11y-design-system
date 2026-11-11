@@ -55,7 +55,7 @@ John flagged the Tokens page on his foldable phone (about 920px wide, dark previ
 - Findings: on int8 the transcript changed on every run and sometimes looped ("for for for"), so it runs on float32, which is repeatable across runs. VAD filtering garbled a quiet line, so it's off for decoding and used only to fix Whisper's early first-word starts.
 - Checks: both `.vtt` files pass a stdlib validator and W3C's webvtt.js parser in strict mode. 14 unit tests pass. All 12 caption starts fall within 0.68 s early and 0.38 s late of Blender's hand-timed subtitles.
 
-## 2026-11-10 TIME_PLACEHOLDER PT: v0.3.0, theme registry with neo as the default (R-2, breaking)
+## 2026-11-10 6:23 PM PT: v0.3.0, theme registry with neo as the default (R-2, breaking)
 
 John asked for switchable themes with the components shown in each. Chief Architect's R-2 and ARCH-REVIEW Addenda 5 and 6 set the rules, and Chief of Technology & Engineering set the scope: themes are registered data, not code, and the earlier three candidate directions are not shipped. neo (Chief of Creatives, CA-signed at main d8e1f93, docs/directions/v3/neo/) is the first registered theme and the default.
 
@@ -68,5 +68,5 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - **Storybook.** The Theme toolbar is generated from the registry. Each component's "All themes" story and the Tokens page iterate every registered theme in light and dark. "Tokens/Theme registry" shows the same Button and Input in neo and in a test-fixture theme (stories and tests only, not shipped; it goes when the next CA-signed theme registers), different in both color and shape.
 - **QA bug 1 fixed.** The Tokens page type specimens rendered cream on white in OS dark (1.16:1). They now sit on a themed surface, and `npm run test:a11y` adds an axe pass over every docs page with the OS set to dark.
 - **Removed:** the three candidate directions' token files, specs, prototypes and screenshots (docs/themes, docs/directions v1/v2). Fonts are now Archivo Black, Archivo and JetBrains Mono, as neo names them.
-- **Checks:** CHECKS_PLACEHOLDER
+- **Checks:** token lint 0 failures; contrast 128 pairs (all 64 of neo's CONTRAST.md pairs plus the fixture's) and 8 contract assertions, 0 failures; 14/14 unit tests; axe 160 runs (62 stories and 12 docs pages in neo light and dark, plus the 12 docs pages in OS dark), 0 serious or critical; mobile 216 runs (12 docs pages at 320/375/414/640/768/920/1024/1280/1440 in light and dark, with 640 standing in for a 1280px window at 200% zoom), each with axe, hit areas at `--target-min` and the 1.4.12 text-spacing overflow check, 0 failing; gitleaks clean; zero hits for the retired theme names and tokens outside this log.
 

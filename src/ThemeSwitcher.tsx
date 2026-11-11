@@ -23,6 +23,7 @@ export function ThemeSwitcher({ onChange, storage, themes = THEME_REGISTRY, clas
   const [dark, setDark] = useState(systemDark);
   const [message, setMessage] = useState('');
   const first = useRef(true);
+  const label = (o: string) => themes.find((t) => t.id === o)?.label ?? MODE_LABEL[o as Mode] ?? o;
 
   useEffect(() => {
     if (typeof matchMedia === 'undefined') return;
@@ -48,7 +49,6 @@ export function ThemeSwitcher({ onChange, storage, themes = THEME_REGISTRY, clas
     onChange?.(next.theme, next.mode);
   };
 
-  const label = (o: string) => themes.find((t) => t.id === o)?.label ?? MODE_LABEL[o as Mode] ?? o;
   const group = (key: 'theme' | 'mode', legend: string, options: readonly string[]) => (
     <fieldset className="em-switch-group">
       <legend className="em-legend">{legend}</legend>

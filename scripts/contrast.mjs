@@ -19,7 +19,7 @@ const TEXT = [
   ['accent-contrast', 'accent'], ['accent-contrast', 'accent-hover'], ['danger-contrast', 'danger'], ['danger-contrast', 'danger-hover'],
   ['color-bg', 'text'], ['highlight-contrast', 'highlight'],
 ];
-const UI = [['border', 'color-bg'], ['border', 'surface'], ['focus-ring-color', 'color-bg'], ['focus-ring-color', 'surface'],
+const UI = [['border', 'color-bg'], ['border', 'surface'], ['border', 'surface-muted'], ['focus-ring-color', 'color-bg'], ['focus-ring-color', 'surface'],
   ['focus-ring-color', 'surface-muted'], ['focus-ring-color', 'border'], ['accent', 'surface-muted']];
 const px = (v) => { const m = String(v).match(/^(-?[\d.]+)px$/); return m ? Number(m[1]) : NaN; };
 const zero = (v) => /^-?0(\.0+)?(px|deg|rem|em)?$/.test(String(v).trim());
