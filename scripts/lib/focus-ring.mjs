@@ -1,12 +1,16 @@
 // Focus ring contrast rows, FOCUS-RING-GATE. Same style as scripts/lib/scrim.mjs: pure row function, one gate call
 // from scripts/contrast.mjs, known fails pinned in scripts/contrast.known.json.
-// For every registered theme and mode, --focus-ring-color must reach 3:1 (WCAG 1.4.11 non-text contrast, and the
-// 2.4.13 focus appearance contrast part) against
-//   1. --color-bg, the page a focused control sits on, and
-//   2. --tabs-track, the track behind Tabs and the ThemeSwitcher options (a component token, src/tokens/components.css,
-//      resolved through the theme), where a focused tab or option draws its ring.
-// A ring or background token that is missing or doesn't resolve to a 6-digit hex fails (no silent skip).
-// The rows for --surface and --surface-muted stay in the main pair table (scripts/contrast.mjs UI list).
+// Requirement: WCAG 1.4.11 Non-text Contrast (AA). House aim: 2.4.13 Focus Appearance (AAA), whose contrast part
+// asks the same 3:1. For every registered theme and mode, --focus-ring-color must reach 3:1 against every background
+// the ring actually draws on:
+//   1. --color-bg, the page a focused control sits on;
+//   2. --surface, cards, the dialog and the toast (all read --card-bg, which is var(--surface) in
+//      src/tokens/components.css; scripts/contrast.mjs adds a --card-bg row whenever it resolves differently);
+//   3. --tabs-track, the track behind Tabs and the ThemeSwitcher options (a component token, src/tokens/components.css,
+//      resolved through the theme), where a focused tab or option draws its ring;
+//   4. --hover-fill, optional (Addendum 10): only where a theme defines it, because a focused and hovered control draws
+//      the ring over the fill. Absent means no row (skip, not fail); defined but unresolved fails.
+// A ring or required background token that is missing or doesn't resolve to a 6-digit hex fails (no silent skip).
 // CLI, for parity with the design side: node scripts/lib/focus-ring.mjs --tokens <direction>/tokens.json
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +18,8 @@ import { declsOf } from '../theme-contract.mjs';
 
 export const FOCUS_MIN = 3;
 export const RING = '--focus-ring-color';
-export const BACKGROUNDS = ['--color-bg', '--tabs-track'];
+export const BACKGROUNDS = ['--color-bg', '--surface', '--tabs-track'];
+export const OPTIONAL = ['--hover-fill'];
 const lum = (h) => { const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 const cr = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
 const six = (v) => /^#[0-9a-f]{6}$/i.test(v || '');
@@ -25,11 +30,12 @@ const bare = (k) => k.slice(2);
 // leading dashes (the main pair table's labels) and value is a ratio (number) or a word (missing / unresolved).
 // opts.via maps a component token to the contract name it reads (from src/tokens/components.css); the Background
 // label then reads like the #27 row, e.g. tabs-track (--surface-muted). Known entries key on the bare token (tabs-track).
-export function focusRingRows(combo, get, mode, { ring = RING, backgrounds = BACKGROUNDS, via = {} } = {}) {
+// opts.optional lists backgrounds that get a row only when get() returns something for them (absent: no row).
+export function focusRingRows(combo, get, mode, { ring = RING, backgrounds = BACKGROUNDS, optional = OPTIONAL, via = {} } = {}) {
   const word = (v) => (v === undefined ? 'missing' : 'unresolved');
   const rv = get(ring); const rows = [];
-  for (const b of backgrounds) {
-    const bv = get(b); const row = { combo, fg: bare(ring), bg: bare(b), label: via[b] ? `${bare(b)} (${via[b]})` : bare(b), ring: rv ?? 'missing', back: bv ?? 'missing', min: `${FOCUS_MIN}:1` };
+  for (const b of [...backgrounds, ...optional.filter((o) => get(o) !== undefined)]) {
+    const bv = get(b); const row = { combo, fg: bare(ring), bg: bare(b), label: via[b] ? `${bare(b)} (${via[b]})` : bare(b), ring: rv ?? 'missing', back: bv ?? 'missing', min: `${FOCUS_MIN}` };
     if (!six(rv)) { rows.push({ ...row, value: `${bare(ring)} ${word(rv)}`, pass: false }); continue; }
     if (!six(bv)) { rows.push({ ...row, value: `${bare(b)} ${word(bv)}`, pass: false }); continue; }
     const v = cr(rv, bv); rows.push({ ...row, value: v, pass: v >= FOCUS_MIN });
@@ -45,7 +51,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   // src/tokens/components.css definition, exactly var(--<semantic name>), the way the shipped CSS resolves it.
   const comp = declsOf(fs.readFileSync(new URL('../../src/tokens/components.css', import.meta.url), 'utf8'));
   const target = (k) => String(comp[k] ?? '').match(/^var\((--[\w-]+)\)$/)?.[1];
-  const viaMap = Object.fromEntries(BACKGROUNDS.filter(target).map((k) => [k, target(k)]));
+  const viaMap = Object.fromEntries([...BACKGROUNDS, '--card-bg'].filter(target).map((k) => [k, target(k)]));
   const via = (t, k) => (target(k) ? t[target(k)] : undefined);
   let fail = 0;
   for (const [combo, t] of Object.entries(J.semantic)) for (const r of focusRingRows(combo, (k) => t[k] ?? via(t, k), combo.endsWith('-dark') ? 'dark' : 'light', { via: viaMap })) {
@@ -68,12 +74,12 @@ export function focusRingGate(themes, knownUrl) {
       if (r.pass) fails.push(`${r.combo}: ${r.fg} on ${r.bg} now passes (${shown(r.value)}); remove its scripts/contrast.known.json entry (${k.card})`);
       else if (shown(r.value) !== String(k.value)) fails.push(`${r.combo}: ${r.fg} on ${r.bg} is ${shown(r.value)}, known entry pins ${k.value} (${k.card}); the value changed`);
       else knowns.push(`${r.combo}: ${r.fg} on ${r.bg} ${shown(r.value)} (${k.card}, ${k.owner}: ${k.cause})`);
-    } else if (!r.pass) fails.push(`${r.combo}: ${r.fg} on ${r.bg} ${shown(r.value)}${typeof r.value === 'number' ? ` < ${FOCUS_MIN}` : ''}`);
+    } else if (!r.pass) fails.push(`${r.combo}: ${r.fg} on ${r.bg} ${shown(r.value)}${typeof r.value === 'number' ? ` < ${FOCUS_MIN}` : ''} (WCAG 1.4.11 AA)`);
   }
   for (const k of known) if (!seen.has(key(k.combo, k.bg))) fails.push(`known entry ${k.combo} / ${k.bg} (${k.card}) matches no row; remove it`);
   const result = (r) => { const k = byKey.get(key(r.combo, r.bg)); return `${shown(r.value)} ${r.pass ? 'pass' : k ? `KNOWN (${k.card})` : 'FAIL'}`; };
   const md = ['', '## Focus ring', '',
-    `Generated by \`npm run contrast\` (scripts/lib/focus-ring.mjs) for every registered theme and mode: ${rows.length} rows, ${fails.length} failures, ${knowns.length} known. \`--focus-ring-color\` needs 3:1 against \`--color-bg\` and against \`--tabs-track\` (the Tabs and ThemeSwitcher track, resolved from src/tokens/components.css), WCAG 1.4.11 and 2.4.13. A ring or background token that is missing or doesn't resolve fails. The ring against \`--surface\` and \`--surface-muted\` is in the pair table above.`, '',
+    `Generated by \`npm run contrast\` (scripts/lib/focus-ring.mjs) for every registered theme and mode: ${rows.length} rows, ${fails.length} failures, ${knowns.length} known. \`--focus-ring-color\` needs 3:1 against every background the ring draws on: \`--color-bg\`, \`--surface\` (cards, the dialog and the toast, which read \`--card-bg\`; a \`--card-bg\` row appears if it ever resolves differently), \`--tabs-track\` (the Tabs and ThemeSwitcher track, resolved from src/tokens/components.css) and, only where a theme defines it, \`--hover-fill\` (Addendum 10; absent means no row). Requirement: WCAG 1.4.11 Non-text Contrast (AA). House aim: 2.4.13 Focus Appearance (AAA). A ring or background token that is missing or doesn't resolve fails.`, '',
     '| Theme.mode | Foreground | Background | Ring | Background value | Min | Result |', '|---|---|---|---|---|---|---|',
     ...rows.map((r) => `| ${r.combo} | ${r.fg} | ${r.label} | ${r.ring} | ${r.back} | ${r.min} | ${result(r)} |`)].join('\n');
   return { rows, fails, knowns, md };
