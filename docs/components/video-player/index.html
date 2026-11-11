@@ -456,7 +456,7 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
  // popovers (More, Speed). Caption settings is a modal dialog.
  let openPop=null,opener=null;
  function closePop(ret=true){if(!openPop)return;openPop.hidden=true;$$(`[aria-controls=${openPop.id}]`,P).forEach(b=>b.setAttribute('aria-expanded','false'));if(ret&&opener)opener.focus();openPop=null;chrome()}
- function showPop(p,btn){const same=openPop===p;closePop(false);if(same)return;p.hidden=false;openPop=p;opener=btn;if(btn&&btn.hasAttribute('aria-expanded'))btn.setAttribute('aria-expanded','true');const f=$('input:checked,button:not([hidden]),input,select',p);f&&f.focus();chrome()}
+ function showPop(p,btn){const same=openPop===p;closePop(false);if(same)return;p.hidden=false;openPop=p;opener=btn;if(btn&&btn.hasAttribute('aria-expanded'))btn.setAttribute('aria-expanded','true');const vis=e=>e.getClientRects().length>0;const f=$$('input:checked',p).find(vis)||$$('button:not([hidden]),input,select',p).find(vis);f&&f.focus();chrome()}
  const caps=Object.assign({rate:true,rates:SPEEDS,volume:true,fullscreen:true},o.caps||{});
  const setRate=r=>{if(!caps.rates.includes(r))r=1;S.rate=r;if(v)v.playbackRate=r;el('spl').textContent=spLabel(r);$('[data-act=speed]',P).setAttribute('aria-label','Playback speed, '+spLabel(r));$$(`input[name=sp-${id}],input[name=spm-${id}]`,P).forEach(i=>i.checked=+i.value===r)};
  const stepRate=d=>{if(!caps.rate)return;const R=caps.rates,i=R.indexOf(S.rate);const j=Math.min(R.length-1,Math.max(0,i+d));if(j!==i){setRate(R[j]);save();el('status').textContent='Playback speed, '+spLabel(R[j])}};
@@ -511,7 +511,7 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
  // no caption track of ours: the provider shows captions. Static notes replace Captions and Caption settings; the transcript hides.
  if(caps.providerCaptions){$('[data-act=cc]',P).dataset.cap='off';el('langf').dataset.cap='off';$('[data-act=capset]',P).dataset.cap='off';document.getElementById(id+'-pcc').hidden=false;$('[data-slot=pset]',P).hidden=false;$$('[data-act=tx]',P).forEach(b=>b.dataset.cap='off');const tx=document.getElementById(id+'-tx');if(tx)tx.hidden=true}
  // keyboard hint (player.keys): a sentence drops when its feature is off
- document.getElementById(id+'-hint').textContent=['Keyboard shortcuts: K or Space plays or pauses.','Left and Right arrows skip 5 seconds, and J and L skip 10 seconds.',caps.volume&&'Up and Down arrows change the volume.','Home and End go to the start or the end.','M mutes.','C turns captions on or off.',ad.length&&'D turns audio description on or off.',caps.rate&&caps.rates.length>1&&'The less-than and greater-than keys slow down or speed up.',caps.fullscreen&&'F goes full screen.',o.tx&&!caps.providerCaptions&&'T opens the transcript.','Escape closes a panel.'].filter(Boolean).join(' ');
+ document.getElementById(id+'-hint').textContent=['Keyboard shortcuts: K or Space plays or pauses.','Left and Right arrows skip 5 seconds, and J and L skip 10 seconds.',caps.volume&&'Up and Down arrows change the volume.','Home and End go to the start or the end.','M mutes.',tracks.length&&!caps.providerCaptions&&'C turns captions on or off.',ad.length&&'D turns audio description on or off.',caps.rate&&caps.rates.length>1&&'The less-than and greater-than keys slow down or speed up.',caps.fullscreen&&'F goes full screen.',o.tx&&!caps.providerCaptions&&'T opens the transcript.','Escape closes a panel.'].filter(Boolean).join(' ');
  if(!caps.volume)$('.vol',P).dataset.cap='off';
  if(!caps.fullscreen)$('[data-act=fs]',P).dataset.cap='off';
  if(!caps.rate||caps.rates.length<2){$('[data-act=speed]',P).dataset.cap='off';$('#'+id+'-more [data-speed]').dataset.cap='off'}
@@ -543,7 +543,7 @@ Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch('media/captions-f
  const pad=()=>$$('.gal figure').forEach(f=>{const p=$('.pop:not([hidden]),dialog[open]',f),vp=$('.vp',f);if(!p)return;vp.style.marginTop='';const over=vp.getBoundingClientRect().top-p.getBoundingClientRect().top;if(over>0)vp.style.marginTop=(over+8)+'px'});
  pad();new ResizeObserver(pad).observe(G)});
 const R=document.documentElement,mb=$('#mode');
-function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark);mb.textContent=dark?'Light mode':'Dark mode'}
+function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark)}
 mb.onclick=()=>{const dark=mb.getAttribute('aria-pressed')==='true';R.dataset.mode=dark?'light':'dark';try{localStorage.setItem('jdilig:mode',R.dataset.mode)}catch(e){}syncMode()};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMode);syncMode();
 </script>
