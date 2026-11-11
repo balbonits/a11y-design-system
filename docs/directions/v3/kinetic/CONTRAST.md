@@ -64,3 +64,41 @@
 | kinetic-dark | focus-ring-color | surface | 3 | 11.10 | pass |
 | kinetic-dark | focus-ring-color | surface-muted | 3 | 9.82 | pass |
 | kinetic-dark | accent | surface-muted | 3 | 5.38 | pass |
+
+## Scrim (dialog backdrop)
+
+`--scrim` is cobalt-950 `#06123F` plus alpha (40% light `#06123F66`, 60% dark `#06123F99`), composited over the page. This is per-mode, the same naming as neo (`--palette-scrim` / `--palette-scrim-dark`). Light is 40% so the dialog border (`--border`, cobalt-700 `#1434B8`) against the scrim over `--color-bg` (warm-50 `#FBF8F1`, composite `#999caa`) meets WCAG 1.4.11 at 3.47:1. The opaque white `--surface` against that composite is 2.73:1, below 3:1; the cobalt border is the 1.4.11 cue and stays as it is (Chief of Creatives ruling, 9:45 PM PT 2026-11-10; CA agreed). Dark border against the composite is 8.73:1.
+
+Page colors should dim or stay equal, never lighten, and text-muted under a scrim stays at least 3:1 so it stays recognizable. The dialog is an opaque `--surface`, so its text contrast is the text/surface rows above and never depends on the scrim.
+
+Known results below 3:1 or against the dim rule, listed here and not hidden:
+
+- Light: `--text-muted` (slate-600 `#45507A`) against the 40% composite `#999caa` is 2.87:1, below 3:1. If both the text and the page are composited under the scrim (neo's method), the same pair is 4.20:1.
+- Light: the opaque white `--surface` against `#999caa` is 2.73:1, below 3:1. The border is the 1.4.11 cue.
+- Dark: `--text-muted` (slate-300) composited under the 60% scrim against the composited page is 2.75:1, below 3:1. The uncomposited token against the dark composite is 11.10:1.
+- Dark: `--color-bg` (night-900 `#070F33`) slightly lightens under the 60% scrim (composite `#06113a`).
+
+| Combo | Token or pair | Base | Under scrim | Rule | Ratio |
+|---|---|---|---|---|---|
+| kinetic-light | color-bg | `#FBF8F1` | `#999caa` | dims |  |
+| kinetic-light | surface | `#FFFFFF` | `#9ba0b2` | dims |  |
+| kinetic-light | surface-muted | `#F3EEE2` | `#9496a1` | dims |  |
+| kinetic-light | text | `#0A1B5C` | `#081750` | dims |  |
+| kinetic-light | text-muted | `#45507A` | `#2c3762` | dims |  |
+| kinetic-light | accent | `#C21807` | `#77161d` | dims |  |
+| kinetic-light | border | `#1434B8` | `#0e2688` | dims |  |
+| kinetic-light | border on color-bg (1.4.11, opaque border) | `#1434B8` | `#999caa` | 3:1 | 3.47 |
+| kinetic-light | surface on color-bg (opaque surface) | `#FFFFFF` | `#999caa` | reported | 2.73 (below 3:1) |
+| kinetic-light | text-muted against composite | `#45507A` | `#999caa` | 3:1 | 2.87 FAIL |
+| kinetic-light | text-muted under scrim (both composited) | `#2c3762` | `#999caa` | 3:1 | 4.20 |
+| kinetic-dark | color-bg | `#070F33` | `#06113a` | LIGHTENS |  |
+| kinetic-dark | surface | `#0D1844` | `#091441` | dims |  |
+| kinetic-dark | surface-muted | `#152255` | `#0c1848` | dims |  |
+| kinetic-dark | text | `#FBF8F1` | `#686e86` | dims |  |
+| kinetic-dark | text-muted | `#C3C9E0` | `#525b7f` | dims |  |
+| kinetic-dark | accent | `#FF6B57` | `#6a3649` | dims |  |
+| kinetic-dark | border | `#9AB0FF` | `#41518c` | dims |  |
+| kinetic-dark | border on color-bg (1.4.11, opaque border) | `#9AB0FF` | `#06113a` | 3:1 | 8.73 |
+| kinetic-dark | surface on color-bg (opaque surface) | `#0D1844` | `#06113a` | reported | 1.07 (below 3:1) |
+| kinetic-dark | text-muted against composite | `#C3C9E0` | `#06113a` | 3:1 | 11.10 |
+| kinetic-dark | text-muted under scrim (both composited) | `#525b7f` | `#06113a` | 3:1 | 2.75 FAIL |
