@@ -1,6 +1,6 @@
 ---
 date: 2026-11-11
-pr:
+pr: 61
 card: DEVLOG-FRAGMENTS
 title: Devlog fragments instead of PROGRESS.md edits (PROC-8)
 ---
