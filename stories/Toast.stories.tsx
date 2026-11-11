@@ -27,10 +27,10 @@ const meta: Meta<typeof Trigger> = {
         component: doc({
           use: ['Confirm something finished: saved, copied, sent.', 'Report a background error that is also shown where it happened.'],
           avoid: ['It is the only place an error appears. Always show the error next to the field or item too.', 'People must act on it. Use a Modal or inline message.'],
-          anatomy: ['Viewport fixed bottom right', 'Polite live region (`role="status"`) for info and success', 'Assertive live region (`role="alert"`) for errors', 'Toast: colored edge, title, message, optional action button (e.g. Undo), dismiss button', 'At 480px and below: only the newest toast, plus a "+N more" button (`aria-expanded`) that shows the whole stack'],
+          anatomy: ['Viewport fixed bottom right', 'Polite live region (`role="status"`) for info and success', 'Assertive live region (`role="alert"`) for errors', 'Toast: colored edge, title, message, optional action button (e.g. Undo), dismiss button', 'Below 640px: only the newest toast, plus a "Show all notifications (N)" button whose name stays the same while `aria-expanded` toggles the whole stack'],
           variants: '`info`, `success`, `error`. Wrap the app in `<ToastProvider>` and call `useToast()`.',
           states: 'Entering (fades up; none under reduced motion), shown, paused (hover or focus stops the timer), sticky (errors and toasts with an action stay until dismissed), dismissed.',
-          keyboard: [['Tab', 'Reaches the dismiss button, and the "+N more" button below 640px'], ['Enter / Space', 'Dismisses the toast']],
+          keyboard: [['Tab', 'Reaches the dismiss button, and the "Show all notifications (N)" button below 640px'], ['Enter / Space', 'Dismisses the toast']],
           a11y: [
             ['4.1.3 Status Messages', 'Info and success go to `role="status"`; errors go to `role="alert"`. The regions stay mounted so additions are announced.'],
             ['2.2.1 Timing Adjustable', 'Info and success toasts auto-dismiss (5s by default) and pause while hovered or focused. Error toasts and toasts with an action (e.g. Undo) never auto-dismiss.'],

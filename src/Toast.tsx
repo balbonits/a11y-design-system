@@ -51,11 +51,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={show}>
       {children}
-      {/* At narrow widths (CSS, below 640px, per Chief Architect) only the newest toast shows, with a "+N more" control, so the stack can't cover the page. */}
+      {/* At narrow widths (CSS, below 640px, per Chief Architect) only the newest toast shows, with a "Show all notifications (N)" control (stable name; aria-expanded carries the state), so the stack can't cover the page. */}
       <div ref={viewport} className="em-toast-viewport" data-expanded={expanded || undefined} data-count={items.length}>
         {items.length > 1 && (
           <Button variant="secondary" size="sm" className="em-toast-more" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
-            {expanded ? 'Show newest only' : `+${items.length - 1} more`}
+            {`Show all notifications (${items.length})`}
           </Button>
         )}
         {/* Live regions stay mounted so screen readers announce what is added to them. */}

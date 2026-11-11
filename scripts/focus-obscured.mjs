@@ -27,7 +27,7 @@ for (const width of [320, 375, 768, 1440]) {
     await page.getByRole('button', { name: /show error toast/i }).click();
     await page.waitForFunction(() => document.querySelectorAll('.em-toast').length === 3);
     if (expand) {
-      await page.getByRole('button', { name: /more$/ }).click();
+      await page.getByRole('button', { name: /^Show all notifications/ }).click();
       // Reduced motion (the expanded runs emulate it): expanding the stack starts no animation.
       const anims = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length);
       if (anims) { hidden++; console.log(`  FAIL ${width}px ${theme} ${mode}: ${anims} animation(s) running under reduced motion`); }
