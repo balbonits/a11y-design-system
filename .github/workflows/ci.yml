@@ -19,6 +19,19 @@ jobs:
       - run: npm run contrast
       - name: Brand contrast (STORYBOOK-BRAND HANDOFF 7.4)
         run: node docs/storybook-brand/contrast.mjs
+      - name: Shipped manager files match the brand mock (STORYBOOK-BRAND HANDOFF, mock/ is the exact file to ship)
+        run: |
+          cmp .storybook/manager.ts docs/storybook-brand/mock/manager.ts
+          cmp .storybook/manager-head.html docs/storybook-brand/mock/manager-head.html
+      - name: Manager/mock match negative control (a one-byte drift must fail cmp)
+        run: |
+          t=$(mktemp -d)
+          for f in manager.ts manager-head.html; do
+            cp ".storybook/$f" "$t/$f"
+            printf ' ' >> "$t/$f"
+            if cmp -s "$t/$f" "docs/storybook-brand/mock/$f"; then echo "::error::cmp missed a one-byte drift in $f"; exit 1; fi
+            echo "negative control ok: one-byte drift in $f is caught"
+          done
       - run: npm test
       - run: npm run build
       - run: npm run check:core-bundle
