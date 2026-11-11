@@ -101,6 +101,14 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - Switch component (role="switch" checkbox, 44x24 track in a --target-min row, label and hint, forced-colors and reduced-motion rules) with stories for every state and a unit test.
 - Gates: tokens and lint:colors 0; contrast 124 pairs and 8 assertions across 2 themes, 0 failures; vitest 15/15; axe 362 runs, 0 failing; mobile 468 runs (13 docs pages x 9 widths x 4 theme/mode combos), 0 failing.
 
+## 2026-11-10 7:24 PM PT: R-3 motion primitives (stacked on v0.3.1)
+- Motion now lives in Ember only (ARCH-REVIEW R-3). New exports: `useReducedMotion()` (live, SSR-safe), `MOTION_TOKENS`, `Marquee`, `Parallax` and `AnimatedIcon`, each with a Motion story page in the fixed docs order.
+- `Marquee`: a labelled region with a visible Pause/Play button before the content (the Button `sm` size, `--target-min` hit area), pauses on hover and focus, the looped copy is `aria-hidden` and `inert`, the loop is `--duration-ticker` (neo 28s, kinetic 36s), and under reduced motion it starts paused and moves only when the user presses Play (neo and kinetic H-6).
+- `Parallax`: decorative only (`aria-hidden`, `inert`), transform only, offset times the theme's `--parallax-scale` (neo 0.08, kinetic 0), and no scroll listener under reduced motion.
+- `AnimatedIcon`: CSS spin, pulse or nudge, 3 cycles clamped to 1 to 1.6s each, so it stops by 4.8s and never cycles more than once a second; `aria-hidden` unless labelled; still under reduced motion.
+- The busy spinner now runs on `--duration-slow` instead of a literal 700ms.
+- New gate `npm run lint:motion` (in CI): `@keyframes` only in `src/ember.css`, and every animation or transition there takes its timing from a token. Apps run the same script on their own source dirs (the tracker retrofit).
+
 ## 2026-11-10 7:46 PM PT: kinetic fonts vendored (CTE ruling)
 - Reverted 48d72ac (the three `@fontsource` devDependencies) with a new commit. Kinetic's fonts are now latin-subset woff2 files in `.storybook/fonts` (Bricolage Grotesque 300/700/800, Instrument Sans 400/500/600, IBM Plex Mono 400), each family's OFL.txt alongside, loaded by `@font-face` with `font-display: swap`. neo's fontsource setup is unchanged, and the Ember package still ships no fonts. Version stays 0.3.1.
 

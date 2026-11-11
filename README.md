@@ -15,6 +15,7 @@ A small, accessible React design system: tokens for light and dark themes, eight
 - `ThemeSwitcher`: native radio groups (Theme, Color mode) that persist to `jdilig:theme` and `jdilig:mode`. It reads the registry, takes an app's own themes through `themes`, and hides the Theme group when only one theme is registered. Put `PREPAINT_SCRIPT` (or `prepaintScript(themes)`) inline in `<head>` so there's no flash of the wrong theme. neo uses Archivo Black, Archivo and JetBrains Mono; load them in your app (Storybook uses `@fontsource/archivo-black`, `@fontsource/archivo` and `@fontsource/jetbrains-mono`).
 - Fonts are the app's to load: neo uses Archivo Black, Archivo and JetBrains Mono; kinetic uses Bricolage Grotesque (300, 700, 800), Instrument Sans (400, 500, 600) and IBM Plex Mono (400). Storybook loads neo's from `@fontsource` and kinetic's from latin woff2 files vendored in `.storybook/fonts` (OFL 1.1, licenses alongside). The Ember package ships no fonts.
 - Components: Button, Input, Select, Checkbox (and CheckboxGroup), Switch, Modal, Tabs, Table, Toast, ThemeSwitcher. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
+- Motion lives in Ember only (R-3): `useReducedMotion()`, `Marquee` (a ticker with a Pause/Play button first, paused on hover and focus, starts paused under reduced motion), `Parallax` (decorative, transform only, scaled by `--parallax-scale`) and `AnimatedIcon` (stops by 4.8s, never more than one cycle a second). Apps add no `@keyframes` of their own; `npm run lint:motion` enforces it.
 - Docs pages in a fixed order: usage, anatomy, variants, states, keyboard, accessibility notes, code.
 
 ## Accessibility checks
@@ -46,6 +47,7 @@ The package exports `ember-ui` (ESM and `.d.ts`), `ember-ui/styles.css` and `emb
 | `npm run typecheck` / `lint` / `test` | TypeScript, ESLint, Vitest |
 | `npm run tokens` | Checks every registered theme against the contract, builds `src/tokens/themes.css` and `src/tokens.json` |
 | `npm run lint:colors` | Token lint: raw colors, literal radius/border width/box-shadow/outline in component CSS, non-`var()` component tokens, retired token names |
+| `npm run lint:motion` | `@keyframes` only in `src/ember.css`, and every animation or transition there timed by a token. Pass source dirs to run it on an app |
 | `npm run contrast` | Contrast and theme-contract gate for every registered theme; writes `docs/CONTRAST.md` |
 | `npm run test:a11y` | axe sweep of the built Storybook (every theme and mode, OS dark, reduced motion) |
 | `npm run test:mobile` | Docs pages at 320 to 1440px: overflow, `--target-min` hit areas, axe, 1.4.12 text spacing |

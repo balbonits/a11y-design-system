@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { Switch, Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher, THEMES, THEME_REGISTRY, DEFAULT_THEME, PREPAINT_SCRIPT, prepaintScript } from './index';
+import { Marquee, Parallax, AnimatedIcon, useReducedMotion, MOTION_TOKENS, Switch, Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher, THEMES, THEME_REGISTRY, DEFAULT_THEME, PREPAINT_SCRIPT, prepaintScript } from './index';
 
 function ModalDemo() {
   const [open, setOpen] = useState(false);
@@ -258,5 +258,70 @@ describe('Switch', () => {
     expect(sw).toBeChecked();
     await u.click(screen.getByText('Email me'));
     expect(sw).not.toBeChecked();
+  });
+});
+
+function mockReducedMotion(reduce: boolean) {
+  const listeners = new Set<() => void>();
+  const mq = { matches: reduce, media: '(prefers-reduced-motion: reduce)', addEventListener: (_: string, f: () => void) => listeners.add(f), removeEventListener: (_: string, f: () => void) => listeners.delete(f) };
+  const orig = globalThis.matchMedia;
+  globalThis.matchMedia = (() => mq) as unknown as typeof matchMedia;
+  return { set(v: boolean) { mq.matches = v; listeners.forEach((f) => f()); }, restore() { globalThis.matchMedia = orig; } };
+}
+
+describe('Motion primitives (R-3)', () => {
+  it('Marquee: a labelled region with the Pause button before the content and the loop copy hidden', async () => {
+    const m = mockReducedMotion(false);
+    render(<Marquee label="Release notes"><span>v0.3.1 ships Switch</span></Marquee>);
+    const region = screen.getByRole('region', { name: 'Release notes' });
+    const btn = screen.getByRole('button', { name: 'Pause Release notes' });
+    expect(region.firstElementChild).toBe(btn);
+    expect(screen.getAllByText('v0.3.1 ships Switch')).toHaveLength(2);
+    const groups = region.querySelectorAll('.em-marquee-group');
+    expect(groups[0]).not.toHaveAttribute('aria-hidden');
+    expect(groups[1]).toHaveAttribute('aria-hidden', 'true');
+    expect(groups[1]).toHaveAttribute('inert');
+    await userEvent.click(btn);
+    expect(screen.getByRole('button', { name: 'Play Release notes' })).toHaveTextContent('Play');
+    expect(region).toHaveClass('em-marquee--paused');
+    m.restore();
+  });
+
+  it('Marquee: starts paused under reduced motion and plays only when asked', async () => {
+    const m = mockReducedMotion(true);
+    render(<Marquee label="Ticker"><span>item</span></Marquee>);
+    const region = screen.getByRole('region', { name: 'Ticker' });
+    expect(region).toHaveClass('em-marquee--paused');
+    await userEvent.click(screen.getByRole('button', { name: 'Play Ticker' }));
+    expect(region).toHaveClass('em-marquee--playing');
+    expect(region).not.toHaveClass('em-marquee--paused');
+    m.restore();
+  });
+
+  it('useReducedMotion follows the media query live', () => {
+    const m = mockReducedMotion(false);
+    function Probe() { return <p>{useReducedMotion() ? 'reduce' : 'full'}</p>; }
+    render(<Probe />);
+    expect(screen.getByText('full')).toBeInTheDocument();
+    act(() => m.set(true));
+    expect(screen.getByText('reduce')).toBeInTheDocument();
+    m.restore();
+    expect(MOTION_TOKENS).toContain('--duration-ticker');
+  });
+
+  it('Parallax is decorative: aria-hidden and inert', () => {
+    const { container } = render(<Parallax><svg /></Parallax>);
+    const el = container.querySelector('.em-parallax')!;
+    expect(el).toHaveAttribute('aria-hidden', 'true');
+    expect(el).toHaveAttribute('inert');
+  });
+
+  it('AnimatedIcon is hidden when decorative and an image when labelled', () => {
+    const { container } = render(<><AnimatedIcon motion="spin"><svg /></AnimatedIcon><AnimatedIcon label="Synced"><svg /></AnimatedIcon><AnimatedIcon active={false}><svg /></AnimatedIcon></>);
+    const icons = container.querySelectorAll('.em-icon');
+    expect(icons[0]).toHaveAttribute('aria-hidden', 'true');
+    expect(icons[0]).toHaveClass('em-icon--spin');
+    expect(screen.getByRole('img', { name: 'Synced' })).toHaveClass('em-icon--pulse');
+    expect(icons[2].className).toBe('em-icon');
   });
 });
