@@ -24,7 +24,7 @@ The layout, states, keyboard, copy and targets in H-1 to H-7 are the same in eve
 | Pills: big Play, status, chips (`--radius-full`) | 999px | 2px, so the big Play is a near-square block | 999px |
 | Buttons and fields (`--radius-md`) | 12px | 2px | 999px (pill buttons and search field) |
 | Elevation (`--shadow-raised` / `-press`) | 4px hard offset / 1px | none / none | soft 0 2px 6px / none |
-| Borders (`--border-width` / `-strong`) | 2px / 2.5px (3px after [PR #41](https://github.com/balbonits/a11y-design-system/pull/41)) | 2px / 3px | 1.5px / 2.5px (1px / 2px after the dusk integer PR) |
+| Borders (`--border-width` / `-strong`) | 2px / 2.5px (3px after [PR #41](https://github.com/balbonits/a11y-design-system/pull/41)) | 2px / 3px | 1px / 2px (#44) |
 | Error and ended dim (`--scrim`, light / dark) | `#11111173` / `#1111118c` | `#06123F66` / `#00000080` | `#1B0B1F80` / `#1B0B1F80` |
 | Motion (`--duration-fast` / `-base`, `--ease-press`) | 120 / 220ms, overshoot | 140 / 260ms, no overshoot | 200 / 420ms, slow ease |
 | `--tilt` / `--lift` on hover | -1.5deg / -3px | 0 / 0 | 0 / -2px |
@@ -69,7 +69,7 @@ The ring-against-fill pair applies only where the ring offset is 0, and that nev
 - **There is no offset-0 or inverted ring color.** Per CA, these rules are enforced, not advisory: lint or the contrast test fails any kinetic Button whose `--focus-ring-offset` resolves under 2px, or whose focus ring is drawn inset (`outline-offset` at or below 0, or an inset `box-shadow` used as the focus indicator). FSD builds that check; it's a DONE criterion below.
 
 **Dusk hover ring** (Chief of Creatives' ruling, CA signed, 2026-11-10). `--shadow-overlay` can't be the only hover cue, and no dusk hover fill reaches 3:1 against its resting fill (light 1.11 to 1.33:1, dark 1.11 to 1.27:1), so dusk hover adds a ring:
-- **How it's drawn:** an inset `box-shadow`, `inset 0 0 0 var(--button-hover-border-width) <color>`, with `--button-hover-border-width: var(--border-width-strong)`. It's 2px once #44 lands (2.5px on this branch until then). It's never an `outline`, so it can't collide with the focus outline, and it never changes `border-width`, so there's no layout shift. It's listed before `--shadow-overlay` in the same `box-shadow`.
+- **How it's drawn:** an inset `box-shadow`, `inset 0 0 0 var(--button-hover-border-width) <color>`, with `--button-hover-border-width: var(--border-width-strong)`. It's 2px (#44). It's never an `outline`, so it can't collide with the focus outline, and it never changes `border-width`, so there's no layout shift. It's listed before `--shadow-overlay` in the same `box-shadow`.
 - **Color by variant:** secondary and ghost use `--accent`. Primary uses `--color-bg` against `--accent-hover`, and danger uses `--color-bg` against `--danger-hover`. An `--accent` ring would vanish on primary's accent fill.
 - **Reduced motion:** the ring stays, because it's a state cue, not motion. Only lift goes to 0.
 - **Forced colors:** box-shadow isn't drawn, so on hover the border takes the system color (`border-color: Highlight`), at the same width.
@@ -358,7 +358,7 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
   - Media: PR #38 at `c42941e`, `stories/media/sintel/` (`sintel-excerpt.mp4`, captions, AD and transcript; French captions follow from FSD).
   - Ember v0.3.1: PR #27 at `d963cbd`, for tokens and the per-theme scrim.
   - Copy: `R4-PLAYER-COPY.md` (final), at `/workspace/ux-projects/copy/R4-PLAYER-COPY.md`.
-  - Themes (this PR, #43): neo, kinetic and dusk tokens from `docs/directions/v3/<theme>/tokens.css`. Dusk's 1px/2px borders come from #44 (`design/dusk-integer-borders`, open at `1f86410`); until it merges, dusk's `--border-width-strong` is 2.5px. The new per-theme `--press-offset` and the Button component tokens (H-0, Button motion) go into Ember with FSD's token PR.
+  - Themes (this PR, #43): neo, kinetic and dusk tokens from `docs/directions/v3/<theme>/tokens.css`. Dusk's 1px/2px borders come from #44 (merged, `1f86410`). The new per-theme `--press-offset` and the Button component tokens (H-0, Button motion) go into Ember with FSD's token PR.
 - **Hard DONE, with numbers:**
   - axe: 0 violations at every impact, not just serious and critical.
   - Every number below holds in each theme (neo, kinetic, dusk), not only neo.
