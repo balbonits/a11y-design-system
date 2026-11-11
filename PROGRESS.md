@@ -88,3 +88,7 @@ John asked for switchable themes with the components shown in each. Chief Archit
 
 ## 2026-11-10 7:46 PM PT: kinetic fonts vendored (CTE ruling)
 - Reverted 48d72ac (the three `@fontsource` devDependencies) with a new commit. Kinetic's fonts are now latin-subset woff2 files in `.storybook/fonts` (Bricolage Grotesque 300/700/800, Instrument Sans 400/500/600, IBM Plex Mono 400), each family's OFL.txt alongside, loaded by `@font-face` with `font-display: swap`. neo's fontsource setup is unchanged, and the Ember package still ships no fonts. Version stays 0.3.1.
+
+## 2026-11-10 7:47 PM PT: Chief Architect's focus-ring rulings on v0.3.1
+- Ruling 1 accepted with its condition: `npm run contrast` now fails a negative (or non-length) `--focus-ring-offset`, prints the offset per theme, and docs/CONTRAST.md states the rule. Focus ring vs `--color-bg`, `--surface` (cards and raised controls) and `--surface-muted` is required at 3:1 in light and dark at any offset; focus ring vs `--border` is required only at offset 0. Negative-tested with kinetic set to -2px.
+- Ruling 2 accepted as built: kinetic's `--hue-shift: 0deg`, with `--parallax-scale` and `--hue-shift` at 0 in the reduced block.
