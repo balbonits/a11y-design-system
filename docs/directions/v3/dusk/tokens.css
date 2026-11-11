@@ -142,5 +142,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="dusk"] {
-  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --hue-shift: 0;
+  --tilt: 0deg; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --hue-shift: 0;
 } }

@@ -46,6 +46,9 @@ nav.views a:hover{border-bottom-color:var(--border)}
 .btn.text:hover{background:none;color:var(--accent)}
 .btn .arr{transition:transform var(--duration-base) var(--ease-standard)}.btn:hover .arr{transform:translateX(4px)}
 #mode{min-height:44px;padding:.4rem .9rem;font-size:.92rem}
+.btn:active{transform:translateY(1px)}
+.btn.primary:active{background:var(--accent-hover);border-color:var(--accent-hover)}
+@media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
 /* ticker: the one solid band */
 .ticker{background:var(--highlight);color:var(--highlight-contrast);display:flex;align-items:center;overflow:hidden;--focus-ring-color:var(--highlight-contrast)}
 .ticker .clip{overflow:hidden;flex:1;display:flex;min-width:0}
@@ -145,12 +148,12 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
  <nav class="views" aria-label="Prototype screens">
   <a href="#components">Components</a><a href="#tracker">Job tracker</a><a href="#dashboard">Dev dashboard</a><a href="#tokens">Tokens</a>
  </nav>
- <button class="btn" id="mode" type="button" aria-pressed="false"><span class="lbl">Dark mode</span></button>
+ <button class="btn" id="mode" type="button"><span class="lbl">Dark mode</span></button>
 </div></header>
 <div class="ticker" id="ticker" role="region" aria-label="Release notes ticker">
  <div class="clip"><div class="track" aria-hidden="true"><span>Accessible by default / Keyboard first / AA contrast in light and dark / Reduced motion respected / Mobile first /</span><span>Accessible by default / Keyboard first / AA contrast in light and dark / Reduced motion respected / Mobile first /</span></div>
  <span class="sr">Accessible by default. Keyboard first. AA contrast in light and dark. Reduced motion respected. Mobile first.</span></div>
- <button type="button" id="tickbtn" aria-pressed="false">Pause ticker</button>
+ <button type="button" id="tickbtn">Pause ticker</button>
 </div>
 <main id="main" class="wrap" tabindex="-1">
 
@@ -218,7 +221,7 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
   <div class="stage"><h2>Applied <span class="n">02 / 1</span></h2><article class="job"><div class="mono muted">Acme Corp (fictional)</div><h3>Front-end Engineer</h3><div class="muted">Applied 6 days ago</div><div class="remind">Follow up with the recruiter</div><button class="btn text" type="button">Move or edit <span class="sr">Front-end Engineer</span></button></article></div>
   <div class="stage"><h2>Interviewing <span class="n">03 / 1</span></h2><article class="job"><div class="mono muted">Globex Inc. (fictional)</div><h3>Senior UI Developer</h3><div class="muted">Interviewing for 3 days</div><div class="remind">Send a thank-you note</div><button class="btn text" type="button">Move or edit <span class="sr">Senior UI Developer</span></button></article></div>
   <div class="stage"><h2>Offer <span class="n">04 / 1</span></h2><article class="job"><div class="mono muted">Hooli Labs (fictional)</div><h3>Accessibility Engineer</h3><div class="muted">Offer received 2 days ago</div><div class="remind">Reply to the offer</div><button class="btn text" type="button">Move or edit <span class="sr">Accessibility Engineer</span></button></article></div>
-  <div class="stage"><h2>Closed <span class="n">05 / 0</span></h2><p class="muted">Nothing here yet.</p></div>
+  <div class="stage"><h2>Closed <span class="n">05 / 0</span></h2><p class="muted">No roles in Closed.</p></div>
  </div>
 </section>
 
@@ -246,7 +249,7 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 
 <section id="v-tokens" aria-labelledby="h-tok" hidden>
  <div class="trhead"><div><p class="mono muted" style="margin:0 0 .6rem">Semantic colors, current mode</p><h1 id="h-tok" class="kin" style="font-size:clamp(2.8rem,11vw,7rem)">Tokens</h1></div></div>
- <p class="muted" style="max-width:60ch">The full sheet is in <a href="TOKENS.md">TOKENS.md</a> and the contrast results are in <a href="CONTRAST.md">CONTRAST.md</a>.</p>
+ <p class="muted doclinks" style="max-width:60ch">The full sheet is in <a href="TOKENS.md">TOKENS.md</a> and the contrast results are in <a href="CONTRAST.md">CONTRAST.md</a>.</p>
  <div class="sw" id="sw" style="margin-top:1.5rem"></div>
 </section>
 </main>

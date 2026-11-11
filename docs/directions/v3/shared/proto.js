@@ -5,7 +5,7 @@ const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const R=document.documentElement,mb=$('#mode'),RM=matchMedia('(prefers-reduced-motion: reduce)');
 window.V3={$,$$,RM};
 function isDark(){return R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
-function syncMode(){const d=isDark();mb.setAttribute('aria-pressed',d);mb.querySelector('.lbl').textContent=d?'Light mode':'Dark mode';drawSw()}
+function syncMode(){const d=isDark();mb.querySelector('.lbl').textContent=d?'Light mode':'Dark mode';drawSw()}
 mb.onclick=()=>{const d=isDark();R.dataset.mode=d?'light':'dark';try{localStorage.setItem('jdilig:mode',R.dataset.mode)}catch(e){}syncMode();toast((d?'Light':'Dark')+' mode on')};
 const views=['components','tracker','dashboard','tokens'];
 function route(){const id=views.includes(location.hash.slice(1))?location.hash.slice(1):'components';
@@ -15,7 +15,7 @@ addEventListener('hashchange',()=>{route();$('#main').focus({preventScroll:true}
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.1});
 function reveal(){$$('.reveal:not(.in)').forEach(el=>io.observe(el))}
 const tk=$('#ticker'),tb=$('#tickbtn');
-if(tk){const set=p=>{tk.toggleAttribute('data-paused',p);tb.textContent=p?'Play ticker':'Pause ticker';tb.setAttribute('aria-pressed',p)};
+if(tk){const set=p=>{tk.toggleAttribute('data-paused',p);tb.textContent=p?'Play ticker':'Pause ticker'};
  tb.onclick=()=>set(!tk.hasAttribute('data-paused'));if(RM.matches)set(true)}
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),4000)}
 window.V3.toast=toast;

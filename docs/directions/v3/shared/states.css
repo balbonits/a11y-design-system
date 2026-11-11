@@ -21,3 +21,5 @@
 .loaderr{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center}
 .loaderr .err{margin:0}
 @media (prefers-reduced-motion:reduce){.spin{animation:none;border-style:dotted;border-right-color:currentColor}}
+/* Prose links that stand alone in a sentence still get a 44px hit area (--target-min), as in neo. */
+.doclinks a{display:inline-flex;align-items:center;min-height:var(--target-min);padding-inline:.25rem}
