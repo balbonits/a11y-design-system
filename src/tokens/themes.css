@@ -161,7 +161,8 @@
    Copied as-is, plus --hue-shift: 0 (a unitless 0..1 multiplier, CA 8:10 PM ruling; a registered extra with its neutral default, ARCH-REVIEW Addendum 7 (a)) and
    --parallax-scale/--hue-shift in the reduced-motion block. Register it in registry.json; no component code changes. */
 [data-theme="kinetic"] {
-  --palette-scrim: #06123F99;
+  --palette-scrim: #06123F66;
+  --palette-scrim-dark: #00000080;
   --palette-warm-50: #FBF8F1;
   --palette-warm-100: #F3EEE2;
   --palette-warm-200: #E8E1D0;
@@ -262,7 +263,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { [data-theme="kinetic"]:not([data-mode]) {
-  --scrim: var(--palette-scrim);
+  --scrim: var(--palette-scrim-dark);
   --color-bg: var(--palette-night-900);
   --surface: var(--palette-night-800);
   --surface-muted: var(--palette-night-700);
@@ -286,7 +287,7 @@
   color-scheme: dark;
 } }
 [data-theme="kinetic"][data-mode="dark"] {
-  --scrim: var(--palette-scrim);
+  --scrim: var(--palette-scrim-dark);
   --color-bg: var(--palette-night-900);
   --surface: var(--palette-night-800);
   --surface-muted: var(--palette-night-700);
