@@ -3,6 +3,7 @@ WEBVTT
 NOTE
 Sintel (excerpt 01:45-02:37)
 Machine-generated captions: faster-whisper 1.2.1, model small.en, CPU float32.
+Text of 4 cues corrected by hand: see corrections.json.
 Sintel (c) copyright Blender Foundation | durian.blender.org | CC BY 3.0
 
 1
@@ -16,7 +17,7 @@ It has shed much innocent blood.
 3
 00:00:12.768 --> 00:00:15.440
 You're a fool for traveling
-alone so completely unprepared.
+alone, so completely unprepared.
 
 4
 00:00:16.416 --> 00:00:18.140
@@ -28,8 +29,8 @@ Thank you.
 
 6
 00:00:22.880 --> 00:00:26.480
-So, what brings you to the
-land of the gatekeepers?
+So... what brings you to
+the land of the gatekeepers?
 
 7
 00:00:29.320 --> 00:00:31.560
@@ -37,11 +38,11 @@ I'm searching for someone.
 
 8
 00:00:32.704 --> 00:00:33.920
-Someone very dear.
+Someone very dear?
 
 9
 00:00:34.860 --> 00:00:35.880
-A kindred spirit.
+A kindred spirit?
 
 10
 00:00:38.000 --> 00:00:39.180

@@ -15,8 +15,9 @@ PY="$VENV/bin/python"
 
 "$PY" transcribe.py "$S/sintel-excerpt.mp4" --out-dir "$S" --model small.en \
   --title "Sintel (excerpt 01:45-02:37)" \
-  --credit "Sintel (c) copyright Blender Foundation | durian.blender.org | CC BY 3.0"
-"$PY" validate_vtt.py "$S/captions.vtt" "$S/ad.vtt"
+  --credit "Sintel (c) copyright Blender Foundation | durian.blender.org | CC BY 3.0" \
+  --corrections "$S/corrections.json"
+"$PY" validate_vtt.py "$S/captions.vtt" "$S/ad.vtt" "$S/transcript.vtt"
 "$PY" -m unittest discover -s tests
 "$PY" spotcheck.py "$S/sintel-excerpt.mp4" "$S/captions.vtt" \
   --ref "$S/reference/sintel_fr.srt" --ref-offset -105
