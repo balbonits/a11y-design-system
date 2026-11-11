@@ -64,13 +64,15 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
   const YT = await loadYouTubeApi();
   const em = new Emitter();
   let timer: ReturnType<typeof setInterval> | undefined;
+  // The 250ms tick is the throttle for bufferedchange (YouTube has no progress event).
   let loaded = -1;
+  let buffering = false;
   const tick = () => {
     em.emit('timeupdate');
     const f = yt.getVideoLoadedFraction();
     if (f !== loaded) {
       loaded = f;
-      em.emit('progress');
+      em.emit('bufferedchange');
     }
   };
   let yt!: YTPlayer;
@@ -95,11 +97,16 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
         },
         onStateChange: (e: { data: number }) => {
           clearInterval(timer);
+          if (buffering && e.data !== BUFFERING) {
+            buffering = false;
+            em.emit('resumed');
+          }
           if (e.data === PLAYING) {
             timer = setInterval(tick, 250);
             em.emit('play');
           } else if (e.data === BUFFERING) {
             timer = setInterval(tick, 250);
+            buffering = true;
             em.emit('waiting');
           } else if (e.data === ENDED) em.emit('ended');
           else em.emit('pause');
@@ -113,7 +120,7 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
   const rates = RATES.filter((r) => ytRates.has(r));
   return {
     kind: 'youtube',
-    capabilities: { rate: rates.length > 1, rates, volume: true, fullscreen: canFullscreen(), buffered: true, providerCaptions: Boolean(providerCaptions) },
+    capabilities: { rate: rates.length > 1, rates, volume: true, fullscreen: canFullscreen(), canReportBuffering: true, canReportBufferedRanges: false, providerCaptions: Boolean(providerCaptions) },
     play: async () => yt.playVideo(),
     pause: async () => yt.pauseVideo(),
     seek: async (s) => {
@@ -136,7 +143,7 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
       em.emit('volumechange');
     },
     isMuted: () => yt.isMuted(),
-    getBuffered: () => Math.min(1, Math.max(0, yt.getVideoLoadedFraction() || 0)),
+    getBuffered: () => ({ fraction: Math.min(1, Math.max(0, yt.getVideoLoadedFraction() || 0)), ranges: null }),
     on: (e, fn) => em.on(e, fn),
     destroy: () => {
       clearInterval(timer);

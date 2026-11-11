@@ -103,6 +103,24 @@ describe('createDescriptions', () => {
     expect(text.at(-1)).toBe('');
     d.destroy();
   });
+  it('switches the AD track in place: keeps the mode, re-syncs the text, voices in the new language', () => {
+    const p = fakePlayer();
+    const text: string[] = [];
+    const langs: (string | undefined)[] = [];
+    const s: SpeechLike = { speak: ({ lang }) => void langs.push(lang), cancel: vi.fn() };
+    const d = createDescriptions({ player: p, cues: CUES, lang: 'en', onText: (x) => text.push(x), speech: s });
+    d.setMode('voice');
+    p.at(1.5);
+    expect(langs).toEqual(['en']);
+    d.setTrack([{ id: 'es1', start: 1, end: 3, text: 'uno' }], 'es');
+    expect(d.mode).toBe('voice');
+    expect(text.slice(-2)).toEqual(['', 'uno']);
+    expect(langs).toEqual(['en', 'es']);
+    d.setMode('off');
+    d.setTrack(CUES, 'en');
+    expect(text.at(-1)).toBe('');
+    d.destroy();
+  });
   it('falls back to text when voicing is unavailable', () => {
     const d = createDescriptions({ player: fakePlayer(), cues: CUES, onText: () => {} });
     expect(d.canVoice).toBe(false);

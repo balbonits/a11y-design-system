@@ -1,7 +1,7 @@
 // Native <video> adapter: the default and the first choice for every source it can play.
-import { Emitter, RATES, canFullscreen, canSetVolume, bufferedFraction, type Player, type PlayerEvent } from '../player';
+import { Emitter, RATES, canFullscreen, canSetVolume, bufferedFraction, rangesOf, throttle, type Player, type PlayerEvent } from '../player';
 
-const EVENTS: PlayerEvent[] = ['play', 'pause', 'timeupdate', 'durationchange', 'ended', 'ratechange', 'volumechange', 'error', 'waiting', 'progress'];
+const EVENTS: PlayerEvent[] = ['play', 'pause', 'timeupdate', 'durationchange', 'ended', 'ratechange', 'volumechange', 'error'];
 
 export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hls' = 'native'): Player {
   const em = new Emitter();
@@ -12,14 +12,28 @@ export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hl
   });
   const ready = () => em.emit('ready');
   video.addEventListener('loadedmetadata', ready);
-  // 'playing' ends a 'waiting' stall; the UI clears its Buffering state on the next 'play'.
-  const playing = () => em.emit('play');
-  video.addEventListener('playing', playing);
+  // Buffering (CTE shape): waiting/stalled start a stall, playing/canplay end it (once); progress is throttled.
+  let stalled = false;
+  const onWait = () => {
+    if (!stalled) {
+      stalled = true;
+      em.emit('waiting');
+    }
+  };
+  const onResume = () => {
+    if (stalled) {
+      stalled = false;
+      em.emit('resumed');
+    }
+  };
+  const progress = throttle(() => em.emit('bufferedchange'));
+  const media: [string, () => void][] = [['waiting', onWait], ['stalled', onWait], ['playing', onResume], ['canplay', onResume], ['progress', progress]];
+  media.forEach(([e, fn]) => video.addEventListener(e, fn));
   // 1-VP: never autoplay.
   video.autoplay = false;
   return {
     kind,
-    capabilities: { rate: true, rates: RATES, volume: canSetVolume(), fullscreen: canFullscreen(), buffered: true, providerCaptions: false },
+    capabilities: { rate: true, rates: RATES, volume: canSetVolume(), fullscreen: canFullscreen(), canReportBuffering: true, canReportBufferedRanges: true, providerCaptions: false },
     play: () => video.play(),
     pause: async () => video.pause(),
     seek: async (s) => {
@@ -41,12 +55,13 @@ export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hl
       video.muted = m;
     },
     isMuted: () => video.muted,
-    getBuffered: () => bufferedFraction(video.buffered, video.currentTime, video.duration),
+    getBuffered: () => ({ fraction: bufferedFraction(video.buffered, video.currentTime, video.duration), ranges: rangesOf(video.buffered) }),
     on: (e, fn) => em.on(e, fn),
     destroy: () => {
       offs.forEach((o) => o());
       video.removeEventListener('loadedmetadata', ready);
-      video.removeEventListener('playing', playing);
+      media.forEach(([e, fn]) => video.removeEventListener(e, fn));
+      progress.cancel();
       em.clear();
     },
   };

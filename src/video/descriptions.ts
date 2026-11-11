@@ -42,7 +42,7 @@ export interface DescriptionsOptions {
 export function createDescriptions({ player, cues, lang, onText, speech = null, pauseWhileSpeaking = false }: DescriptionsOptions) {
   let mode: DescriptionsMode = 'off';
   let pausedBySpeech = false;
-  const follower = createCueFollower(cues, ({ active, entered }) => {
+  const onChange = ({ active, entered }: { active: readonly Cue[]; entered: readonly Cue[] }) => {
     if (mode === 'off') return;
     onText(active.map((c) => c.text).join('\n'));
     if (mode !== 'voice' || !speech || entered.length === 0) return;
@@ -62,7 +62,8 @@ export function createDescriptions({ player, cues, lang, onText, speech = null, 
         }
       },
     });
-  });
+  };
+  let follower = createCueFollower(cues, onChange);
   const offs = [
     player.on('timeupdate', () => follower.update(player.getTime())),
     player.on('pause', () => {
@@ -82,6 +83,19 @@ export function createDescriptions({ player, cues, lang, onText, speech = null, 
       if (mode === 'off') onText('');
       else follower.update(player.getTime());
       return mode;
+    },
+    /** Switch the AD track (another language or variant) without changing the mode; speech in flight is cancelled. */
+    setTrack(nextCues: readonly Cue[], nextLang?: string): void {
+      speech?.cancel();
+      if (pausedBySpeech) {
+        pausedBySpeech = false;
+        void player.play();
+      }
+      lang = nextLang;
+      follower = createCueFollower(nextCues, onChange);
+      if (mode === 'off') return;
+      onText('');
+      follower.update(player.getTime());
     },
     canVoice: speech !== null,
     destroy(): void {

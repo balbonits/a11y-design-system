@@ -1,6 +1,6 @@
 // Vimeo adapter: @vimeo/player, imported only when a Vimeo source is used.
 // Pending John's install OK (ARCH-REVIEW R-4 wants it bundled); until then it resolves at runtime.
-import { Emitter, RATES, canFullscreen, type Player } from '../player';
+import { Emitter, RATES, VideoAdapterUnavailable, canFullscreen, throttle, type Player } from '../player';
 
 interface VimeoPlayer {
   ready(): Promise<void>;
@@ -30,7 +30,13 @@ export async function createVimeoPlayer(
   load: () => Promise<{ default: VimeoCtor }> = () => import(/* @vite-ignore */ VIMEO_MODULE),
   { providerCaptions = false }: VimeoOptions = {},
 ): Promise<Player> {
-  const Ctor = (await load()).default;
+  let Ctor: VimeoCtor;
+  try {
+    Ctor = (await load()).default;
+    if (typeof Ctor !== 'function') throw new Error('no default export');
+  } catch (cause) {
+    throw new VideoAdapterUnavailable('vimeo', VIMEO_MODULE, { cause });
+  }
   const vp = new Ctor(mount, { id: Number(id), autoplay: false, controls: false, dnt: true, title: false, byline: false, portrait: false, playsinline: true, ...(providerCaptions ? { texttrack: providerCaptions } : {}) });
   await vp.ready();
   mount.querySelector('iframe')?.setAttribute('title', title);
@@ -50,14 +56,16 @@ export async function createVimeoPlayer(
   vp.on('volumechange', (d) => ((s.volume = d.volume ?? s.volume), em.emit('volumechange')));
   vp.on('error', (d) => em.emit('error', d));
   vp.on('bufferstart', () => em.emit('waiting'));
-  vp.on('bufferend', () => {
-    if (!s.paused) em.emit('play');
+  vp.on('bufferend', () => em.emit('resumed'));
+  const buffered = throttle(() => em.emit('bufferedchange'));
+  vp.on('progress', (d) => {
+    s.buffered = Math.min(1, Math.max(0, d.percent ?? s.buffered));
+    buffered();
   });
-  vp.on('progress', (d) => ((s.buffered = Math.min(1, Math.max(0, d.percent ?? s.buffered))), em.emit('progress')));
   queueMicrotask(() => em.emit('ready'));
   return {
     kind: 'vimeo',
-    capabilities: { rate: rateOk, rates: rateOk ? RATES : [1], volume: true, fullscreen: canFullscreen(), buffered: true, providerCaptions: Boolean(providerCaptions) },
+    capabilities: { rate: rateOk, rates: rateOk ? RATES : [1], volume: true, fullscreen: canFullscreen(), canReportBuffering: true, canReportBufferedRanges: false, providerCaptions: Boolean(providerCaptions) },
     play: () => vp.play(),
     pause: () => vp.pause(),
     seek: async (t) => {
@@ -76,9 +84,10 @@ export async function createVimeoPlayer(
       em.emit('volumechange');
     },
     isMuted: () => s.muted,
-    getBuffered: () => s.buffered,
+    getBuffered: () => ({ fraction: s.buffered, ranges: null }),
     on: (e, fn) => em.on(e, fn),
     destroy: () => {
+      buffered.cancel();
       void vp.destroy();
       em.clear();
     },

@@ -1,6 +1,6 @@
 // HLS adapter: native HLS first (Safari, iOS). hls.js is an optional peerDependency, imported
 // only when a browser lacks native HLS. Needs `media-src 'self' blob:` on that page only.
-import type { Player } from '../player';
+import { VideoAdapterUnavailable, type Player } from '../player';
 import { createNativePlayer } from './native';
 
 interface HlsCtor {
@@ -25,8 +25,8 @@ export async function createHlsPlayer(
   let Hls: HlsCtor;
   try {
     Hls = (await load()).default;
-  } catch {
-    throw new Error('HLS needs the optional peer dependency hls.js on browsers without native HLS.');
+  } catch (cause) {
+    throw new VideoAdapterUnavailable('hls', HLS_MODULE, { cause });
   }
   if (!Hls.isSupported()) throw new Error('HLS is not supported in this browser.');
   const hls = new Hls();

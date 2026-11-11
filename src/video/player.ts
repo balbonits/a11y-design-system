@@ -1,6 +1,6 @@
 // R-4: the one internal player interface. Controls, the caption renderer and the transcript
 // panel are built only on this; every source adapter (native, HLS, YouTube, Vimeo) implements it.
-export type PlayerEvent = 'ready' | 'play' | 'pause' | 'timeupdate' | 'durationchange' | 'ended' | 'ratechange' | 'volumechange' | 'error' | 'waiting' | 'progress';
+export type PlayerEvent = 'ready' | 'play' | 'pause' | 'timeupdate' | 'durationchange' | 'ended' | 'ratechange' | 'volumechange' | 'error' | 'waiting' | 'resumed' | 'bufferedchange';
 
 export interface Player {
   readonly kind: SourceKind;
@@ -17,8 +17,8 @@ export interface Player {
   getVolume(): number;
   setMuted(m: boolean): Promise<void>;
   isMuted(): boolean;
-  /** Fraction of the duration loaded (0..1); 0 when the source doesn't report it (see capabilities.buffered). */
-  getBuffered(): number;
+  /** What's loaded: fraction of the duration (0..1, 0 when unknown) and ranges in seconds where the source reports them. */
+  getBuffered(): Buffered;
   on(e: PlayerEvent, fn: (detail?: unknown) => void): () => void;
   destroy(): void;
 }
@@ -48,12 +48,50 @@ export interface Capabilities {
   volume: boolean;
   /** Fullscreen API is available for the player container. */
   fullscreen: boolean;
-  /** getBuffered() and 'progress' report real data; when false the UI hides the buffered fill. 'waiting' fires on every adapter. */
-  buffered: boolean;
+  /** 'waiting'/'resumed' and getBuffered().fraction carry real data; when false the UI hides the Buffering pill and the fill. */
+  canReportBuffering: boolean;
+  /** getBuffered().ranges is an array (native, HLS); when false it's null and the UI draws one fill from fraction. */
+  canReportBufferedRanges: boolean;
   /** The provider renders its own captions (YouTube/Vimeo source with no VTT of ours, CA ruling); the UI hides our caption controls. */
   providerCaptions: boolean;
 }
 
+
+export interface Buffered {
+  fraction: number;
+  ranges: Array<[number, number]> | null;
+}
+
+/** A source adapter whose optional peer module (hls.js, @vimeo/player) isn't installed or failed to load. The UI shows a text link to the video instead of a blank box. */
+export class VideoAdapterUnavailable extends Error {
+  readonly name = 'VideoAdapterUnavailable';
+  constructor(readonly adapter: 'hls' | 'vimeo', readonly module: string, options?: { cause?: unknown }) {
+    super(`The ${adapter} adapter needs the optional peer dependency ${module}.`, options);
+  }
+}
+
+/** Calls fn at most once per `ms`, with a trailing call so the last change always lands. */
+export function throttle(fn: () => void, ms = 250, now: () => number = () => Date.now()): (() => void) & { cancel(): void } {
+  let last = -Infinity;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const run = () => {
+    last = now();
+    timer = undefined;
+    fn();
+  };
+  const t = () => {
+    const wait = last + ms - now();
+    if (wait <= 0) {
+      clearTimeout(timer);
+      run();
+    } else timer ??= setTimeout(run, wait);
+  };
+  return Object.assign(t, { cancel: () => clearTimeout(timer) });
+}
+
+export function rangesOf(r: Pick<TimeRanges, 'length' | 'start' | 'end'>): Array<[number, number]> {
+  return Array.from({ length: r.length }, (_, i) => [r.start(i), r.end(i)] as [number, number]);
+}
 
 /**
  * Fraction loaded from TimeRanges: the end of the range holding the playhead (else the furthest end)
