@@ -40,6 +40,10 @@ jobs:
         run: npm run test:target-size -- http://127.0.0.1:6007 --negative-control
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: VideoPlayer gates (R4-TESTS-FIRST; fixme until the player lands, switch VP_GATES in scripts/vp-gates.mjs)
+        run: npm run test:vp -- http://127.0.0.1:6007
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
   transcribe:
     runs-on: ubuntu-latest
     steps:
