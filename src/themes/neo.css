@@ -46,7 +46,7 @@
   --radius-xl: var(--radius-lg);
   --radius-full: 999px;
   --border-width: 2px;
-  --border-width-strong: 2.5px;
+  --border-width-strong: 3px;
   --shadow-raised: 4px 4px 0 var(--border);
   --shadow-press: 1px 1px 0 var(--border);
   --divider-shape: none;
@@ -67,6 +67,8 @@
   --parallax-scale: 0.08;
   --lift: -3px;
   --tilt: -1.5deg;
+  /* Addendum 8 (video-player HANDOFF:98-107): how far a pressed button moves, every variant. Locked per theme. */
+  --press-offset: 3px;
   /* Addendum 7 registered extras, neutral defaults for neo. */
   --rule: 0px;
   --shadow-overlay: none;
@@ -150,5 +152,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="neo"] {
-  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --stagger: 0ms; --hue-shift: 0;
+  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --press-offset: 0px; --stagger: 0ms; --hue-shift: 0;
 } }

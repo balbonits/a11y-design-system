@@ -33,6 +33,13 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 
 Color names are Ember's, plus `--highlight` and `--highlight-contrast` (a feature-band fill and the text on it) and `--focus-ring-color`, all from the locked set in ARCH-REVIEW Addendum 5. There are no `--radius` or `--focus` aliases.
 
+## Registered extra color tokens
+Component tokens that alias a semantic color. The token layer gives each a default, so every theme resolves it, and a theme lists an override only where it differs (ARCH-REVIEW Addendum 9). The generator fails if one doesn't resolve to a color, and every dialog border reads `var(--dialog-border)`.
+
+| Token | Default | Light | Dark |
+|---|---|---|---|
+| `--dialog-border` | `var(--border)` | `var(--text)` <span style="display:inline-block;width:1em;height:1em;background:#3D1340;border:1px solid #777;vertical-align:middle"></span> `#3D1340` | `var(--border)` <span style="display:inline-block;width:1em;height:1em;background:#A8849F;border:1px solid #777;vertical-align:middle"></span> `#A8849F` |
+
 ## Primitives
 | Token | Value |
 |---|---|
@@ -88,8 +95,8 @@ Shape names follow ARCH-REVIEW Addendum 5 (`--radius-sm/md/lg/full`, `--border-w
 | `--radius-md` | `999px` |
 | `--radius-sm` | `18px` |
 | `--radius-full` | `999px` |
-| `--border-width` | `1.5px` |
-| `--border-width-strong` | `2.5px` |
+| `--border-width` | `1px` |
+| `--border-width-strong` | `2px` |
 | `--divider-shape` | `curve` |
 | `--focus-ring-width` | `3px` |
 | `--focus-ring-offset` | `3px` |

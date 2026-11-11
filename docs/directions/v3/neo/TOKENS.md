@@ -33,6 +33,13 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 
 New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. The set follows ARCH-REVIEW Addendum 5 (locked 5:20 PM PT): `--focus-ring-color/width/offset/style`, `--control-height/padding-x/gap` and `--target-min` (44px hit area) are defined here too. Ember's old `--radius` and `--focus` are removed, with no aliases. All other names are Ember's existing ones.
 
+## Registered extra color tokens
+Component tokens that alias a semantic color. The token layer gives each a default, so every theme resolves it, and a theme lists an override only where it differs (ARCH-REVIEW Addendum 9). The generator fails if one doesn't resolve to a color, and every dialog border reads `var(--dialog-border)`.
+
+| Token | Default | Light | Dark |
+|---|---|---|---|
+| `--dialog-border` | `var(--border)` | `var(--border)` `#111111` | `var(--border)` `#fdf8e9` |
+
 ## Shape, type and motion
 | Token | Value |
 |---|---|
@@ -45,7 +52,7 @@ New semantic tokens for the additive minor release after v0.3.0 (every theme mus
 | `--radius-lg` | `18px` |
 | `--radius-full` | `999px` |
 | `--border-width` | `2px` |
-| `--border-width-strong` | `2.5px` |
+| `--border-width-strong` | `3px` |
 | `--shadow-raised` | `4px 4px 0 var(--border)` |
 | `--shadow-press` | `1px 1px 0 var(--border)` |
 | `--divider-shape` | `none` |

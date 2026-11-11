@@ -14,6 +14,7 @@
   --button-fg: var(--accent-contrast);
   --button-bg-hover: var(--accent-hover);
   --button-lift: var(--lift);
+  --button-press-offset: var(--press-offset);
   --button-duration: var(--duration-base);
   --button-press-duration: var(--duration-fast);
   --button-ease: var(--ease-standard);

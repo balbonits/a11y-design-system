@@ -95,6 +95,47 @@ def render_txt(cues: list[Cue], gap: float = 2.0) -> str:
     return "\n\n".join(" ".join(p) for p in paras) + "\n"
 
 
+def render_download_txt(cues: list[Cue]) -> str:
+    """The player's .txt transcript download (ember-ui/video toTxt): one cue per line."""
+    return "".join(" ".join(c.text.split("\n")) + "\n" for c in cues)
+
+
+def render_download_vtt(cues: list[Cue], width: int = 42) -> str:
+    """The player's .vtt transcript download (ember-ui/video toVtt): no NOTE, ids 1..n."""
+    blocks = [
+        "\n".join([str(i), f"{fmt_ts(c.start)} --> {fmt_ts(c.end)}",
+                   *(_escape(line) for line in wrap(c.text, width))])
+        for i, c in enumerate(cues, 1)
+    ]
+    return "WEBVTT\n\n" + "\n\n".join(blocks) + "\n"
+
+
+def apply_corrections(cues: list[Cue], corrections: list[dict]) -> list[Cue]:
+    """Hand corrections to the machine text, by 1-based cue number.
+
+    Each entry is {"cue": n, "from": machine text, "to": corrected text, "why": reason}.
+    "from" must equal the machine output exactly, so a model or snapping change that
+    alters the cue fails loudly instead of silently dropping or misplacing a fix.
+    Timings are never changed here.
+    """
+    out = list(cues)
+    seen: set[int] = set()
+    for fix in corrections:
+        n = int(fix["cue"])
+        if n in seen:
+            raise ValueError(f"cue {n}: corrected twice")
+        seen.add(n)
+        if not 1 <= n <= len(out):
+            raise ValueError(f"cue {n}: no such cue (have {len(out)})")
+        if not str(fix.get("why", "")).strip():
+            raise ValueError(f"cue {n}: correction needs a reason")
+        c = out[n - 1]
+        if c.text != fix["from"]:
+            raise ValueError(f"cue {n}: machine text is {c.text!r}, correction expects {fix['from']!r}")
+        out[n - 1] = Cue(c.start, c.end, fix["to"])
+    return out
+
+
 def to_json(cues: list[Cue]) -> str:
     return json.dumps([asdict(c) for c in cues], indent=2, ensure_ascii=False) + "\n"
 
