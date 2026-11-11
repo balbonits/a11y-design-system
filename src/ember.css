@@ -128,6 +128,14 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-tab:hover:not(:disabled) { color: var(--text); background: var(--tabs-track); }
 .em-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
 .em-tab:disabled { cursor: not-allowed; opacity: 0.55; }
+/* Forced colors (CA, HIT-PATCH): background images are dropped and every transparent border paints CanvasText, so the
+   baseline vanished and every tab showed the same underline. Draw the baseline as a border (no clip: it sits outside the
+   tablist's content box), hide unselected indicators with Canvas, and give the selected tab a Highlight indicator. */
+@media (forced-colors: active) {
+  .em-tablist { background: none; border-bottom: var(--border-width) solid CanvasText; }
+  .em-tab { border-bottom-color: Canvas; }
+  .em-tab[aria-selected="true"] { border-bottom-color: Highlight; }
+}
 .em-tabpanel { padding: var(--space-4) 0; }
 
 /* ---------- Table ---------- */
