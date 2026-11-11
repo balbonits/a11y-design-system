@@ -105,3 +105,10 @@ John asked for switchable themes with the components shown in each. Chief Archit
 ## 2026-11-10 6:50 PM PT: ACR report version
 - The ACR now has an explicit **Report version: 1.0** line (Chief Architect ruling). It goes up a minor version for any row or remark change, and a major version when the product version changes. The Version line stays the product version that was evaluated. The jdilig.me generator reads all three and fails if one is missing.
 - The 2.4.11 remark now names the fix card, FU-FSD-TOAST. The row stays Partially Supports until that card ships and `scripts/focus-obscured.mjs` reports 0 hidden stops.
+
+## 2026-11-10 9:02 PM PT: Architecture review, R-4 VideoPlayer core (draft)
+
+- The player ships as a separate entry, `ember-ui/video`, so the core bundle doesn't grow. A new CI step, `npm run check:core-bundle`, fails if `dist/index.js` or anything it imports mentions hls.js, YouTube, Vimeo or the player code. It was proven both ways: 0 references now, and exit 1 when a reference is planted.
+- One internal player interface (play, pause, seek, rate, volume, mute, time and track events) with adapters behind it. Native `<video>` is the default and never autoplays. HLS uses native playback where the browser has it and lazy-loads hls.js (an optional peer) only where it doesn't. YouTube uses youtube-nocookie.com through the IFrame API, loaded only for a YouTube source. Vimeo loads `@vimeo/player` only for a Vimeo source. Each lazy adapter is its own chunk.
+- One WebVTT cue model, parsed once. The caption renderer, the transcript (current cue, click-to-seek, search, `.txt` and `.vtt` download) and the audio-description track will all read it. Tests cover parsing, round-trip, search, the committed Sintel captions and AD files, source detection and both HLS paths: 24/24 vitest.
+- Not in this PR: the visible controls, caption renderer and transcript panel wait for the design handoff. Installing hls.js and @vimeo/player waits on John's OK. The per-path CSP comes with the demo page.

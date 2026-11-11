@@ -10,7 +10,7 @@ export default defineConfig({
     cssCodeSplit: false,
     sourcemap: true,
     lib: {
-      entry: { index: 'src/index.ts' },
+      entry: { index: 'src/index.ts', video: 'src/video/index.ts' },
       formats: ['es'],
       cssFileName: 'ember',
     },
