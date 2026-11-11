@@ -46,7 +46,7 @@ Every state has a non-color cue. Shadow or press is never the only one.
 |---|---|
 | Default | Surface fill, 2px ink border, `--shadow-raised` (4px 4px 0 ink). Primary uses `--accent` with `--accent-contrast` text. |
 | Hover | Lifts 1px and tilts `--tilt` (-1.5deg); secondary buttons also fill `--accent-soft`, primary goes to `--accent-hover`. |
-| Focus-visible | 3px `--focus` ring (pink-600 `#e0217a` in both modes) with a 3px offset, so a strip of background sits between the ring and the ink outline. Ring contrast: 4.24 on bg, 4.20 against the ink border (light); 4.20 on bg, 4.24 against the cream border (dark). |
+| Focus-visible | 3px `--focus-ring-color` ring (pink-600 `#e0217a` in both modes) with a 3px offset, so a strip of background sits between the ring and the ink outline. Ring contrast: 4.24 on bg, 4.20 against the ink border (light); 4.20 on bg, 4.24 against the cream border (dark). |
 | Active / pressed | Moves 3px into its shadow, shadow drops to `--shadow-press`, and the fill changes (`--surface-muted`, or `--accent-hover` for primary). |
 | Disabled | `disabled` attribute, dotted border, no shadow, `--surface-muted` fill, `--text-muted` text, `not-allowed` cursor. |
 | Error | `aria-invalid="true"`, border goes to `--danger` at `--border-width-strong`, message linked by `aria-describedby` that starts with "Error:" and a "!" badge. |
@@ -90,7 +90,9 @@ The full table for light and dark, with primitives and hex, is in [TOKENS.md](TO
 | `--shadow-raised` | `4px 4px 0 var(--border)` |
 | `--shadow-press` | `1px 1px 0 var(--border)` |
 | `--divider-shape` | `none` |
+| `--focus-ring-color` | pink-600 `#e0217a` (both modes) |
 | `--focus-ring-width` / `--focus-ring-offset` | 3px / 3px |
+| `--focus`, `--radius` | Deprecated aliases until v0.4, pointing to `--focus-ring-color` and `--radius-md` |
 
 Contrast for every pair in both modes is in [CONTRAST.md](CONTRAST.md): text 4.5:1, borders, focus and states 3:1, 64 pairs, 0 fails.
 
