@@ -64,7 +64,7 @@
 .em-spinner {
   width: 1em; height: 1em; border-radius: var(--radius-full);
   border: var(--border-width) solid currentColor; border-right-color: transparent;
-  animation: em-spin 700ms linear infinite;
+  animation: em-spin var(--duration-slow) linear infinite;
 }
 @keyframes em-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) {
@@ -208,3 +208,32 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-switch-option input:focus-visible + span { outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .em-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 @media (forced-colors: active) { .em-switch-option input:checked + span { outline: var(--focus-ring-width) solid CanvasText; } }
+
+/* ---------- Motion primitives (R-3): the only @keyframes in Ember and its apps ---------- */
+.em-marquee { display: flex; align-items: center; gap: var(--space-3); min-width: 0; }
+.em-marquee-toggle { flex: none; }
+.em-marquee-glyph { font-size: 0.75em; letter-spacing: -0.1em; }
+.em-marquee-viewport { flex: 1; min-width: 0; overflow: hidden; }
+.em-marquee-track { display: flex; width: max-content; animation: em-marquee var(--duration-ticker) linear infinite; }
+.em-marquee-group { display: flex; flex: none; align-items: center; gap: var(--space-6); padding-inline-end: var(--space-6); }
+.em-marquee--paused .em-marquee-track,
+.em-marquee:hover .em-marquee-track,
+.em-marquee:focus-within .em-marquee-track { animation-play-state: paused; }
+@keyframes em-marquee { to { transform: translateX(-50%); } }
+
+.em-parallax { position: relative; pointer-events: none; }
+.em-parallax-layer { transform: translate3d(0, calc(var(--em-parallax-y, 0px) * var(--parallax-scale)), 0); }
+
+.em-icon { display: inline-flex; line-height: 0; }
+.em-icon--spin { animation: em-icon-spin clamp(1000ms, calc(var(--duration-slow) * 2), 1600ms) var(--ease-standard) 3; }
+.em-icon--pulse { animation: em-icon-pulse clamp(1000ms, calc(var(--duration-slow) * 2), 1600ms) var(--ease-standard) 3; }
+.em-icon--nudge { animation: em-icon-nudge clamp(1000ms, calc(var(--duration-slow) * 2), 1600ms) var(--ease-standard) 3; }
+@keyframes em-icon-spin { to { transform: rotate(360deg); } }
+@keyframes em-icon-pulse { 50% { opacity: 0.6; transform: scale(0.92); } }
+@keyframes em-icon-nudge { 50% { transform: translateX(3px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .em-marquee:not(.em-marquee--playing) .em-marquee-track { animation-play-state: paused; }
+  .em-parallax-layer { transform: none; }
+  .em-icon--spin, .em-icon--pulse, .em-icon--nudge { animation: none; }
+}
