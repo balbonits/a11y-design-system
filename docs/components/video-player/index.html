@@ -163,18 +163,22 @@ footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 .25rem
 .themes .btn[aria-pressed=true]{background:var(--accent);color:var(--accent-contrast)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0s!important;scroll-behavior:auto!important}.bigplay:hover,.btn:hover,.btn:active,.ib:active{transform:none}}
 /* ===== R-4 follow-up: copy fill, captions per approved copy, dialog, tooltips, transcript tools ===== */
-/* Caption appearance follows R4-PLAYER-COPY (viewer overrides). Colors are component-local values,
-   pending CA on whether they become --palette-caption-* tokens (HANDOFF Known issue 7). */
-.vp{--cap-fg:#fff;--cap-band:0 0 0;--cap-a:1;--cap-font:var(--font-body)}
-.vp[data-cap-color=yellow]{--cap-fg:#ffe600}
-.vp[data-cap-color=cyan]{--cap-fg:#00e5ff}
-.vp[data-cap-color=black]{--cap-fg:#000;--cap-band:255 255 255}
-.vp[data-cap-bg=half]{--cap-a:.5}
-.vp[data-cap-bg=none]{--cap-a:0}
+/* Caption colors per CA ARCH-REVIEW 9:35 (KI-7). TOKEN LAYER (shared, unthemed, FSD ships it in src/tokens):
+   --palette-caption-* primitives, and [data-caption-color] selectors that set the two extras.
+   The component reads ONLY --caption-text and --caption-bg. Identical in neo, kinetic and dusk. */
+:root{--palette-caption-white:#ffffff;--palette-caption-yellow:#ffe600;--palette-caption-cyan:#00e5ff;--palette-caption-black:#000000;
+ --caption-text:var(--palette-caption-white);--caption-bg:var(--palette-caption-black);--caption-bg-alpha:1}
+[data-caption-color=white]{--caption-text:var(--palette-caption-white);--caption-bg:var(--palette-caption-black)}
+[data-caption-color=yellow]{--caption-text:var(--palette-caption-yellow);--caption-bg:var(--palette-caption-black)}
+[data-caption-color=cyan]{--caption-text:var(--palette-caption-cyan);--caption-bg:var(--palette-caption-black)}
+[data-caption-color=black]{--caption-text:var(--palette-caption-black);--caption-bg:var(--palette-caption-white)}
+[data-caption-bg=solid]{--caption-bg-alpha:1}[data-caption-bg=half]{--caption-bg-alpha:.7}[data-caption-bg=none]{--caption-bg-alpha:0}
+/* COMPONENT: reads the extras only */
+.vp{--cap-font:var(--font-body)}
 .vp[data-cap-font=serif]{--cap-font:Georgia,'Times New Roman',serif}
 .vp[data-cap-font=mono]{--cap-font:var(--font-mono)}
-.cap span,.cs-prev span{background:rgb(var(--cap-band) / var(--cap-a));color:var(--cap-fg);font-family:var(--cap-font)}
-.vp[data-cap-bg=half] .cap span,.vp[data-cap-bg=none] .cap span,.vp[data-cap-bg=half] .cs-prev span,.vp[data-cap-bg=none] .cs-prev span{text-shadow:-1px -1px 0 rgb(var(--cap-band)),1px -1px 0 rgb(var(--cap-band)),-1px 1px 0 rgb(var(--cap-band)),1px 1px 0 rgb(var(--cap-band)),0 0 3px rgb(var(--cap-band))}
+.cap span,.cs-prev span{background:color-mix(in srgb,var(--caption-bg) calc(var(--caption-bg-alpha)*100%),transparent);color:var(--caption-text);font-family:var(--cap-font)}
+.vp[data-caption-bg=half] .cap span,.vp[data-caption-bg=none] .cap span,.vp[data-caption-bg=half] .cs-prev span,.vp[data-caption-bg=none] .cs-prev span{text-shadow:-1px -1px 0 var(--caption-bg),1px -1px 0 var(--caption-bg),-1px 1px 0 var(--caption-bg),1px 1px 0 var(--caption-bg),0 0 3px var(--caption-bg)}
 .cs-prev{padding:.9rem .5rem;border-radius:var(--radius-md);background:var(--surface-muted) url(poster.jpg) center/cover;text-align:center}
 .cs-prev span{-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:.08em .45em;line-height:1.5;border-radius:var(--radius-sm);font-weight:500;font-size:1.1rem}
 .vp[data-cap-size=s] .cs-prev span{font-size:.95rem}.vp[data-cap-size=l] .cs-prev span{font-size:1.3rem}.vp[data-cap-size=xl] .cs-prev span{font-size:1.55rem}
@@ -313,17 +317,17 @@ let TRACKS=[],AD=[],DUR=52,n=0;
 const TITLE='Sintel (excerpt)',SLUG='sintel-excerpt';
 function playerHTML(id,o){const sp=nm=>SPEEDS.map(s=>`<label class="chip"><input type="radio" name="${nm}-${id}" value="${s}"${s===1?' checked':''}><span>${spLabel(s)}</span></label>`).join('');
  const ch=(name,vals)=>vals.map(([v,l,full,sw])=>`<label class="chip"><input type="radio" name="${name}-${id}" value="${v}"><span>${sw?`<i class="sw" style="background:${sw}" aria-hidden="true"></i>`:''}${full?`<span aria-hidden="true">${l}</span><span class="sr">${full}</span>`:l}</span></label>`).join('');
- return `<section class="vp" id="${id}" data-state="poster" aria-label="Video player: ${o.label}" aria-describedby="${id}-hint">
+ return `<section class="vp" id="${id}" data-state="poster" aria-label="Video player: ${o.label}">
  <div class="stage">
   ${o.media?`<video playsinline preload="metadata" poster="poster.jpg"><source src="${SRC}sintel-excerpt.mp4" type="video/mp4"></video>`:`<img class="poster" src="poster.jpg" alt="">`}
-  <button class="bigplay" type="button" data-act="play"><span>${svg('play')}</span><span>Play<span class="sr"> ${TITLE}</span></span><span class="dur" aria-hidden="true">${fmt(DUR)}</span></button>
+  <button class="bigplay" type="button" data-act="play" aria-describedby="${id}-hint"><span>${svg('play')}</span><span>Play<span class="sr"> ${TITLE}</span></span><span class="dur" aria-hidden="true">${fmt(DUR)}</span></button>
   <div class="statuspill" aria-hidden="true" data-slot="pill"></div>
   <div class="cap" aria-hidden="true" data-slot="cap"></div>
   <div class="ov err"><div class="card"><p>The video didn't load.</p><button class="btn sm primary" type="button" data-act="retry">Retry</button></div></div>
-  <div class="ov end"><div class="card"><p>[COPY-TBD] Ended</p><button class="btn sm primary" type="button" data-act="replay">${svg('play')} [COPY-TBD] Replay</button></div></div>
-  <div class="ov una"><div class="card"><p>[COPY-TBD] This video can't play here.</p><a class="btn sm primary" href="https://vimeo.com/">[COPY-TBD] Watch the video</a></div></div>
+  <div class="ov end"><div class="card"><p id="${id}-endm">Video ended.</p><button class="btn sm primary" type="button" data-act="replay" aria-describedby="${id}-endm">${svg('play')} Replay<span class="sr"> ${TITLE}</span></button></div></div>
+  <div class="ov una"><div class="card"><p>This video didn't load here.</p><a class="btn sm primary" href="https://vimeo.com/">Watch ${TITLE} on Vimeo</a></div></div>
  </div>
- <p class="sr" id="${id}-hint">[COPY-TBD] Keyboard: K or Space to play or pause, left and right arrows to seek 5 seconds, J and L to seek 10 seconds, up and down arrows for volume, M to mute, C for captions, D for audio description, F for full screen, T for the transcript.</p>
+ <p class="sr" id="${id}-hint"></p>
  <div class="sr" role="status" data-slot="status"></div>
  <div class="sr" role="alert" data-slot="alert"></div>
  <p class="adline" data-slot="ad"><span class="adb" aria-hidden="true">AD</span><span class="adl">Audio description</span><span data-slot="adt" aria-live="polite"></span></p>
@@ -332,7 +336,7 @@ function playerHTML(id,o){const sp=nm=>SPEEDS.map(s=>`<label class="chip"><input
    <div class="scrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="${Math.round(DUR)}" aria-valuenow="0" aria-valuetext="0 seconds of ${words(DUR)}"><div class="track"><div class="buf" aria-hidden="true"></div><div class="played"></div></div><div class="thumb"></div></div>
    <span class="tnum" data-slot="tot" aria-hidden="true">${fmt(DUR)}</span></div>
   <div class="ctl">
-   <button class="ib" type="button" data-act="toggle" aria-label="Play" data-tip="Play">${svg('play')}</button>
+   <button class="ib" type="button" data-act="toggle" aria-label="Play" data-tip="Play" aria-describedby="${id}-hint">${svg('play')}</button>
    <span class="time" data-slot="time" aria-hidden="true">0:00 / ${fmt(DUR)}</span>
    <button class="ib" type="button" data-act="mute" aria-label="Mute" data-tip="Mute" aria-pressed="false">${svg('vol')}</button>
    <span class="vol"><input type="range" min="0" max="100" step="5" value="80" aria-label="Volume" aria-valuetext="80%"></span>
@@ -344,15 +348,18 @@ function playerHTML(id,o){const sp=nm=>SPEEDS.map(s=>`<label class="chip"><input
    <button class="ib" type="button" data-act="fs" aria-label="Full screen" data-tip="Full screen">${svg('fs')}</button>
   </div>
   <p class="cchint" id="${id}-cch" hidden>No captions for this video.</p>
+  <p class="cchint" id="${id}-pcc" hidden>Captions are shown by ${o.provider||'YouTube'}.</p>
   <div class="pop" id="${id}-more" role="group" aria-label="More options" hidden>
    <fieldset class="n-only" data-speed><legend>Playback speed</legend><div class="chips">${sp('spm')}</div></fieldset>
    <button class="btn sm mi n-only" type="button" data-act="tx" aria-expanded="true" aria-controls="${id}-tx">${svg('tx')} Transcript</button>
    <button class="btn sm mi" type="button" data-act="ad" aria-pressed="false"><span class="adb" aria-hidden="true">AD</span> Audio description</button>
    <button class="btn sm mi" type="button" data-act="voice" aria-pressed="false" aria-disabled="true" aria-describedby="${id}-vh">Read descriptions aloud</button>
    <p class="hint" id="${id}-vh">Turn on Audio description to use this.</p>
-   <button class="btn sm mi sub" type="button" data-act="vpause" aria-pressed="false" aria-disabled="true">[COPY-TBD] Pause video while reading</button>
+   <button class="btn sm mi sub" type="button" data-act="vpause" aria-pressed="false" aria-disabled="true" aria-describedby="${id}-ph">Pause video for descriptions</button>
+   <p class="hint" id="${id}-ph">Turn on Read descriptions aloud to use this.</p>
    <div class="field" data-slot="langf"><label for="${id}-lang">Caption language</label><select id="${id}-lang" data-slot="lang"></select></div>
    <button class="btn sm mi" type="button" data-act="capset" aria-haspopup="dialog">Caption settings</button>
+   <p class="hint" data-slot="pset" hidden>Caption settings are in the ${o.provider||'YouTube'} player.</p>
   </div>
   <div class="pop" id="${id}-sp" role="group" aria-label="Playback speed" hidden><fieldset><legend>Playback speed</legend><div class="chips">${sp('sp')}</div></fieldset></div>
  </div>
@@ -361,7 +368,7 @@ function playerHTML(id,o){const sp=nm=>SPEEDS.map(s=>`<label class="chip"><input
   <div class="cs-prev" aria-hidden="true"><span>This blade has a dark past.</span></div>
   <fieldset><legend>Text size</legend><div class="chips">${ch('size',[['s','S','Small'],['m','M','Medium'],['l','L','Large'],['xl','XL','Extra large']])}</div></fieldset>
   <fieldset><legend>Text color</legend><div class="chips">${ch('color',[['white','White','','#fff'],['yellow','Yellow','','#ffe600'],['cyan','Cyan','','#00e5ff'],['black','Black','','#000']])}</div></fieldset>
-  <fieldset><legend>Background</legend><div class="chips">${ch('background',[['none','None'],['half','Half'],['solid','Solid']])}</div></fieldset>
+  <fieldset><legend>Background</legend><div class="chips">${ch('background',[['none','None'],['half','Translucent'],['solid','Solid']])}</div></fieldset>
   <fieldset><legend>Font</legend><div class="chips">${ch('font',[['sans','Sans serif'],['serif','Serif'],['mono','Monospace']])}</div></fieldset>
   <p class="sr" role="status" data-slot="csst"></p>
   <div class="acts"><button class="btn sm" type="button" data-act="capreset">Reset</button><button class="btn sm primary" value="close">Close</button></div>
@@ -392,12 +399,12 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
   h.hidden=!none;P.dataset.cc=!none&&S.cc.on?'on':'off';
   const lf=el('langf'),ls=el('lang');lf.hidden=tracks.length<2;ls.innerHTML=`<option value="off">Off</option>`+tracks.map(t=>`<option value="${t.id}" lang="${t.lang}">${esc(t.label)}</option>`).join('');ls.value=S.cc.on?track()?.id||'off':'off';
   for(const k of ['size','color','background','font'])$$(`input[name=${k}-${id}]`,P).forEach(i=>i.checked=i.value===S.cs[k]);
-  P.dataset.capSize=S.cs.size;P.dataset.capColor=S.cs.color;P.dataset.capBg=S.cs.background;P.dataset.capFont=S.cs.font;el('cap').lang=track()?.lang||''}
+  P.dataset.capSize=S.cs.size;P.dataset.captionColor=S.cs.color;P.dataset.captionBg=S.cs.background;P.dataset.capFont=S.cs.font;el('cap').lang=track()?.lang||''}
  function applyAD(){const has=ad.length>0,ab=$('[data-act=ad]',P),vb=$('[data-act=voice]',P),pb=$('[data-act=vpause]',P);ab.hidden=!has;
   const canVoice='speechSynthesis' in window&&!o.novoice;vb.hidden=pb.hidden=!has||!canVoice;$('#'+id+'-vh').hidden=!has||!canVoice||S.ds.on;
   ab.setAttribute('aria-pressed',S.ds.on);P.dataset.ad=has&&S.ds.on?'on':'off';
   vb.setAttribute('aria-disabled',!S.ds.on);vb.setAttribute('aria-pressed',S.ds.on&&S.ds.voice);if(S.ds.on)vb.removeAttribute('aria-describedby');else vb.setAttribute('aria-describedby',id+'-vh');
-  pb.setAttribute('aria-disabled',!(S.ds.on&&S.ds.voice));pb.setAttribute('aria-pressed',S.ds.on&&S.ds.voice&&S.ds.pause);
+  const pon=S.ds.on&&S.ds.voice;pb.setAttribute('aria-disabled',!pon);$('#'+id+'-ph').hidden=pb.hidden||pon;if(pon)pb.removeAttribute('aria-describedby');else pb.setAttribute('aria-describedby',id+'-ph');pb.setAttribute('aria-pressed',S.ds.on&&S.ds.voice&&S.ds.pause);
   // when voice is on, the text line stops being a live region so a screen reader and the speech engine don't talk over each other
   el('adt').setAttribute('aria-live',S.ds.voice?'off':'polite')}
  let lastAd=null;
@@ -456,7 +463,7 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
   // mirrors the core's getBuffered(): one segment per range where canReportBufferedRanges (native, HLS), else one fill from fraction
   v.addEventListener('progress',()=>{try{const r=[];for(let i=0;i<v.buffered.length;i++)r.push([v.buffered.start(i),v.buffered.end(i)]);S.buf={fraction:r.length&&DUR?r[r.length-1][1]/DUR:0,ranges:r}}catch(e){S.buf=null}render()});
   v.addEventListener('playing',()=>{S.playing=true;setState('playing');render()});v.addEventListener('pause',()=>{S.playing=false;if(!['ended','error'].includes(P.dataset.state))setState('paused');render()});
-  v.addEventListener('waiting',()=>{if(P.dataset.state!=='poster')setState('buffering')});v.addEventListener('ended',()=>{S.playing=false;setState('ended');render()});
+  v.addEventListener('waiting',()=>{if(P.dataset.state!=='poster')setState('buffering')});v.addEventListener('ended',()=>{S.playing=false;setState('ended');render();if(S.interacted)$('[data-act=replay]',P).focus()});
   v.addEventListener('error',()=>{S.playing=false;setState('error')},true);$('source',v).addEventListener('error',()=>{S.playing=false;setState('error')});
   v.addEventListener('click',toggle)}
  // scrubber pointer
@@ -468,7 +475,7 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
  // popovers (More, Speed). Caption settings is a modal dialog.
  let openPop=null,opener=null;
  function closePop(ret=true){if(!openPop)return;openPop.hidden=true;$$(`[aria-controls=${openPop.id}]`,P).forEach(b=>b.setAttribute('aria-expanded','false'));if(ret&&opener)opener.focus();openPop=null;chrome()}
- function showPop(p,btn){const same=openPop===p;closePop(false);if(same)return;p.hidden=false;openPop=p;opener=btn;if(btn&&btn.hasAttribute('aria-expanded'))btn.setAttribute('aria-expanded','true');const f=$('input:checked,button:not([hidden]),input,select',p);f&&f.focus();chrome()}
+ function showPop(p,btn){const same=openPop===p;closePop(false);if(same)return;p.hidden=false;openPop=p;opener=btn;if(btn&&btn.hasAttribute('aria-expanded'))btn.setAttribute('aria-expanded','true');const vis=e=>e.getClientRects().length>0;const f=$$('input:checked',p).find(vis)||$$('button:not([hidden]),input,select',p).find(vis);f&&f.focus();chrome()}
  const caps=Object.assign({rate:true,rates:SPEEDS,volume:true,fullscreen:true},o.caps||{});
  const setRate=r=>{if(!caps.rates.includes(r))r=1;S.rate=r;if(v)v.playbackRate=r;el('spl').textContent=spLabel(r);$('[data-act=speed]',P).setAttribute('aria-label','Playback speed, '+spLabel(r));$$(`input[name=sp-${id}],input[name=spm-${id}]`,P).forEach(i=>i.checked=+i.value===r)};
  const stepRate=d=>{if(!caps.rate)return;const R=caps.rates,i=R.indexOf(S.rate);const j=Math.min(R.length-1,Math.max(0,i+d));if(j!==i){setRate(R[j]);save();el('status').textContent='Playback speed, '+spLabel(R[j])}};
@@ -520,16 +527,19 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
  ['pointermove','keydown','touchstart','focusin'].forEach(ev=>P.addEventListener(ev,chrome,{passive:true}));
  // capabilities from the core Player (PR #33): hide what a source can't do, never offer a control that fails
  if(caps.canReportBuffering===false){S.buf=null;P.dataset.nobuf=''}
- if(caps.providerCaptions){$('[data-act=cc]',P).dataset.cap='off';el('langf').dataset.cap='off';$('[data-act=capset]',P).dataset.cap='off'}
+ // no caption track of ours: the provider shows captions. Static notes replace Captions and Caption settings; the transcript hides.
+ if(caps.providerCaptions){$('[data-act=cc]',P).dataset.cap='off';el('langf').dataset.cap='off';$('[data-act=capset]',P).dataset.cap='off';document.getElementById(id+'-pcc').hidden=false;$('[data-slot=pset]',P).hidden=false;$$('[data-act=tx]',P).forEach(b=>b.dataset.cap='off');const tx=document.getElementById(id+'-tx');if(tx)tx.hidden=true}
+ // keyboard hint (player.keys): a sentence drops when its feature is off
+ document.getElementById(id+'-hint').textContent=['Keyboard shortcuts: K or Space plays or pauses.','Left and Right arrows skip 5 seconds, and J and L skip 10 seconds.',caps.volume&&'Up and Down arrows change the volume.','Home and End go to the start or the end.','M mutes.',tracks.length&&!caps.providerCaptions&&'C turns captions on or off.',ad.length&&'D turns audio description on or off.',caps.rate&&caps.rates.length>1&&'The less-than and greater-than keys slow down or speed up.',caps.fullscreen&&'F goes full screen.',o.tx&&!caps.providerCaptions&&'T opens the transcript.','Escape closes a panel.'].filter(Boolean).join(' ');
  if(!caps.volume)$('.vol',P).dataset.cap='off';
  if(!caps.fullscreen)$('[data-act=fs]',P).dataset.cap='off';
  if(!caps.rate||caps.rates.length<2){$('[data-act=speed]',P).dataset.cap='off';$('#'+id+'-more [data-speed]').dataset.cap='off'}
  else $$('input[type=radio][name^=sp]',P).forEach(i=>{if(!caps.rates.includes(+i.value))i.closest('label').dataset.cap='off'});
  applyCC();applyAD();setRate(S.rate);buildTx();render();
  if(o.demo)demo(o.demo);
- function demo(d){const L={poster:0,loading:0,buffering:21,buffrac:21,playing:13.4,paused:30,error:0,ended:DUR,nocc:13.4,capset:13.4,limited:30,adon:0.6,unavailable:0,txsearch:8,txempty:13.4};S.t=L[d]??0;if(!P.hasAttribute('data-nobuf'))S.buf=caps.canReportBufferedRanges===false?{fraction:Math.min(DUR,S.t+14)/DUR,ranges:null}:{fraction:Math.min(DUR,S.t+14)/DUR,ranges:[[0,Math.min(DUR,S.t+14)],[Math.min(DUR,S.t+20),Math.min(DUR,S.t+24)]]};
+ function demo(d){const L={poster:0,loading:0,buffering:21,buffrac:21,playing:13.4,paused:30,error:0,ended:DUR,nocc:13.4,capset:13.4,limited:30,adon:0.6,unavailable:0,provcc:13.4,txsearch:8,txempty:13.4};S.t=L[d]??0;if(!P.hasAttribute('data-nobuf'))S.buf=caps.canReportBufferedRanges===false?{fraction:Math.min(DUR,S.t+14)/DUR,ranges:null}:{fraction:Math.min(DUR,S.t+14)/DUR,ranges:[[0,Math.min(DUR,S.t+14)],[Math.min(DUR,S.t+20),Math.min(DUR,S.t+24)]]};
   S.playing=['playing','nocc','capset','adon','txsearch','txempty'].includes(d);
-  const state={nocc:'playing',capset:'playing',adon:'playing',limited:'paused',txsearch:'playing',txempty:'playing',buffrac:'buffering'}[d]||d;setState(state,true);
+  const state={provcc:'playing',nocc:'playing',capset:'playing',adon:'playing',limited:'paused',txsearch:'playing',txempty:'playing',buffrac:'buffering'}[d]||d;setState(state,true);
   if(d==='adon'){S.ds.on=true;applyAD()}
   render();
   if(d==='paused'||d==='limited'||d==='adon'){showPop($('#'+id+'-more'),$('[data-act=more]',P));document.activeElement&&document.activeElement.blur()}
@@ -538,11 +548,12 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
  return P}
 Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch('media/captions-fr.vtt').then(r=>r.text()),fetch(SRC+'ad.vtt').then(r=>r.text())]).then(([c,f,a])=>{TRACKS=[{id:'en',lang:'en',label:'English',cues:vtt(c)},{id:'fr',lang:'fr',label:'Français',cues:vtt(f)}];AD=vtt(a)}).catch(()=>{}).finally(()=>{
  mount($('#live'),{label:TITLE,media:true,tx:true});
- const G=$('#gal');[['poster','Poster: play target with duration'],['loading','Loading video (shown after about 1 second)'],['buffering','Stalled (native, HLS): same "Loading video" words, one segment per buffered range'],['buffrac','Stalled (YouTube, Vimeo): one fill from the loaded fraction'],['playing','Playing with captions'],['paused','Paused, More open: speed, audio description, caption language'],['adon','Audio description on, More open: Read descriptions aloud available'],['capset','Caption settings dialog'],['error','Error with Retry'],['ended','Ended with Replay'],['nocc','No captions track: Captions unavailable with hint'],['limited','Limited source, More open: no speed, no volume level, no full screen'],['unavailable','Adapter unavailable (Vimeo or hls.js module missing): text link to the video'],['txsearch','Transcript search: count, previous and next'],['txempty','Transcript with no lines']].forEach(([d,l])=>{
+ const G=$('#gal');[['poster','Poster: play target with duration'],['loading','Loading video (shown after about 1 second)'],['buffering','Stalled (native, HLS): same "Loading video" words, one segment per buffered range'],['buffrac','Stalled (YouTube, Vimeo): one fill from the loaded fraction'],['playing','Playing with captions'],['paused','Paused, More open: speed, audio description, caption language'],['adon','Audio description on, More open: Read descriptions aloud available'],['capset','Caption settings dialog'],['error','Error with Retry'],['ended','Ended with Replay'],['nocc','No captions track: Captions unavailable with hint'],['limited','Limited source, More open: no speed, no volume level, no full screen'],['unavailable','Adapter unavailable (Vimeo or hls.js module missing): text link to the video'],['provcc','No caption track of ours (YouTube): provider captions, static notes, no transcript'],['txsearch','Transcript search: count, previous and next'],['txempty','Transcript with no lines']].forEach(([d,l])=>{
   const f=document.createElement('figure');f.innerHTML=`<figcaption>${l}</figcaption>`;G.appendChild(f);
   const opt={label:'state demo: '+l,demo:d};
   if(d==='limited')opt.caps={rate:false,rates:[1],volume:false,fullscreen:false};
   if(d==='nocc')opt.tracks=[];
+  if(d==='provcc'){opt.caps={providerCaptions:true};opt.provider='YouTube';opt.tx=true}
   if(d==='buffrac')opt.caps={canReportBufferedRanges:false};
   if(d==='txsearch')opt.tx=true;
   if(d==='txempty'){opt.tx=true;opt.tracks=[];opt.ad=[]}
@@ -551,7 +562,7 @@ Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch('media/captions-f
  const pad=()=>$$('.gal figure').forEach(f=>{const p=$('.pop:not([hidden]),dialog[open]',f),vp=$('.vp',f);if(!p)return;vp.style.marginTop='';const over=vp.getBoundingClientRect().top-p.getBoundingClientRect().top;if(over>0)vp.style.marginTop=(over+8)+'px'});
  pad();new ResizeObserver(pad).observe(G)});
 const R=document.documentElement,mb=$('#mode');
-function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark);mb.textContent=dark?'Light mode':'Dark mode'}
+function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark)}
 document.querySelectorAll('[data-theme-pick]').forEach(b=>{const sync=()=>document.querySelectorAll('[data-theme-pick]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.themePick===R.dataset.theme));document.querySelectorAll('[data-theme-name]').forEach(n=>n.textContent=R.dataset.theme);b.onclick=()=>{R.dataset.theme=b.dataset.themePick;try{localStorage.setItem('ember:vp-theme',R.dataset.theme)}catch(e){}const u=new URL(location);u.searchParams.set('theme',R.dataset.theme);history.replaceState(null,'',u);sync()};sync()});
 mb.onclick=()=>{const dark=mb.getAttribute('aria-pressed')==='true';R.dataset.mode=dark?'light':'dark';try{localStorage.setItem('jdilig:mode',R.dataset.mode)}catch(e){}syncMode()};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMode);syncMode();
