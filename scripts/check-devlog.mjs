@@ -24,7 +24,9 @@ export function checkChanges(changes, labels, fragments) {
   if (labels.includes(MAINT_LABEL)) return { fails, notes: [`label ${MAINT_LABEL}: PROGRESS.md edits and fragment count allowed`] };
   const touchesProgress = changes.some((c) => c.path === 'PROGRESS.md' || c.from === 'PROGRESS.md');
   if (touchesProgress) fails.push('PROGRESS.md is modified: add your entry as a progress/YYYY-MM-DD-<slug>.md fragment instead (PROC-8)');
-  const added = changes.filter((c) => /^[ARC]/.test(c.status) && isFragmentPath(c.path)).map((c) => c.path);
+  // Only files this PR adds (git diff --diff-filter=A <base>...HEAD -- progress/): fragments that arrive by forward-merging main are
+  // already on the base side of the merge base, so they never count against the one-fragment rule.
+  const added = changes.filter((c) => c.status === 'A' && isFragmentPath(c.path)).map((c) => c.path);
   if (added.length === 0) fails.push('no devlog fragment added: add exactly one progress/YYYY-MM-DD-<slug>.md (see progress/README.md)');
   if (added.length > 1) fails.push(`${added.length} devlog fragments added (${added.join(', ')}): a PR adds exactly one`);
   const removed = changes.filter((c) => (c.status === 'D' && isFragmentPath(c.path)) || (/^R/.test(c.status) && c.from && isFragmentPath(c.from) && !isFragmentPath(c.path)));

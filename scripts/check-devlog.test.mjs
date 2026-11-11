@@ -23,7 +23,7 @@ function repo() {
   g('add', '-A'); g('commit', '-q', '-m', 'base'); g('checkout', '-q', '-b', 'pr');
   const write = (rel, text) => { fs.mkdirSync(path.dirname(path.join(d, rel)), { recursive: true }); fs.writeFileSync(path.join(d, rel), text); };
   const commit = () => { g('add', '-A'); g('commit', '-q', '--allow-empty', '-m', 'pr'); };
-  return { d, write, commit };
+  return { d, g, write, commit };
 }
 function run(d, labels = '') {
   try { return { code: 0, out: execFileSync('node', [CHECK, '--root', d, '--base', 'main', '--labels', labels], { encoding: 'utf8' }) }; }
@@ -86,4 +86,13 @@ test('render: invalid fragment writes nothing and exits 1', () => {
   const r = repo(); r.write('progress/2026-11-12-a.md', '- no front matter\n');
   assert.throws(() => execFileSync('node', [RENDER, '--root', r.d], { stdio: 'pipe' }));
   assert.equal(fs.existsSync(path.join(r.d, 'dist/devlog/DEVLOG.md')), false);
+});
+test('pass: forward-merge of main that brings in other PRs\' fragments still counts only this PR\'s one', () => {
+  const r = repo(); r.write('progress/2026-11-12-mine.md', frag('2026-11-12', 'MINE', 'Mine')); r.commit();
+  r.g('checkout', '-q', 'main');
+  r.write('progress/2026-11-12-other-a.md', frag('2026-11-12', 'OA', 'Other A')); r.write('progress/2026-11-12-other-b.md', frag('2026-11-12', 'OB', 'Other B')); r.commit();
+  r.g('checkout', '-q', 'pr'); r.g('merge', '-q', '--no-ff', '--no-edit', 'main');
+  const o = run(r.d); assert.equal(o.code, 0, o.out); assert.match(o.out, /fragment: progress\/2026-11-12-mine\.md/);
+  r.write('progress/2026-11-12-second.md', frag('2026-11-12', 'S', 'Second')); r.commit();
+  const o2 = run(r.d); assert.equal(o2.code, 1); assert.match(o2.out, /2 devlog fragments added \(progress\/2026-11-12-mine\.md, progress\/2026-11-12-second\.md\)/);
 });
