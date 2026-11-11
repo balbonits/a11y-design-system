@@ -4,17 +4,18 @@ Status: **draft for Chief Architect sign-off.** Coders build from this file plus
 
 - Prototype: [`index.html`](index.html) (open through a server that supports HTTP Range requests, e.g. `npx serve` or GitHub Pages; Python's `http.server` can't seek video).
 - Annotated shots: [`handoff/`](handoff/), made by [`annotate.cjs`](annotate.cjs) (neo pattern).
-- Core it is designed against: FSD's [PR #33](https://github.com/balbonits/a11y-design-system/pull/33), `feat/r4-video` at `8f4eb06` (`src/video/player.ts`, `src/video/vtt.ts`, adapters). Read with `gh`/`git show` only.
+- Core it is designed against: FSD's [PR #33](https://github.com/balbonits/a11y-design-system/pull/33), `feat/r4-video` at `8f4eb06` (`src/video/player.ts`, `src/video/vtt.ts`, adapters), and its current head `acd2f93` with `docs/components/video-player/CORE-API.md` sections 5a (tracks, descriptions, voicing) and 5b (`waiting`/`resumed`, `bufferedchange`, `getBuffered()` → `{ fraction, ranges }`, `canReportBuffering`, `canReportBufferedRanges`, `providerCaptions`, `VideoAdapterUnavailable`, `descriptions.setTrack`, `readVideoPrefs`/`writeVideoPrefs`). Read with `gh`/`git show` only.
+- Copy: `R4-PLAYER-COPY.md` from UI Copywriter (final, approved by Chief of Creatives). Every string in the prototype comes from it except the ones still marked `[COPY-TBD]` (see Copy).
 - Identity: neo tokens only (`docs/directions/v3/neo/tokens.css`), locked Addendum 5 and 7 names, no aliases, no new tokens. `--scrim` from `e48047a`. `--target-min` is 44px.
-- Media for the demo: `tools/transcribe/samples/sintel/` (52s excerpt, 1126×480, captions.vtt, ad.vtt, transcript.txt). Sintel © Blender Foundation, CC BY 3.0.
+- Media for the demo: `tools/transcribe/samples/sintel/` (52s excerpt, 1126×480, captions.vtt, ad.vtt, transcript.txt) and `media/captions-fr.vtt` (the official French Sintel subtitles from `reference/sintel_fr.srt`, re-timed to the excerpt, so the Caption language picker has two real tracks). Sintel © Blender Foundation, CC BY 3.0.
 
-Checks at this commit (from `annotate.cjs`): 320 / 375 / 768 / 1024 / 1440 × light / dark: horizontal overflow 0, axe serious+critical 0, WCAG 1.4.12 text spacing overflow 0 and clipped 0, 200% zoom (640 css px) overflow 0, targets under 44px: none, page errors: none. Keyboard smoke test (End, Home, arrows, PgUp, Space, K, C, Esc returns focus, caption settings persist, transcript search and cue seek) passes.
+Checks at this commit (from `annotate.cjs`): 320 / 375 / 768 / 1024 / 1440 × light / dark: horizontal overflow 0, axe serious+critical 0, WCAG 1.4.12 text spacing overflow 0 and clipped 0, 200% zoom (640 css px) overflow 0, targets under 44px: none, page errors: none. Keyboard smoke test passes: End, Home, arrows, J/L, `<`/`>` speed steps, Shift+M ignored, M (aria-pressed and "Muted" valuetext), D, C, T (focus to the transcript), Esc returns focus, caption language switch (French cue renders with `lang=fr`), Caption settings dialog (focus to the checked size, live preview, Reset announces "Caption settings reset.", Esc closes and focus returns to More), prefs written as one `ember:video:v1` object, a corrupt stored value falls back silently, transcript search count, Enter / Shift+Enter, no-results text, Clear search.
 
 ---
 
 ## H-1 Layout, mobile-first
 
-The player is a `section` (`aria-label="Video player: <title>"`) holding three parts top to bottom: **stage** (video, poster play button, status pill, captions, error and ended overlays), the **audio-description line** (only when AD is on), and the **control bar**. The transcript is its own `section` next to or under it.
+The player is a `section` (`aria-label="Video player: <title>"`) holding three parts top to bottom: **stage** (video, poster play button, status pill, captions, error, ended and adapter-unavailable overlays), the **audio-description line** (only when AD is on), and the **control bar**. The Caption settings `dialog` sits inside the section so it renders in full screen too. The transcript is its own `section` next to or under it.
 
 | Page width | Player | Bar mode (container query) | Transcript |
 |---|---|---|---|
@@ -28,37 +29,65 @@ Decisions (pushback, with reasons):
 1. **The bar docks below the frame at every width, not over the video.** The sample is 2.35:1, so at 320 the picture is about 121px tall; an overlay bar (≥96px with the scrubber) would cover most of it. Docking also means the controls always sit on solid `--surface` (contrast is guaranteed, not "depends on the frame") and captions never collide with controls. The bar overlays only in full screen (H-4, H-7).
 2. **Bar mode is a container query on the player (`container: vp / inline-size`, switch at 560px), not a viewport breakpoint.** The same player can sit in a narrow card on a wide page (see the states gallery, two columns at 1024+, each ~410px, narrow mode). Viewport breakpoints would put wide controls in a 410px box.
 3. **Transcript goes beside the player from 1024px.** Below 1024, a side panel would squeeze the player under 560px and the controls would drop to narrow mode on a big screen. At 1024 the split is ~620 / ~330, which keeps wide controls and a readable transcript line.
-4. **Stage height:** `max(9.5rem, 100cqi × 480 / 1126)`, i.e. the video's ratio but never shorter than 9.5rem so the poster button, status pill and overlays fit at 320. Letterboxing is `--surface-muted`. Use the real video ratio per source (from metadata, or 16:9 for YouTube and Vimeo).
+4. **Audio description line sits under the frame, not over it.** Creatives asked that AD text sit above the captions and never cover them. Docked under the frame it covers neither the picture nor the captions at any width, and at 320 there's no room inside a 121px-tall frame for two text bands. In full screen, where the frame is large, the AD line moves to the **top of the frame**, which puts it above the captions with the frame between them. It always shows the `AD` badge next to the full name "Audio description" (never the badge alone).
+5. **Stage height:** `max(9.5rem, 100cqi × 480 / 1126)`, i.e. the video's ratio but never shorter than 9.5rem so the poster button, status pill and overlays fit at 320. Letterboxing is `--surface-muted`. Use the real video ratio per source (from metadata, or 16:9 for YouTube and Vimeo).
 
 ## H-2 Fluid rules
 
 - Player: `width: 100%`, `min-width: 0` inside any grid. Never a fixed width.
 - Side-by-side grid (≥1024): `grid-template-columns: minmax(0,2fr) minmax(280px,1fr)`. The transcript takes the player's height with `height:0; min-height:100%; overflow:hidden` and its list scrolls. Don't let the transcript set the row height.
 - Captions: `max-width: 92%` of the stage, centered, `bottom: 6%`. Size uses `cqi` clamps so it scales with the player, not the viewport (H-8 table).
-- Popovers: anchored above the bar's right edge, `max-width: calc(100cqi - 1.1rem)`, `max-height: min(26rem, 80vh)`, scroll inside. Chips wrap.
+- Popovers: anchored above the bar's right edge, `max-width: calc(100cqi - 1.1rem)`, `max-height: min(36rem, 80vh)`, scroll inside. Chips wrap.
 - Narrow bar: row 1 is current time, scrubber, duration (`.tnum`, tabular mono). Row 2 is Play, Mute, spacer, Captions, More, Full screen.
 - Wide bar: row 1 is the scrubber alone. Row 2 is Play, `0:00 / 0:52`, Mute, Volume slider, spacer, Captions, Speed, Transcript, More, Full screen.
+- Transcript button: icon only below a 720px player, icon plus visible "Transcript" from 720px. The copy says "from 480px"; on our layout the button is only in the bar from 560px, and at 560 to 720 the row can't fit the text without wrapping, so the visible text starts at 720 (player width, container query). Its name is "Transcript" at every size.
+- Captions-unavailable hint: a third bar row (`.cchint`, `--text-muted`) only when there is no usable captions track.
+- Transcript header: heading on the left, Download on the right, search on its own row. Downloads are an inline group (`Download` label, Text, Captions file) when the transcript is at least 440px wide, and collapse into a `Download` disclosure (button `aria-expanded` and a panel) below that. That covers 320 and 375 and the side column at 1024 to 1440.
+- Caption settings dialog: `width: min(30rem, 100vw - 1.5rem)`, `max-height: 100dvh - 1.5rem`, scrolls inside. Chips wrap.
 - Text spacing (1.4.12) and 200% zoom: nothing clips; chips and menu items wrap; the time label never truncates.
 
 ## H-3 Controls per mode
 
-| Control | Narrow (<560 container) | Wide (≥560) | Hidden when (core `capabilities`) |
+| Control | Narrow (<560 container) | Wide (≥560) | Hidden when (core `capabilities` and tracks) |
 |---|---|---|---|
 | Play / Pause | bar | bar | never |
 | Time | flanks scrubber | inline `cur / dur` | never |
-| Mute | bar | bar | never (works even on iOS) |
+| Mute | bar, `aria-pressed` | bar | never (works even on iOS) |
 | Volume slider | hidden | bar, **only with `(hover:hover) and (pointer:fine)`** | `capabilities.volume === false` (iOS) |
-| Captions | bar, `aria-pressed` | bar | disabled, not hidden, when there's no captions track (`aria-disabled`, label "Captions, unavailable") |
-| Speed | inside More | bar button showing current rate | `rate === false` or `rates.length < 2`; otherwise show only chips in `capabilities.rates` |
-| Transcript | inside More | bar button, `aria-expanded` | no transcript configured |
-| Audio description | inside More, `aria-pressed` | inside More | no descriptions track |
-| Caption settings | inside More | inside More | never (captions are always ours) |
-| Full screen | bar | bar | `capabilities.fullscreen === false` (iPhone Safari) |
+| Captions | bar, `aria-pressed` | bar | `capabilities.providerCaptions`. With no usable track it stays visible, `aria-disabled="true"`, `aria-describedby` the hint "No captions for this video." |
+| Speed | inside More (radio chips) | bar button showing the value ("Normal", "1.5×"), name "Playback speed, {value}" | `rate === false` or `rates.length < 2`; otherwise only chips in `capabilities.rates` |
+| Transcript | inside More, `aria-expanded` | bar button, `aria-expanded` | no transcript configured |
+| Audio description | inside More, `aria-pressed`, `AD` badge plus full name | inside More | no descriptions track (a failed descriptions VTT hides it) |
+| Read descriptions aloud | inside More, under Audio description, `aria-pressed` | inside More | no descriptions track, or no speech engine (`canVoice()` false). Disabled (`aria-disabled`, hint "Turn on Audio description to use this.") while AD is off |
+| Pause video while reading `[COPY-TBD]` | sub-toggle under Read aloud, `aria-pressed`, default off | inside More | same as Read aloud. Disabled until Read aloud is on |
+| Caption language | inside More, native `select` with Off first | inside More | fewer than 2 caption tracks, or `providerCaptions` |
+| Caption settings | inside More, opens a modal dialog | inside More | `providerCaptions` |
+| Full screen | bar, name "Full screen" / "Exit full screen" | bar | `capabilities.fullscreen === false` (iPhone Safari) |
 
-- **More is a disclosure (`button aria-expanded` + `role=group` panel), not `role=menu`.** It mixes radio chips and toggles; menu semantics would force arrow-key-only navigation and break the radios.
-- **PiP is not in the product.** The core marks it out of scope (CTE), so the prototype has no PiP item.
-- Speed chips are a radio group (0.5 / 0.75 / 1 / 1.25 / 1.5 / 2, the core's `RATES`). The wide Speed button reads "Speed, 1×".
-- See the gallery state "Limited source" for the hidden-capability layout.
+- **More is a disclosure (`button aria-expanded` plus a `role=group` panel), not `role=menu`.** It mixes radio chips, toggles and a select; menu semantics would force arrow-key-only navigation and break the radios.
+- **Caption settings is a native modal `dialog`** (Ember Modal pattern, `--scrim` backdrop): focus goes to the checked Text size chip, Esc or Close returns focus to More, settings apply live with a preview line, Reset announces "Caption settings reset." politely.
+- **Tooltips:** every icon-only bar button shows its name above it on hover and on keyboard focus (`::after` from `data-tip`, kept in sync with the name, so "Pause" and "Exit full screen" update). Esc hides it until the pointer moves or focus moves (WCAG 1.4.13). The first and last buttons anchor their tooltip to the inside edge so it never leaves the player.
+- **PiP is not in the product** (CTE ruling).
+- A failed captions VTT drops out of the picker; if none is left, Captions goes to the disabled state above. No toast.
+
+### Adapters × controls
+
+From PR #33 and 5b. "Ours" means our UI renders it from the core.
+
+| Control | native | hls | youtube | vimeo |
+|---|---|---|---|---|
+| Play, pause, seek, time | ours | ours | ours (iframe, provider controls off) | ours (iframe, provider controls off) |
+| Mute | ours | ours | ours | ours |
+| Volume slider | ours, except iOS (`volume:false`) | same as native | ours | ours |
+| Speed | ours, `capabilities.rates` | ours | ours, YouTube's rate list | hidden unless the owner account allows it (`rate:false`) |
+| Captions, language, settings | ours from VTT | ours from VTT | ours from VTT. Only when the host has no VTT and passes `providerCaptions`: our caption controls hide and More shows "Captions are shown by YouTube." | same: "Captions are shown by Vimeo." |
+| Audio description, Read aloud | ours | ours | ours | ours |
+| Transcript | ours | ours | ours | ours |
+| Full screen | ours on the container, except iPhone (`fullscreen:false`) | same | ours on the container | ours on the container |
+| Buffered fill | one segment per range (`ranges`) | one segment per range | one fill from `fraction` (`ranges` null) | one fill from `fraction`. On any adapter, no fill when `fraction` is 0 |
+| Adapter can't load | Error state | **Unavailable state** when `hls.js` is missing on a browser without native HLS | Error state | **Unavailable state** when `@vimeo/player` is missing |
+
+Unavailable state: the core rejects with `VideoAdapterUnavailable` (`adapter: 'vimeo' \| 'hls'`). The frame shows "This video can't play here." `[COPY-TBD]` and a text link to the video `[COPY-TBD]` (a plain `a` to the source page, focusable, 44px), with no bar and no big Play (CA ruling).
 
 ## H-4 States
 
@@ -66,19 +95,37 @@ All shown in the prototype's States gallery (static, no media load) and in `hand
 
 | State | What shows | Notes |
 |---|---|---|
-| Poster | poster frame, big Play button with duration chip (`Play 0:52`), scrubber visible but inert | the big button is the first tab stop; it has a `--surface` halo so the focus ring reads on any frame |
-| Loading | status pill "Loading video" (`role=status`) | static text and a dotted ring, **no spinner**, nothing moves |
-| Buffering | status pill "Buffering" | same; shown only on the adapter's waiting signal (see Known issue 1) |
+| Poster | poster frame, big Play button "Play" with the duration chip, scrubber visible but inert | name is "Play Sintel (excerpt)" (visible "Play" plus visually hidden title; the duration chip is `aria-hidden`); the poster `img` has `alt=""`; it's the first tab stop, with a `--surface` halo so the focus ring reads on any frame |
+| Loading | pill "Loading video" | appears only after about 1 second, the same moment the polite status announces it (no flash on fast loads); static text and a dotted ring, **no spinner** |
+| Stalled (native, HLS) | the same pill, the same words; the lighter fill draws one segment per buffered range | pill from the core `waiting` until `resumed`; fill redrawn on `bufferedchange` (`canReportBufferedRanges` true) |
+| Stalled (YouTube, Vimeo) | the same pill; one fill from 0 to `fraction` | `ranges` is null. No fill when `fraction` is 0 |
+| No buffering report | no pill, no fill | `canReportBuffering` false (none of the four adapters today; kept for future adapters) |
 | Playing | captions on by default, Pause icon | |
-| Paused | Play icon; More can be open | |
-| Caption settings open | panel with Size, Style, Background, Font, Reset, Done | |
-| Error | `--scrim` over the frame, card with message and Retry | `[COPY-TBD]` strings |
-| Ended | `--scrim`, card "Ended" and Replay | `[COPY-TBD]` |
-| No captions | Captions button `aria-disabled`, captions box hidden | C key does nothing |
+| Paused, More open | Playback speed, Audio description, Read descriptions aloud (disabled with hint), the pause sub-toggle (disabled), Caption language, Caption settings | |
+| Audio description on | AD line under the frame; Read descriptions aloud enabled | when Read aloud is on, the AD text stops being a live region so the screen reader and speech engine don't talk at once |
+| Caption settings dialog | preview line, Text size, Text color, Background, Font, Reset, Close | |
+| Error | `--scrim` over the frame, "The video didn't load." and Retry | if it fails after the user started playback: `role=alert` and focus moves to Retry. A failure on first load shows the card without an alert |
+| Ended | `--scrim`, card and Replay | `[COPY-TBD]` |
+| No captions | Captions `aria-disabled`, hint "No captions for this video." under the bar | C does nothing |
 | Limited source | no Speed, no volume slider, no Full screen | from `capabilities` |
-| Full screen | bar overlays the bottom as a floating solid surface bar, auto-hides (H-7), captions lift to `bottom: 8.5rem` while the bar shows | not shot headless; see H-9 |
+| Adapter unavailable | `--scrim`, card with message and a text link to the video, no bar | Vimeo or hls.js module missing; `[COPY-TBD]` |
+| Transcript search | count "1 of 3 matches" / "1 match", current match outlined, Previous match and Next match | buttons `aria-disabled` at 0 matches; Enter and Shift+Enter step |
+| Transcript, no results | 'No lines match "zzz".' | |
+| Transcript empty | "This video has no transcript." | search, downloads and Jump are hidden |
+| Full screen | bar overlays the bottom as a floating solid bar, auto-hides (H-7), captions lift to `bottom: 8.5rem` while the bar shows, AD line at the top of the frame | not shot headless; see H-9 |
 
-Transcript states: list of cues (time + text buttons), current cue marked with `aria-current="true"`, a "Now" label and a left border (not color alone); search results count in one `role=status` ("2 matches" / "No matches" `[COPY-TBD]`); "Jump to current" appears when the user scrolls away while auto-follow is on.
+Transcript rows: dialogue and description cues in one list, in time order. A description row has a visible `Description` tag and italic text. Each row is a button whose name reads "{time in words}, {text}" (for a description, "{time in words}, Description, {text}") from a visually hidden time, so the visible text stays in the name. The current dialogue row has `aria-current="true"`, a "Now" label and a left border (not color alone). "Jump to current" (name "Jump to current line") appears when the user scrolls away while auto-follow is on.
+
+### Live-region policy
+
+| Region | Politeness | What it says, and when |
+|---|---|---|
+| Player status (`role=status`, visually hidden) | polite | "Loading video" after about 1s of loading or stalling; "Playback speed, {value}" after `<` or `>`. Cleared when playback resumes. **Never** the current time |
+| Player alert (`role=alert`) | assertive | "The video didn't load." only when it fails after the user started playback |
+| AD text | polite | each description cue's text as it starts. Turned off (`aria-live=off`) while Read descriptions aloud is on |
+| Transcript search count (`role=status`) | polite | the count or no-results text, **debounced about 500ms** after typing stops; updated right away on Enter / Shift+Enter |
+| Caption settings status | polite | "Caption settings reset." after Reset |
+| Captions box | none (`aria-hidden`) | captions are visual; screen reader users get the transcript |
 
 ## H-5 Touch targets
 
@@ -92,34 +139,50 @@ Transcript states: list of cues (time + text buttons), current cue marked with `
 
 ## H-6 Keyboard and focus
 
-Shortcuts work **only while focus is inside that player** (never global), never in text inputs, and never with Ctrl/Alt/Meta held.
+Shortcuts work **only while focus is inside that player** (never global, WCAG 2.1.4), never in the search field, select or dialog, and never with Ctrl/Alt/Meta held. Shift is accepted only for `<` and `>`.
 
 | Key | Action | Where it differs |
 |---|---|---|
-| K | play or pause | not inside the settings panels |
+| K | play or pause | not inside the panels or dialog |
 | Space | play or pause | only on the scrubber or the player frame; on a button it presses the button |
 | ← / → | seek 5s | on the volume slider they change volume |
-| ↑ / ↓ | volume ±10% | on the scrubber they seek 5s (slider pattern) |
+| J / L | seek 10s | |
+| ↑ / ↓ | volume ±10% | on the scrubber they seek 5s (slider pattern); nothing when `capabilities.volume` is false |
 | PgUp / PgDn | seek ±10% of duration | scrubber only |
-| Home / End | start / end | scrubber only |
+| Home / End | start / end | anywhere in the player except the volume slider and fields |
 | M | mute | |
-| C | captions on/off | nothing when there's no track |
+| C | captions on/off | last-used track; nothing when there's no track |
+| D | audio description on/off | nothing when there's no descriptions track |
+| `<` / `>` | slower / faster, one step through `capabilities.rates` | announces "Playback speed, {value}" |
 | F | full screen | nothing when the source has no full screen |
-| Esc | close the open panel, focus back to the button that opened it | in full screen the browser exits full screen |
+| T | open the transcript and focus the current row | falls back to the first row, then the heading |
+| Esc | close the open panel or dialog, focus back to its button; with nothing open, hide a tooltip | in full screen the browser exits full screen |
+| Enter / Shift+Enter | next / previous search match | in the transcript search field |
 
-- Scrubber: `role=slider`, `aria-valuemin 0`, `aria-valuemax` = duration, `aria-valuenow` = floor(seconds), `aria-valuetext` in words ("15 seconds of 52 seconds"; minutes when ≥60s).
-- Tab order: big Play (poster only), scrubber, Play, Mute, Volume, Captions, Speed, Transcript, More, Full screen, then any open panel, then the transcript.
+- Scrubber: `role=slider`, `aria-valuemin 0`, `aria-valuemax` = duration, `aria-valuenow` = floor(seconds), `aria-valuetext` per copy ("15 seconds of 52 seconds", "1 hour 2 minutes 5 seconds of 1 hour 30 minutes"; only the current time while the duration is unknown).
+- Volume: `aria-valuetext` "{n}%", or "Muted" while muted.
+- Tab order: big Play (poster only), scrubber, Play, Mute, Volume, Captions, Speed, Transcript, More, Full screen, then any open panel, then the transcript (Download, search, Clear search, Previous match, Next match, rows, Jump to current).
 - Focus ring: neo `--focus-ring-*`. Bar padding is larger than ring offset + width so rings never clip.
-- Panels: one open at a time. Opening moves no focus (disclosure); Done in Caption settings returns focus to More.
-- The player has `aria-describedby` pointing at a visually hidden keyboard hint (Copy table).
-- Captions box is `aria-hidden` (screen reader users use the transcript or their own caption reading; duplicating live captions is noise). The AD line is `aria-live="polite"` and exists only while AD is on.
+- Panels: one open at a time. Opening a panel moves focus to its first control. The Download disclosure moves focus to its first link and Esc closes it.
+- The player has `aria-describedby` pointing at a visually hidden keyboard hint (Copy).
+- Captions box is `aria-hidden`; captions in another language get `lang` on the caption box.
 
 ## H-7 Motion
 
-- No `@keyframes` anywhere. Transitions only: played fill width (`--duration-fast`, linear), bar opacity in full screen and caption lift (`--duration-base`, `--ease-standard`), button press (`--ease-press`).
-- **Reduced motion:** all transitions 0s, no hover/press transforms, transcript auto-follow **off** (no auto-scrolling; "Jump to current" still works), full screen auto-hide **off**.
-- **Full screen auto-hide:** after 3s of no pointer, key or touch while playing. Never hides while any element has `:focus-visible` (keyboard users keep the controls; a mouse click focus doesn't block it), while a panel is open, while the pointer is over the bar, or when paused. Any input shows it again.
-- Loading and buffering never animate (static text).
+No `@keyframes` anywhere. Everything that moves, and what reduced motion does:
+
+| Motion | Default | `prefers-reduced-motion: reduce` |
+|---|---|---|
+| Played fill width | `--duration-fast`, linear | instant |
+| Full screen bar fade and auto-hide | `--duration-base`, `--ease-standard`; hides after 3s of no input while playing | **no auto-hide**, controls stay |
+| Caption lift in full screen | `--duration-base` | instant |
+| Button hover lift and press | translate, `--ease-press` | no transform |
+| Big Play hover tilt | `--tilt` rotate | no transform |
+| Transcript auto-follow | scrolls the current row to a third of the list | **off**; "Jump to current" still works |
+| Search match stepping | jumps the list (no smooth scroll) | same |
+| Loading and stalled pill | static text, no spinner | same |
+
+Auto-hide never hides while any element has `:focus-visible`, while a panel is open, while the pointer is over the bar, or when paused. Any input shows the controls again.
 
 ## H-8 Tokens
 
@@ -140,16 +203,18 @@ Only these neo tokens are used (no new tokens, no aliases):
 | Focus | `--focus-ring-width`, `--focus-ring-offset`, `--focus-ring-style`, `--focus-ring-color` |
 | Motion | `--duration-fast`, `--duration-base`, `--ease-standard`, `--ease-press` |
 
-Caption settings are **token-pair presets, not free color pickers** (free colors can fail contrast):
+Caption settings follow the approved copy (viewer overrides). This replaces the earlier token-pair presets.
 
-| Setting | Values | Rule |
+| Setting | Values (stored value) | Rule |
 |---|---|---|
-| Style | Default, Inverted, High-vis | `--text` on `--surface` / `--surface` on `--text` / `--highlight-contrast` on `--highlight` |
-| Background | Solid, 75%, 50% | `color-mix(in srgb, <bg> N%, transparent)`; Solid is the default and the only one with guaranteed contrast |
-| Size | S, M (default), L, XL | `clamp(.875rem,.45rem+2cqi,1.6rem)` / `clamp(1rem,.55rem+2.4cqi,1.9rem)` / `clamp(1.2rem,.7rem+3cqi,2.3rem)` / `clamp(1.45rem,.85rem+3.8cqi,2.8rem)` |
-| Font | Sans, Mono | `--font-body` / `--font-mono` |
+| Text size | Small, Medium (default), Large, Extra large (`s`, `m`, `l`, `xl`); chips show S, M, L, XL with the full name as hidden text | `clamp(.875rem,.45rem+2cqi,1.6rem)` / `clamp(1rem,.55rem+2.4cqi,1.9rem)` / `clamp(1.2rem,.7rem+3cqi,2.3rem)` / `clamp(1.45rem,.85rem+3.8cqi,2.8rem)` |
+| Text color | White (default), Yellow, Cyan, Black (`white`, `yellow`, `cyan`, `black`) | `#fff`, `#ffe600`, `#00e5ff`, `#000`. Black switches the band to white. Component-local values, pending CA (Known issue 7) |
+| Background | None, Half, Solid (default) (`none`, `half`, `solid`) | band at 0 / 50% / 100% of black (white for Black text). None and Half add a 1px outline in the band color so text holds over bright frames |
+| Font | Sans serif (default), Serif, Monospace (`sans`, `serif`, `mono`) | `--font-body` / `Georgia, serif` (no serif token) / `--font-mono` |
 
-Saved in `localStorage["jdilig:captions:v1"]` as `{on,size,style,bg,font}`; Reset restores defaults.
+Contrast on Solid: white, yellow and cyan on black are 21:1, 19.6:1 and 15.6:1; black on white is 21:1.
+
+**Saved prefs:** one JSON object in `localStorage["ember:video:v1"]` (override with the `storageKey` prop), the same shape as the core's `readVideoPrefs`/`writeVideoPrefs`: `{ volume, muted, rate, captions: lang | 'off' | null, descriptions: 'off' | 'text' | 'voice', pauseWhileReading, captionStyle: { size, color, background, font } }`. A bad field falls back to its default, and a storage error falls back silently. Only the main player saves; demos don't. Reset restores the caption style defaults only.
 
 ## H-9 Annotated screenshots
 
@@ -166,32 +231,38 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
 3. One cue model (`vtt.ts`) feeds captions (`activeCues`), transcript (`cueIndexAt` for the current cue, `searchCues`, `toTxt`/`toVtt` for downloads) and AD.
 4. Seeks requested before metadata loads are kept and applied on `durationchange`/ready (the prototype does this on `loadedmetadata`).
 5. Keyboard listener on the player root, not `document` (H-6). Ignore events from text inputs and with modifiers.
-6. States from events: `play`/`pause`/`ended`/`error` map directly; Loading is "play requested, no `play` yet". Buffering waits on Known issue 1.
+6. States from events: `play`/`pause`/`ended`/`error` map directly; Loading is "play requested, no `play` yet"; Stalled is `waiting` until `resumed`; redraw the fill on `bufferedchange`; catch `VideoAdapterUnavailable` into the Unavailable state. Start the 1s timer on entering either and clear it on leaving.
 7. Overlay bar and auto-hide only under `:fullscreen` (H-7).
-8. Copy: use the strings in the Copy table; anything marked `[COPY-TBD]` waits for UI Copywriter via Chief of Creatives.
+8. Copy: every string comes from `R4-PLAYER-COPY.md`; anything still marked `[COPY-TBD]` waits for UI Copywriter.
 9. Prototype CSS is the reference for spacing and sizes; port it to the Ember component's CSS with the same token names.
+10. Prefs through `readVideoPrefs`/`writeVideoPrefs` (5b) plus `pauseWhileReading`; validate `captionStyle` per field against H-8.
+11. Voicing through `createDescriptions` and `browserSpeech()` (5a). `pauseWhileSpeaking` maps to `pauseWhileReading`, default false.
+12. Audio description language: picking another AD track calls `descriptions.setTrack(cues, lang)`, which keeps the user's mode (text or voice); the picker appears only with 2 or more AD tracks (the demo has one).
 
 ## Copy
 
-All strings below are placeholders until UI Copywriter rules (routed through Chief of Creatives).
+Strings are from `R4-PLAYER-COPY.md` (final). Still open with UI Copywriter (asked at 9:35 PM PT, cc Chief of Creatives):
 
-| Where | Placeholder |
+| Where | Placeholder in the prototype |
 |---|---|
-| Error card | `[COPY-TBD] This video didn't load.` / button `[COPY-TBD] Retry` |
-| Ended card | `[COPY-TBD] Ended` / button `Replay` |
-| Status pill | `Loading video`, `Buffering` |
-| Captions unavailable | button label `Captions, unavailable` |
-| Transcript search | `2 matches` / `No matches` (`[COPY-TBD]`), `Jump to current`, `Now` |
-| Keyboard hint (screen readers) | `Keyboard: K to play or pause, arrow keys to seek and change volume, M to mute, C for captions, F for full screen.` |
+| Ended card | `[COPY-TBD] Ended` / `[COPY-TBD] Replay` |
+| Keyboard hint (screen readers, `aria-describedby`) | `[COPY-TBD] Keyboard: K or Space to play or pause, ...` (draft lists every key in H-6) |
+| Pause sub-toggle | `[COPY-TBD] Pause video while reading` |
+| Adapter unavailable | `[COPY-TBD] This video can't play here.` / `[COPY-TBD] Watch the video` |
+
+Track labels in the language picker ("English", "Français") come from the track metadata, not UI copy.
 
 ## Known issues
 
-1. **Buffering and buffered range need a core addition.** `PlayerEvent` has no `waiting`/`playing`/`progress`, and `Player` has no buffered range. The design needs (a) a waiting/resumed signal for the Buffering pill and (b) `getBuffered(): number` (seconds buffered ahead) for the lighter fill. Asking FSD; until then hide the buffered fill and never show Buffering.
+1. ~~Buffering needs a core addition.~~ Resolved in the core (5b, FSD commit `1fa5c04`, pushed with the player PR): `waiting` and `progress` on all four adapters, `getBuffered()` 0..1 and `capabilities.buffered`.
 2. **YouTube and Vimeo** run in iframes: our captions and transcript still work (they're ours), but the iframe takes focus when clicked, so our shortcuts stop until focus returns; the provider's own UI must be hidden (`controls=0` / Vimeo `controls:false`). Vimeo rate needs a paid owner account (core reports `rate:false`).
 3. **iOS Safari:** volume level is read-only (slider hidden, Mute works); iPhone has no element full screen (button hidden).
-4. Caption backgrounds 75% and 50% are user choices and can drop below contrast over bright frames; Solid is the default.
+4. Caption backgrounds Half and None are user choices and can drop below contrast over bright frames even with the outline; Solid is the default.
 5. No hover time preview (thumbnails) on the scrubber.
 6. Captions don't show in native full screen on iOS when the browser takes over the video element.
+7. **Open with CA:** the four caption text colors aren't registered tokens. Either register them (e.g. `--palette-caption-*`) or keep them component-local as now.
+8. **Open with CA:** embed captions. The copy and Creatives want a provider note when the provider shows captions; CA ruled provider captions only for a source with no VTT of ours (`providerCaptions`). The prototype follows CA: ours everywhere we have VTT, the note only with `providerCaptions`.
+9. Speech voicing uses the browser's speech engine (`speechSynthesis`); voices and timing vary by OS, so Read aloud is hidden where `canVoice()` is false.
 
 ## Out of scope
 

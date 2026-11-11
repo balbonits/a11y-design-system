@@ -58,29 +58,19 @@ main:focus{outline:none}
 .vp[data-state=error] .stage video,.vp[data-state=error] .stage .poster{opacity:.25}
 .cap{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);width:max-content;max-width:92%;text-align:center;pointer-events:none;transition:bottom var(--duration-base) var(--ease-standard)}
 .cap:empty,.vp:not([data-cc=on]) .cap,.vp[data-state=poster] .cap,.vp[data-state=error] .cap{display:none}
-.cap span{-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:.08em .45em;line-height:1.5;border-radius:var(--radius-sm);background:var(--surface);color:var(--text);font:500 clamp(1rem,.55rem + 2.4cqi,1.9rem) var(--font-body)}
+.cap span{-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:.08em .45em;line-height:1.5;border-radius:var(--radius-sm);font-weight:500;font-size:clamp(1rem,.55rem + 2.4cqi,1.9rem)}
 .vp[data-cap-size=s] .cap span{font-size:clamp(.875rem,.45rem + 2cqi,1.6rem)}
 .vp[data-cap-size=l] .cap span{font-size:clamp(1.2rem,.7rem + 3cqi,2.3rem)}
 .vp[data-cap-size=xl] .cap span{font-size:clamp(1.45rem,.85rem + 3.8cqi,2.8rem)}
-.vp[data-cap-style=inverted] .cap span{background:var(--text);color:var(--surface)}
-.vp[data-cap-style=highvis] .cap span{background:var(--highlight);color:var(--highlight-contrast)}
-.vp[data-cap-bg="75"] .cap span{background:color-mix(in srgb,var(--surface) 75%,transparent)}
-.vp[data-cap-bg="50"] .cap span{background:color-mix(in srgb,var(--surface) 50%,transparent)}
-.vp[data-cap-bg="75"][data-cap-style=inverted] .cap span{background:color-mix(in srgb,var(--text) 75%,transparent)}
-.vp[data-cap-bg="50"][data-cap-style=inverted] .cap span{background:color-mix(in srgb,var(--text) 50%,transparent)}
-.vp[data-cap-bg="75"][data-cap-style=highvis] .cap span{background:color-mix(in srgb,var(--highlight) 75%,transparent)}
-.vp[data-cap-bg="50"][data-cap-style=highvis] .cap span{background:color-mix(in srgb,var(--highlight) 50%,transparent)}
-.vp[data-cap-font=mono] .cap span{font-family:var(--font-mono)}
 .adline{display:none;margin:0;padding:.45rem .8rem;border-top:var(--border-width) solid var(--border-subtle);font-style:italic;background:var(--surface-muted)}
 .vp[data-ad=on] .adline{display:block}
-.adline b{font-style:normal;font-family:var(--font-mono);font-size:.82rem;margin-right:.4rem}
 .bar{position:relative;padding:.45rem .55rem .55rem;border-top:var(--border-width) solid var(--border);display:grid;gap:.15rem;background:var(--surface);border-radius:0 0 calc(var(--radius-lg) - var(--border-width)) calc(var(--radius-lg) - var(--border-width));transition:opacity var(--duration-base) var(--ease-standard)}
 .srow{display:flex;align-items:center;gap:.5rem}
 .tnum{font:700 .875rem var(--font-mono);min-width:2.9em;text-align:center}
 .scrub{position:relative;flex:1;height:44px;cursor:pointer;touch-action:none;border-radius:var(--radius-full)}
 .scrub .track{position:absolute;left:0;right:0;top:50%;height:12px;transform:translateY(-50%);border:var(--border-width) solid var(--border);border-radius:var(--radius-full);background:var(--surface-muted);overflow:hidden}
-.scrub .buf,.scrub .played{position:absolute;left:0;top:0;bottom:0;width:0}
-.scrub .buf{background:var(--border-subtle)}
+.scrub .played{position:absolute;left:0;top:0;bottom:0;width:0}
+.scrub .buf{position:absolute;inset:0}.scrub .buf i{position:absolute;top:0;bottom:0;background:var(--border-subtle)}
 .scrub .played{background:var(--accent);transition:width var(--duration-fast) linear}
 .scrub .thumb{position:absolute;top:50%;left:0;width:22px;height:22px;margin-left:-11px;transform:translateY(-50%);border-radius:var(--radius-full);background:var(--surface);border:var(--border-width-strong) solid var(--border);box-shadow:var(--shadow-press)}
 .scrub:hover .thumb,.scrub:active .thumb{background:var(--highlight)}
@@ -99,7 +89,7 @@ main:focus{outline:none}
 .vol input{width:6.5rem;height:44px;accent-color:var(--accent);margin:0}
 @container vp (min-width:560px){.srow .tnum{display:none}.time{display:inline}.ctl .w-only{display:inline-flex}.pop .n-only{display:none}}
 @media (hover:hover) and (pointer:fine){@container vp (min-width:560px){.vol{display:flex}}}
-.pop{position:absolute;right:.55rem;bottom:calc(100% + .4rem);z-index:6;width:max-content;min-width:15rem;max-width:calc(100cqi - 1.1rem);max-height:min(26rem,80vh);overflow:auto;background:var(--surface);color:var(--text);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);padding:.7rem;display:grid;gap:.55rem}
+.pop{position:absolute;right:.55rem;bottom:calc(100% + .4rem);z-index:6;width:max-content;min-width:15rem;max-width:calc(100cqi - 1.1rem);max-height:min(36rem,80vh);overflow:auto;background:var(--surface);color:var(--text);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);padding:.7rem;display:grid;gap:.55rem}
 .pop[hidden]{display:none}
 .pop h3{font-size:1rem;margin:0}
 .pop fieldset{border:0;margin:0;padding:0;display:grid;gap:.3rem}
@@ -111,7 +101,7 @@ main:focus{outline:none}
 .chip input:checked+span{background:var(--text);color:var(--surface);border-color:var(--border)}
 .chip input:checked+span::before{content:'✓';margin-right:.3rem}
 .chip input:focus-visible+span{outline:var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);outline-offset:var(--focus-ring-offset)}
-.ib svg,.mi svg{width:1.25rem;height:1.25rem;flex:none}
+.ib svg,.mi svg,.btn svg{width:1.25rem;height:1.25rem;flex:none}
 .mi{justify-content:flex-start;gap:.5rem;width:100%;border-color:var(--border-subtle)}
 .preview{padding:.5rem;border-radius:var(--radius-md);background:var(--surface-muted);text-align:center}
 .hint{font-size:.9rem;color:var(--text-muted);margin:.6rem 0 0}
@@ -144,8 +134,6 @@ main:focus{outline:none}
 .gal{display:grid;gap:1.6rem}
 @media (min-width:760px){.gal{grid-template-columns:1fr 1fr}}
 .gal figure{margin:0;display:grid;align-content:start;gap:.5rem;padding-top:1rem}
-.gal figure.tall{padding-top:13.5rem}
-.gal figure.taller{padding-top:21.5rem}
 .gal figcaption{font-weight:700}
 table{border-collapse:collapse;width:100%;min-width:480px;background:var(--surface)}
 .tscroll{overflow-x:auto;border:var(--border-width) solid var(--border);border-radius:var(--radius-lg)}
@@ -155,6 +143,87 @@ kbd{font:700 .85rem var(--font-mono);border:var(--border-width) solid var(--bord
 footer{border-top:var(--border-width) solid var(--border);padding:1.2rem 0 2rem;margin-top:1rem}
 footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 .25rem}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0s!important;scroll-behavior:auto!important}.bigplay:hover,.btn:hover,.btn:active,.ib:active{transform:none}}
+/* ===== R-4 follow-up: copy fill, captions per approved copy, dialog, tooltips, transcript tools ===== */
+/* Caption appearance follows R4-PLAYER-COPY (viewer overrides). Colors are component-local values,
+   pending CA on whether they become --palette-caption-* tokens (HANDOFF Known issue 7). */
+.vp{--cap-fg:#fff;--cap-band:0 0 0;--cap-a:1;--cap-font:var(--font-body)}
+.vp[data-cap-color=yellow]{--cap-fg:#ffe600}
+.vp[data-cap-color=cyan]{--cap-fg:#00e5ff}
+.vp[data-cap-color=black]{--cap-fg:#000;--cap-band:255 255 255}
+.vp[data-cap-bg=half]{--cap-a:.5}
+.vp[data-cap-bg=none]{--cap-a:0}
+.vp[data-cap-font=serif]{--cap-font:Georgia,'Times New Roman',serif}
+.vp[data-cap-font=mono]{--cap-font:var(--font-mono)}
+.cap span,.cs-prev span{background:rgb(var(--cap-band) / var(--cap-a));color:var(--cap-fg);font-family:var(--cap-font)}
+.vp[data-cap-bg=half] .cap span,.vp[data-cap-bg=none] .cap span,.vp[data-cap-bg=half] .cs-prev span,.vp[data-cap-bg=none] .cs-prev span{text-shadow:-1px -1px 0 rgb(var(--cap-band)),1px -1px 0 rgb(var(--cap-band)),-1px 1px 0 rgb(var(--cap-band)),1px 1px 0 rgb(var(--cap-band)),0 0 3px rgb(var(--cap-band))}
+.cs-prev{padding:.9rem .5rem;border-radius:var(--radius-md);background:var(--surface-muted) url(poster.jpg) center/cover;text-align:center}
+.cs-prev span{-webkit-box-decoration-break:clone;box-decoration-break:clone;padding:.08em .45em;line-height:1.5;border-radius:var(--radius-sm);font-weight:500;font-size:1.1rem}
+.vp[data-cap-size=s] .cs-prev span{font-size:.95rem}.vp[data-cap-size=l] .cs-prev span{font-size:1.3rem}.vp[data-cap-size=xl] .cs-prev span{font-size:1.55rem}
+.sw{width:1em;height:1em;border-radius:var(--radius-full);border:var(--border-width) solid var(--border);margin-right:.35rem;flex:none}
+/* Caption settings: native modal dialog on the Ember Modal pattern */
+.csd{width:min(30rem,calc(100vw - 1.5rem));max-height:calc(100dvh - 1.5rem);overflow:auto;padding:1rem;background:var(--surface);color:var(--text);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised)}
+.csd::backdrop{background:var(--scrim)}
+.csd form{display:grid;gap:.8rem;margin:0}
+.csd h2{font-size:1.25rem;margin:0}
+.csd fieldset{border:0;margin:0;padding:0;display:grid;gap:.3rem}
+.csd legend{font-weight:700;font-size:.95rem;margin-bottom:.25rem;padding:0}
+.csd .acts{display:flex;gap:.4rem;flex-wrap:wrap;justify-content:flex-end}
+.csd.demo{position:absolute;inset:auto .55rem calc(100% + .4rem) auto;margin:0;width:min(30rem,calc(100cqi - 1.1rem));max-height:none;z-index:7}
+/* status: visual pill mirrors the polite status, both after ~1s */
+.statuspill{pointer-events:none}
+.vp[data-nobuf] .scrub .buf{display:none} /* canReportBuffering false: no pill, no fill */
+/* AD line: docked under the frame, never over the picture or captions. In full screen it sits at the top of the frame, above the captions. */
+.adline{display:none;align-items:baseline;flex-wrap:wrap;gap:.1rem .45rem}
+.vp[data-ad=on] .adline{display:flex}
+.adb{display:inline-block;font:700 .75rem/1.4 var(--font-mono);font-style:normal;padding:0 .35rem;border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)}
+.adl{font-style:normal;font-weight:700;font-size:.9rem}
+.vp:fullscreen .adline{position:absolute;top:1rem;left:50%;transform:translateX(-50%);max-width:min(48rem,92%);border:var(--border-width) solid var(--border);border-radius:var(--radius-md);z-index:4}
+.cchint{margin:0;padding:0 .3rem;font-size:.875rem;color:var(--text-muted)}
+.cchint[hidden]{display:none}
+.mi .adb{margin-right:.1rem}
+.mi[aria-pressed=true]{background:var(--highlight);color:var(--highlight-contrast)}
+.mi[aria-disabled=true]{color:var(--text-muted);border-style:dotted;box-shadow:none;cursor:not-allowed;transform:none;background:transparent}
+.mi.sub{margin-left:1rem;width:calc(100% - 1rem)}
+.pop .hint{margin:-.25rem 0 0;font-size:.85rem}
+.pop .hint[hidden],.pop [hidden]{display:none}
+.field{display:grid;gap:.25rem}
+.field label{font-weight:700;font-size:.9rem}
+.field select{font:inherit;min-height:44px;padding:.3rem .5rem;border:var(--border-width) solid var(--border);border-radius:var(--radius-sm);background:var(--surface);color:var(--text)}
+/* tooltips: icon-only controls show their name on hover and keyboard focus. Esc hides them (WCAG 1.4.13). */
+.ctl .ib{position:relative}
+.ctl .ib[data-tip]::after{content:attr(data-tip);position:absolute;bottom:calc(100% + .35rem);left:50%;transform:translateX(-50%);white-space:nowrap;padding:.15rem .5rem;border-radius:var(--radius-sm);background:var(--text);color:var(--surface);font:700 .8rem var(--font-body);pointer-events:none;display:none;z-index:8}
+.ctl .ib[data-tip]:first-child::after{left:0;transform:none}
+.ctl .ib[data-tip]:last-child::after{left:auto;right:0;transform:none}
+@media (hover:hover){.vp:not([data-tip=off]) .ctl .ib[data-tip]:hover::after{display:block}}
+.vp:not([data-tip=off]) .ctl .ib[data-tip]:focus-visible::after{display:block}
+.vp[data-chrome=hidden] .ib::after{display:none}
+.txl{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@container vp (min-width:720px){.txl{position:static;width:auto;height:auto;overflow:visible;clip-path:none}.ib[data-act=tx]{padding:0 .6rem}}
+/* VideoAdapterUnavailable (vimeo or hls module missing): text link in place of the player */
+.vp[data-state=unavailable] .ov.una{display:grid}
+.vp[data-state=unavailable] .bar{display:none}
+.vp[data-state=unavailable] .bigplay{display:none}
+/* transcript tools */
+.tx{container:tx/inline-size}
+.tx-head{grid-template-columns:1fr auto;align-items:center}
+.tx-head h2{grid-column:1}
+.tx-dl{grid-column:2;position:relative;justify-self:end}
+.tx-search{grid-column:1/-1;display:grid;gap:.25rem}
+.tx-search label{font-weight:700;font-size:.9rem}
+.qrow{display:flex;gap:.3rem;align-items:center}
+.qrow input{flex:1;min-width:0}
+.qrow .ib{border-color:var(--border-subtle)}
+.qrow .ib[hidden]{display:none}
+.qs{font-size:.875rem;color:var(--text-muted);min-height:1.3em}
+.dlg{display:none;gap:.35rem;align-items:center;flex-wrap:wrap}
+.tx-dl[data-open] .dlg{display:grid;position:absolute;right:0;top:calc(100% + .3rem);z-index:5;background:var(--surface);border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);padding:.5rem;width:max-content}
+.dll{font-weight:700;font-size:.9rem}
+.tx-dl[data-open] .dll{display:none}
+@container tx (min-width:440px){.dlt{display:none!important}.dlg,.tx-dl[data-open] .dlg{display:flex;position:static;box-shadow:none;border:0;padding:0;background:none}.tx-dl[data-open] .dll{display:inline}}
+.tx-empty .tx-search,.tx-empty .tx-dl,.tx-empty .tx-foot{display:none}
+.cue .cl{display:inline-block;font:700 .72rem var(--font-mono);font-style:normal;text-transform:uppercase;margin-right:.35rem;padding:0 .3rem;border:var(--border-width) solid var(--border-subtle);border-radius:var(--radius-sm)}
+.cue.hit{background:var(--surface-muted)}
+.cue.hitcur{outline:var(--border-width-strong) dashed var(--border);outline-offset:-3px}
 </style>
 </head>
 <body>
@@ -181,124 +250,193 @@ footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 .25rem
   <tr><td><kbd>K</kbd></td><td>Play or pause</td><td>Anywhere in the player except the settings panels</td></tr>
   <tr><td><kbd>Space</kbd></td><td>Play or pause</td><td>On the scrubber or the player frame. On a button, Space presses that button.</td></tr>
   <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Seek 5 seconds back or forward</td><td>On the volume slider they change volume instead</td></tr>
-  <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Volume up or down 10%</td><td>On the scrubber they seek 5 seconds, per the slider pattern</td></tr>
+  <tr><td><kbd>J</kbd> <kbd>L</kbd></td><td>Seek 10 seconds back or forward</td><td></td></tr>
+  <tr><td><kbd>↑</kbd> <kbd>↓</kbd></td><td>Volume up or down 10%</td><td>On the scrubber they seek 5 seconds, per the slider pattern. Nothing when the source has no volume control.</td></tr>
   <tr><td><kbd>Page Up</kbd> <kbd>Page Down</kbd></td><td>Seek 10% of the duration</td><td>Scrubber only</td></tr>
-  <tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>Go to the start or the end</td><td>Scrubber only</td></tr>
+  <tr><td><kbd>Home</kbd> <kbd>End</kbd></td><td>Go to the start or the end</td><td>Anywhere in the player except the volume slider and fields</td></tr>
   <tr><td><kbd>M</kbd></td><td>Mute or unmute</td><td></td></tr>
   <tr><td><kbd>C</kbd></td><td>Captions on or off</td><td>Does nothing when no captions track exists</td></tr>
+  <tr><td><kbd>D</kbd></td><td>Audio description on or off</td><td>Does nothing when no description track exists</td></tr>
+  <tr><td><kbd>&lt;</kbd> <kbd>&gt;</kbd></td><td>Slower or faster, one step</td><td>Steps through the source's speeds. These are the only keys that take Shift.</td></tr>
   <tr><td><kbd>F</kbd></td><td>Full screen or exit</td><td>Does nothing when the source has no full screen (the button is hidden too)</td></tr>
-  <tr><td><kbd>Esc</kbd></td><td>Close the open panel</td><td>Focus goes back to the button that opened it. In full screen, the browser exits full screen.</td></tr>
+  <tr><td><kbd>T</kbd></td><td>Open the transcript and move focus to the current line</td><td>Falls back to the first line, then the heading</td></tr>
+  <tr><td><kbd>Esc</kbd></td><td>Close the open panel or dialog, else hide a tooltip</td><td>Focus goes back to the button that opened it. In full screen, the browser exits full screen.</td></tr>
   </tbody></table></div>
 </section>
 </main>
-<footer><div class="wrap"><p class="muted">Video: <a href="https://durian.blender.org/">Sintel</a>, excerpt 01:45–02:37, © Blender Foundation, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. Captions are machine-generated (faster-whisper) and the audio description is hand-written, both from <span class="mono">tools/transcribe/samples/sintel</span>.</p></div></footer>
+<footer><div class="wrap"><p class="muted">Video: <a href="https://durian.blender.org/">Sintel</a>, excerpt 01:45–02:37, © Blender Foundation, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>. English captions are machine-generated (faster-whisper) and the audio description is hand-written, both from <span class="mono">tools/transcribe/samples/sintel</span>. French captions are the official Sintel subtitles, re-timed to the excerpt in <span class="mono">media/captions-fr.vtt</span>.</p></div></footer>
 <script>
 const SRC='../../../tools/transcribe/samples/sintel/';
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
 const RM=matchMedia('(prefers-reduced-motion: reduce)');
-const fmt=s=>{s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
-const words=s=>{s=Math.max(0,Math.floor(s||0));const m=Math.floor(s/60),r=s%60,p=[];if(m)p.push(m+' minute'+(m>1?'s':''));if(r||!m)p.push(r+' second'+(r===1?'':'s'));return p.join(' ')};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+const fmt=s=>{s=Math.max(0,Math.floor(s||0));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=String(s%60).padStart(2,'0');return h?`${h}:${String(m).padStart(2,'0')}:${r}`:`${m}:${r}`};
+// R4-PLAYER-COPY valuetext rule: "1 hour 2 minutes 5 seconds". Zero parts are dropped, except "0 seconds".
+const words=s=>{s=Math.max(0,Math.floor(s||0));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60,p=[];if(h)p.push(h+' hour'+(h>1?'s':''));if(m)p.push(m+' minute'+(m>1?'s':''));if(r||!p.length)p.push(r+' second'+(r===1?'':'s'));return p.join(' ')};
 const tsec=t=>{const p=t.split(':').map(Number);return p.length===3?p[0]*3600+p[1]*60+p[2]:p[0]*60+p[1]};
 function vtt(t){return t.replace(/\r/g,'').split(/\n\n+/).map(b=>{const l=b.split('\n'),i=l.findIndex(x=>x.includes('-->'));if(i<0)return null;const [a,z]=l[i].split('-->').map(x=>tsec(x.trim().split(' ')[0]));return {start:a,end:z,text:l.slice(i+1).join(' ').trim()}}).filter(Boolean)}
-const I={play:'<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>',pause:'<path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z" fill="currentColor"/>',vol:'<path d="M3 9h4l5-4v14l-5-4H3z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>',mute:'<path d="M3 9h4l5-4v14l-5-4H3z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',cc:'<rect x="2.5" y="5" width="19" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10.5 10.2a2.4 2.4 0 1 0 0 3.6M17 10.2a2.4 2.4 0 1 0 0 3.6" stroke="currentColor" stroke-width="2" fill="none"/>',more:'<circle cx="5" cy="12" r="2.2" fill="currentColor"/><circle cx="12" cy="12" r="2.2" fill="currentColor"/><circle cx="19" cy="12" r="2.2" fill="currentColor"/>',fs:'<path d="M3 9V3h6M15 3h6v6M21 15v6h-6M9 21H3v-6" stroke="currentColor" stroke-width="2.4" fill="none"/>',fsx:'<path d="M9 3v6H3M21 9h-6V3M15 21v-6h6M3 15h6v6" stroke="currentColor" stroke-width="2.4" fill="none"/>',tx:'<path d="M4 5h16M4 10h16M4 15h10M4 20h7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'};
+const I={play:'<path d="M7 4.5v15l12-7.5z" fill="currentColor"/>',pause:'<path d="M6 4h4.5v16H6zM13.5 4H18v16h-4.5z" fill="currentColor"/>',vol:'<path d="M3 9h4l5-4v14l-5-4H3z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>',mute:'<path d="M3 9h4l5-4v14l-5-4H3z" fill="currentColor"/><path d="M16 9l6 6M22 9l-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',cc:'<rect x="2.5" y="5" width="19" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M10.5 10.2a2.6 2.6 0 1 0 0 3.6M17.5 10.2a2.6 2.6 0 1 0 0 3.6" fill="none" stroke="currentColor" stroke-width="2"/>',tx:'<path d="M5 6h14M5 10h14M5 14h9M5 18h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',more:'<circle cx="5" cy="12" r="2.1" fill="currentColor"/><circle cx="12" cy="12" r="2.1" fill="currentColor"/><circle cx="19" cy="12" r="2.1" fill="currentColor"/>',fs:'<path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',fsx:'<path d="M9 4v5H4M20 9h-5V4M15 20v-5h5M4 15h5v5" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',prev:'<path d="M6 15l6-6 6 6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',next:'<path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',x:'<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>'};
 const svg=n=>`<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${I[n]}</svg>`;
 const SPEEDS=[0.5,0.75,1,1.25,1.5,2];
-const PREF_KEY='jdilig:captions:v1',DEF={on:true,size:'m',style:'default',bg:'100',font:'sans'};
-const loadPref=()=>{try{return {...DEF,...JSON.parse(localStorage.getItem(PREF_KEY)||'{}')}}catch(e){return {...DEF}}};
-let CUES=[],AD=[],DUR=52,n=0;
-function playerHTML(id,o){const sp=SPEEDS.map(s=>`<label class="chip"><input type="radio" name="sp-${id}" value="${s}"${s===1?' checked':''}><span>${s}×</span></label>`).join('');
- const ch=(name,vals)=>vals.map(([v,l])=>`<label class="chip"><input type="radio" name="${name}-${id}" value="${v}"><span>${l}</span></label>`).join('');
+const spLabel=s=>s===1?'Normal':s+'×';
+// One JSON object, same shape as the core's readVideoPrefs/writeVideoPrefs (R4-CORE-API 5b): key overridable with storageKey,
+// silent fallback when storage throws, a bad field falls back to its default. pauseWhileReading is the one field the UI adds.
+const STORE_KEY='ember:video:v1';
+const CS_DEF={size:'m',color:'white',background:'solid',font:'sans'},CS_OK={size:['s','m','l','xl'],color:['white','yellow','cyan','black'],background:['none','half','solid'],font:['sans','serif','mono']};
+const DEF={volume:.8,muted:false,rate:1,captions:null,descriptions:'off',pauseWhileReading:false,captionStyle:null};
+const clone=o=>JSON.parse(JSON.stringify(o));
+function loadStore(k){let s={};try{s=JSON.parse(localStorage.getItem(k)||'{}')||{}}catch(e){}const o=clone(DEF);
+ if(typeof s.volume==='number'&&s.volume>=0&&s.volume<=1)o.volume=s.volume;if(typeof s.muted==='boolean')o.muted=s.muted;if(SPEEDS.includes(s.rate))o.rate=s.rate;
+ if(typeof s.captions==='string')o.captions=s.captions;if(['off','text','voice'].includes(s.descriptions))o.descriptions=s.descriptions;if(typeof s.pauseWhileReading==='boolean')o.pauseWhileReading=s.pauseWhileReading;
+ if(s.captionStyle&&typeof s.captionStyle==='object')o.captionStyle=s.captionStyle;return o}
+const cleanCS=c=>{const o={...CS_DEF};if(c)for(const k in CS_OK)if(CS_OK[k].includes(c[k]))o[k]=c[k];return o};
+let TRACKS=[],AD=[],DUR=52,n=0;
+const TITLE='Sintel (excerpt)',SLUG='sintel-excerpt';
+function playerHTML(id,o){const sp=nm=>SPEEDS.map(s=>`<label class="chip"><input type="radio" name="${nm}-${id}" value="${s}"${s===1?' checked':''}><span>${spLabel(s)}</span></label>`).join('');
+ const ch=(name,vals)=>vals.map(([v,l,full,sw])=>`<label class="chip"><input type="radio" name="${name}-${id}" value="${v}"><span>${sw?`<i class="sw" style="background:${sw}" aria-hidden="true"></i>`:''}${full?`<span aria-hidden="true">${l}</span><span class="sr">${full}</span>`:l}</span></label>`).join('');
  return `<section class="vp" id="${id}" data-state="poster" aria-label="Video player: ${o.label}" aria-describedby="${id}-hint">
  <div class="stage">
   ${o.media?`<video playsinline preload="metadata" poster="poster.jpg"><source src="${SRC}sintel-excerpt.mp4" type="video/mp4"></video>`:`<img class="poster" src="poster.jpg" alt="">`}
-  <button class="bigplay" type="button" data-act="play"><span>${svg('play')}</span><span>Play</span><span class="dur"><span class="sr">, duration </span>${fmt(DUR)}</span></button>
-  <div class="statuspill" role="status" data-slot="status"></div>
+  <button class="bigplay" type="button" data-act="play"><span>${svg('play')}</span><span>Play<span class="sr"> ${TITLE}</span></span><span class="dur" aria-hidden="true">${fmt(DUR)}</span></button>
+  <div class="statuspill" aria-hidden="true" data-slot="pill"></div>
   <div class="cap" aria-hidden="true" data-slot="cap"></div>
-  <div class="ov err"><div class="card"><p data-slot="errmsg">[COPY-TBD] This video didn't load.</p><button class="btn sm primary" type="button" data-act="retry">[COPY-TBD] Retry</button></div></div>
-  <div class="ov end"><div class="card"><p>[COPY-TBD] Ended</p><button class="btn sm primary" type="button" data-act="replay">${svg('play')} Replay</button></div></div>
+  <div class="ov err"><div class="card"><p>The video didn't load.</p><button class="btn sm primary" type="button" data-act="retry">Retry</button></div></div>
+  <div class="ov end"><div class="card"><p>[COPY-TBD] Ended</p><button class="btn sm primary" type="button" data-act="replay">${svg('play')} [COPY-TBD] Replay</button></div></div>
+  <div class="ov una"><div class="card"><p>[COPY-TBD] This video can't play here.</p><a class="btn sm primary" href="https://vimeo.com/">[COPY-TBD] Watch the video</a></div></div>
  </div>
- <p class="sr" id="${id}-hint">Keyboard: K to play or pause, arrow keys to seek and change volume, M to mute, C for captions, F for full screen.</p>
- <p class="adline" data-slot="ad" aria-live="polite"><b>AD</b><span></span></p>
+ <p class="sr" id="${id}-hint">[COPY-TBD] Keyboard: K or Space to play or pause, left and right arrows to seek 5 seconds, J and L to seek 10 seconds, up and down arrows for volume, M to mute, C for captions, D for audio description, F for full screen, T for the transcript.</p>
+ <div class="sr" role="status" data-slot="status"></div>
+ <div class="sr" role="alert" data-slot="alert"></div>
+ <p class="adline" data-slot="ad"><span class="adb" aria-hidden="true">AD</span><span class="adl">Audio description</span><span data-slot="adt" aria-live="polite"></span></p>
  <div class="bar">
   <div class="srow"><span class="tnum" data-slot="cur" aria-hidden="true">0:00</span>
-   <div class="scrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="${Math.round(DUR)}" aria-valuenow="0" aria-valuetext="0 seconds of ${words(DUR)}"><div class="track"><div class="buf"></div><div class="played"></div></div><div class="thumb"></div></div>
+   <div class="scrub" role="slider" tabindex="0" aria-label="Seek" aria-valuemin="0" aria-valuemax="${Math.round(DUR)}" aria-valuenow="0" aria-valuetext="0 seconds of ${words(DUR)}"><div class="track"><div class="buf" aria-hidden="true"></div><div class="played"></div></div><div class="thumb"></div></div>
    <span class="tnum" data-slot="tot" aria-hidden="true">${fmt(DUR)}</span></div>
   <div class="ctl">
-   <button class="ib" type="button" data-act="toggle" aria-label="Play">${svg('play')}</button>
-   <span class="time" data-slot="time">0:00 / ${fmt(DUR)}</span>
-   <button class="ib" type="button" data-act="mute" aria-label="Mute">${svg('vol')}</button>
+   <button class="ib" type="button" data-act="toggle" aria-label="Play" data-tip="Play">${svg('play')}</button>
+   <span class="time" data-slot="time" aria-hidden="true">0:00 / ${fmt(DUR)}</span>
+   <button class="ib" type="button" data-act="mute" aria-label="Mute" data-tip="Mute" aria-pressed="false">${svg('vol')}</button>
    <span class="vol"><input type="range" min="0" max="100" step="5" value="80" aria-label="Volume" aria-valuetext="80%"></span>
    <span class="grow"></span>
-   <button class="ib" type="button" data-act="cc" aria-label="Captions" aria-pressed="true">${svg('cc')}</button>
-   <button class="ib w-only" type="button" data-act="speed" aria-expanded="false" aria-controls="${id}-sp"><span class="sr">Speed, </span><span data-slot="spl">1×</span></button>
-   <button class="ib w-only" type="button" data-act="tx" aria-label="Transcript" aria-expanded="true" aria-controls="${id}-tx">${svg('tx')}</button>
-   <button class="ib" type="button" data-act="more" aria-label="More options" aria-expanded="false" aria-controls="${id}-more">${svg('more')}</button>
-   <button class="ib" type="button" data-act="fs" aria-label="Full screen">${svg('fs')}</button>
+   <button class="ib" type="button" data-act="cc" aria-label="Captions" data-tip="Captions" aria-pressed="true">${svg('cc')}</button>
+   <button class="ib w-only" type="button" data-act="speed" aria-expanded="false" aria-controls="${id}-sp" aria-label="Playback speed, Normal"><span data-slot="spl">Normal</span></button>
+   <button class="ib w-only" type="button" data-act="tx" aria-expanded="true" aria-controls="${id}-tx" data-tip="Transcript">${svg('tx')}<span class="txl">Transcript</span></button>
+   <button class="ib" type="button" data-act="more" aria-label="More options" data-tip="More options" aria-expanded="false" aria-controls="${id}-more">${svg('more')}</button>
+   <button class="ib" type="button" data-act="fs" aria-label="Full screen" data-tip="Full screen">${svg('fs')}</button>
   </div>
+  <p class="cchint" id="${id}-cch" hidden>No captions for this video.</p>
   <div class="pop" id="${id}-more" role="group" aria-label="More options" hidden>
-   <fieldset class="n-only"><legend>Speed</legend><div class="chips">${sp.replaceAll('sp-'+id,'spm-'+id)}</div></fieldset>
+   <fieldset class="n-only" data-speed><legend>Playback speed</legend><div class="chips">${sp('spm')}</div></fieldset>
    <button class="btn sm mi n-only" type="button" data-act="tx" aria-expanded="true" aria-controls="${id}-tx">${svg('tx')} Transcript</button>
-   <button class="btn sm mi" type="button" data-act="ad" aria-pressed="false">Audio description</button>
-   <button class="btn sm mi" type="button" data-act="capset">Caption settings</button>
+   <button class="btn sm mi" type="button" data-act="ad" aria-pressed="false"><span class="adb" aria-hidden="true">AD</span> Audio description</button>
+   <button class="btn sm mi" type="button" data-act="voice" aria-pressed="false" aria-disabled="true" aria-describedby="${id}-vh">Read descriptions aloud</button>
+   <p class="hint" id="${id}-vh">Turn on Audio description to use this.</p>
+   <button class="btn sm mi sub" type="button" data-act="vpause" aria-pressed="false" aria-disabled="true">[COPY-TBD] Pause video while reading</button>
+   <div class="field" data-slot="langf"><label for="${id}-lang">Caption language</label><select id="${id}-lang" data-slot="lang"></select></div>
+   <button class="btn sm mi" type="button" data-act="capset" aria-haspopup="dialog">Caption settings</button>
   </div>
-  <div class="pop" id="${id}-sp" role="group" aria-label="Playback speed" hidden><fieldset><legend>Speed</legend><div class="chips">${sp}</div></fieldset></div>
-  <div class="pop" id="${id}-cs" role="group" aria-labelledby="${id}-csh" hidden>
-   <h3 id="${id}-csh">Caption settings</h3>
-   <fieldset><legend>Size</legend><div class="chips">${ch('size',[['s','S'],['m','M'],['l','L'],['xl','XL']])}</div></fieldset>
-   <fieldset><legend>Style</legend><div class="chips">${ch('style',[['default','Default'],['inverted','Inverted'],['highvis','High-vis']])}</div></fieldset>
-   <fieldset><legend>Background</legend><div class="chips">${ch('bg',[['100','Solid'],['75','75%'],['50','50%']])}</div></fieldset>
-   <fieldset><legend>Font</legend><div class="chips">${ch('font',[['sans','Sans'],['mono','Mono']])}</div></fieldset>
-   <div style="display:flex;gap:.4rem;flex-wrap:wrap"><button class="btn sm" type="button" data-act="capreset">Reset</button><button class="btn sm primary" type="button" data-act="capdone">Done</button></div>
-  </div>
+  <div class="pop" id="${id}-sp" role="group" aria-label="Playback speed" hidden><fieldset><legend>Playback speed</legend><div class="chips">${sp('sp')}</div></fieldset></div>
  </div>
+ <dialog class="csd" id="${id}-cs" aria-labelledby="${id}-csh"><form method="dialog">
+  <h2 id="${id}-csh">Caption settings</h2>
+  <div class="cs-prev" aria-hidden="true"><span>This blade has a dark past.</span></div>
+  <fieldset><legend>Text size</legend><div class="chips">${ch('size',[['s','S','Small'],['m','M','Medium'],['l','L','Large'],['xl','XL','Extra large']])}</div></fieldset>
+  <fieldset><legend>Text color</legend><div class="chips">${ch('color',[['white','White','','#fff'],['yellow','Yellow','','#ffe600'],['cyan','Cyan','','#00e5ff'],['black','Black','','#000']])}</div></fieldset>
+  <fieldset><legend>Background</legend><div class="chips">${ch('background',[['none','None'],['half','Half'],['solid','Solid']])}</div></fieldset>
+  <fieldset><legend>Font</legend><div class="chips">${ch('font',[['sans','Sans serif'],['serif','Serif'],['mono','Monospace']])}</div></fieldset>
+  <p class="sr" role="status" data-slot="csst"></p>
+  <div class="acts"><button class="btn sm" type="button" data-act="capreset">Reset</button><button class="btn sm primary" value="close">Close</button></div>
+ </form></dialog>
 </section>
-${o.tx?`<section class="tx" id="${id}-tx" aria-labelledby="${id}-txh">
+${o.tx?`<section class="tx" id="${id}-tx" ${o.media?`aria-labelledby="${id}-txh"`:`aria-label="Transcript, ${o.label}"`}>
  <div class="tx-head"><h2 id="${id}-txh">Transcript</h2>
-  <label class="sr" for="${id}-q">Search transcript</label><input id="${id}-q" type="search" placeholder="Search transcript" autocomplete="off">
-  <div class="tx-tools"><a class="btn sm" href="${SRC}transcript.txt" download>Download .txt</a><a class="btn sm" href="${SRC}captions.vtt" download>Download .vtt</a></div>
+  <div class="tx-dl"><button class="btn sm dlt" type="button" aria-expanded="false" aria-controls="${id}-dl" data-act="dl">Download</button>
+   <div class="dlg" id="${id}-dl" role="group" aria-label="Download"><span class="dll" aria-hidden="true">Download</span><a class="btn sm" href="${SRC}transcript.txt" download="${SLUG}-transcript.txt" aria-label="Download transcript as text">Text</a><a class="btn sm" href="${SRC}captions.vtt" download="${SLUG}-captions.vtt" aria-label="Download captions file">Captions file</a></div></div>
+  <div class="tx-search"><label for="${id}-q">Search transcript</label>
+   <div class="qrow"><input id="${id}-q" type="search" autocomplete="off" aria-describedby="${id}-qs"><button class="ib" type="button" data-act="qclear" aria-label="Clear search" hidden>${svg('x')}</button><button class="ib" type="button" data-act="qprev" aria-label="Previous match" aria-disabled="true">${svg('prev')}</button><button class="ib" type="button" data-act="qnext" aria-label="Next match" aria-disabled="true">${svg('next')}</button></div>
+   <span class="qs" id="${id}-qs" role="status" data-slot="qs"></span></div>
  </div>
  <ol class="tx-list" data-slot="list"></ol>
- <div class="tx-foot"><span class="muted" role="status" data-slot="qs"></span><button class="btn sm" type="button" data-act="jump" hidden>Jump to current</button></div>
+ <div class="tx-foot"><button class="btn sm" type="button" data-act="jump" aria-label="Jump to current line" hidden>Jump to current</button></div>
 </section>`:''}`}
-function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',playerHTML(id,o));const P=$('#'+id),v=$('video',P),sc=$('.scrub',P),tx=document.getElementById(id+'-tx');if(!tx)$$('[data-act=tx]',P).forEach(b=>b.remove());
- const S={t:o.t||0,buf:o.buf||0,playing:false,muted:false,vol:.8,rate:1,pref:loadPref(),ad:false,follow:true};
+function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',playerHTML(id,o));const P=$('#'+id),v=$('video',P),sc=$('.scrub',P),tx=document.getElementById(id+'-tx'),dlg=$('#'+id+'-cs');if(!tx)$$('[data-act=tx]',P).forEach(b=>b.remove());
+ const key=o.storageKey||STORE_KEY;const st=o.media?loadStore(key):clone(DEF);
+ const tracks=o.tracks||TRACKS,ad=o.ad||AD;
+ const S={t:o.t||0,buf:0,playing:false,muted:st.muted,vol:st.volume,rate:st.rate,cc:{on:st.captions!=='off',track:st.captions&&st.captions!=='off'?st.captions:'en'},ds:{on:st.descriptions!=='off',voice:st.descriptions==='voice',pause:st.pauseWhileReading},cs:cleanCS(st.captionStyle),follow:true,interacted:false,q:'',hits:[],hi:-1};
  const el=k=>$(`[data-slot=${k}]`,P)||(tx&&$(`[data-slot=${k}]`,tx));
- function applyPref(){P.dataset.cc=S.pref.on?'on':'off';P.dataset.capSize=S.pref.size;P.dataset.capStyle=S.pref.style;P.dataset.capBg=S.pref.bg;P.dataset.capFont=S.pref.font;
-  $('[data-act=cc]',P).setAttribute('aria-pressed',S.pref.on);for(const k of ['size','style','bg','font'])$$(`input[name=${k}-${id}]`,P).forEach(i=>i.checked=i.value===S.pref[k])}
- function savePref(){if(o.media)try{localStorage.setItem(PREF_KEY,JSON.stringify(S.pref))}catch(e){}applyPref()}
- function render(){const d=DUR,t=S.t,p=d?t/d*100:0;$('.played',sc).style.width=p+'%';$('.thumb',sc).style.left=p+'%';$('.buf',sc).style.width=(d?S.buf/d*100:0)+'%';
-  sc.setAttribute('aria-valuenow',Math.floor(t));sc.setAttribute('aria-valuemax',Math.round(d));sc.setAttribute('aria-valuetext',`${words(t)} of ${words(d)}`);
+ const save=()=>{if(!o.media)return;try{localStorage.setItem(key,JSON.stringify({volume:S.vol,muted:S.muted,rate:S.rate,captions:S.cc.on?S.cc.track:'off',descriptions:!S.ds.on?'off':S.ds.voice?'voice':'text',pauseWhileReading:S.ds.pause,captionStyle:S.cs}))}catch(e){}};
+ const track=()=>tracks.find(t=>t.id===S.cc.track)||tracks[0];
+ const setTip=(b,l)=>{b.setAttribute('aria-label',l);if(b.dataset.tip!==undefined)b.dataset.tip=l};
+ // captions: a failed or missing track leaves the button visible but aria-disabled with the inline hint (no toast)
+ function applyCC(){const cb=$('[data-act=cc]',P),h=$('#'+id+'-cch'),none=!tracks.length;
+  cb.setAttribute('aria-disabled',none);if(none){cb.setAttribute('aria-describedby',id+'-cch');cb.setAttribute('aria-pressed','false')}else{cb.removeAttribute('aria-describedby');cb.setAttribute('aria-pressed',S.cc.on)}
+  h.hidden=!none;P.dataset.cc=!none&&S.cc.on?'on':'off';
+  const lf=el('langf'),ls=el('lang');lf.hidden=tracks.length<2;ls.innerHTML=`<option value="off">Off</option>`+tracks.map(t=>`<option value="${t.id}" lang="${t.lang}">${esc(t.label)}</option>`).join('');ls.value=S.cc.on?track()?.id||'off':'off';
+  for(const k of ['size','color','background','font'])$$(`input[name=${k}-${id}]`,P).forEach(i=>i.checked=i.value===S.cs[k]);
+  P.dataset.capSize=S.cs.size;P.dataset.capColor=S.cs.color;P.dataset.capBg=S.cs.background;P.dataset.capFont=S.cs.font;el('cap').lang=track()?.lang||''}
+ function applyAD(){const has=ad.length>0,ab=$('[data-act=ad]',P),vb=$('[data-act=voice]',P),pb=$('[data-act=vpause]',P);ab.hidden=!has;
+  const canVoice='speechSynthesis' in window&&!o.novoice;vb.hidden=pb.hidden=!has||!canVoice;$('#'+id+'-vh').hidden=!has||!canVoice||S.ds.on;
+  ab.setAttribute('aria-pressed',S.ds.on);P.dataset.ad=has&&S.ds.on?'on':'off';
+  vb.setAttribute('aria-disabled',!S.ds.on);vb.setAttribute('aria-pressed',S.ds.on&&S.ds.voice);if(S.ds.on)vb.removeAttribute('aria-describedby');else vb.setAttribute('aria-describedby',id+'-vh');
+  pb.setAttribute('aria-disabled',!(S.ds.on&&S.ds.voice));pb.setAttribute('aria-pressed',S.ds.on&&S.ds.voice&&S.ds.pause);
+  // when voice is on, the text line stops being a live region so a screen reader and the speech engine don't talk over each other
+  el('adt').setAttribute('aria-live',S.ds.voice?'off':'polite')}
+ let lastAd=null;
+ function render(){const d=DUR,t=S.t,p=d?t/d*100:0;$('.played',sc).style.width=p+'%';$('.thumb',sc).style.left=p+'%';{const b=S.buf,R=!d||!b?[]:b.ranges?b.ranges:b.fraction>0?[[0,b.fraction*d]]:[];const k=R.map(r=>r.join()).join('|');if(k!==sc._bk){sc._bk=k;$('.buf',sc).innerHTML=R.map(([a,e])=>`<i style="left:${a/d*100}%;width:${(e-a)/d*100}%"></i>`).join('')}}
+  sc.setAttribute('aria-valuenow',Math.floor(t));sc.setAttribute('aria-valuemax',Math.round(d));sc.setAttribute('aria-valuetext',d?`${words(t)} of ${words(d)}`:words(t));
   el('cur').textContent=fmt(t);el('tot').textContent=fmt(d);el('time').textContent=`${fmt(t)} / ${fmt(d)}`;
-  const tb=$('[data-act=toggle]',P);tb.innerHTML=svg(S.playing?'pause':'play');tb.setAttribute('aria-label',S.playing?'Pause':'Play');
-  const mb=$('[data-act=mute]',P);mb.innerHTML=svg(S.muted||S.vol===0?'mute':'vol');mb.setAttribute('aria-label',S.muted?'Unmute':'Mute');
-  const c=CUES.find(c=>t>=c.start&&t<c.end);el('cap').innerHTML=c?`<span>${c.text}</span>`:'';
-  const a=AD.find(c=>t>=c.start&&t<c.end);const as=$('span',el('ad'));const at=a?a.text:'';if(as.textContent!==at)as.textContent=at;
+  const tb=$('[data-act=toggle]',P);tb.innerHTML=svg(S.playing?'pause':'play');setTip(tb,S.playing?'Pause':'Play');
+  const mb=$('[data-act=mute]',P);mb.innerHTML=svg(S.muted||S.vol===0?'mute':'vol');mb.setAttribute('aria-pressed',S.muted);
+  const vi=$('.vol input',P);vi.value=Math.round(S.vol*100);vi.setAttribute('aria-valuetext',S.muted?'Muted':Math.round(S.vol*100)+'%');
+  const tr=track(),c=tr&&tr.cues.find(c=>t>=c.start&&t<c.end);el('cap').innerHTML=c?`<span>${esc(c.text)}</span>`:'';
+  const a=ad.find(c=>t>=c.start&&t<c.end)||null;const at=a?a.text:'';const as=el('adt');if(as.textContent!==at)as.textContent=at;
+  if(a!==lastAd){lastAd=a;if(a&&S.ds.on&&S.ds.voice&&S.playing)speak(a.text)}
   if(tx)hl()}
- // transcript
- function buildTx(){if(!tx)return;const L=el('list');const rows=[...CUES.map(c=>({...c})),...(S.ad?AD.map(c=>({...c,ad:1})):[])].sort((a,b)=>a.start-b.start);
-  const q=$('input',tx).value.trim().toLowerCase();let hits=0;
-  L.innerHTML=rows.length?rows.map(c=>{let tt=c.text.replace(/&/g,'&amp;').replace(/</g,'&lt;');if(q){const i=tt.toLowerCase().indexOf(q);if(i>=0){hits++;tt=tt.slice(0,i)+'<mark>'+tt.slice(i,i+q.length)+'</mark>'+tt.slice(i+q.length)}}
-   return `<li><button class="cue${c.ad?' ad':''}" type="button" data-start="${c.start}" data-end="${c.end}"><span class="ts">${fmt(c.start)}</span><span>${c.ad?'<span class="sr">Description: </span>':''}${tt}</span></button></li>`}).join(''):`<li class="empty">[COPY-TBD] No transcript for this video.</li>`;
-  el('qs').textContent=q?(hits?`${hits} match${hits>1?'es':''}`:'[COPY-TBD] No matches'):'';hl(true)}
+ function speak(text){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='en';if(S.ds.pause&&v){u.onstart=()=>v.pause();u.onend=()=>play()}speechSynthesis.speak(u)}catch(e){}}
+ // transcript: dialogue and description cues, one list, time order
+ const rows=()=>[...(tracks[0]?tracks[0].cues:[]).map(c=>({...c})),...ad.map(c=>({...c,ad:1}))].sort((a,b)=>a.start-b.start);
+ let qt;
+ function buildTx(){if(!tx)return;const L=el('list'),R=rows();tx.classList.toggle('tx-empty',!R.length);const q=S.q.trim().toLowerCase();S.hits=[];
+  L.innerHTML=R.length?R.map((c,i)=>{let tt=esc(c.text);let hit=false;if(q){const j=c.text.toLowerCase().indexOf(q);if(j>=0){hit=true;S.hits.push(i);tt=esc(c.text.slice(0,j))+'<mark>'+esc(c.text.slice(j,j+q.length))+'</mark>'+esc(c.text.slice(j+q.length))}}
+   return `<li><button class="cue${c.ad?' ad':''}${hit?' hit':''}" type="button" data-i="${i}" data-start="${c.start}" data-end="${c.end}"><span class="ts"><span aria-hidden="true">${fmt(c.start)}</span><span class="sr">${words(c.start)}, </span></span><span>${c.ad?'<span class="cl">Description</span><span class="sr">, </span>':''}${tt}</span></button></li>`}).join(''):`<li class="empty">This video has no transcript.</li>`;
+  if(S.hi>=S.hits.length)S.hi=S.hits.length?0:-1;if(S.hits.length&&S.hi<0)S.hi=0;
+  // search count is debounced (~500 ms) so the status isn't re-announced on every keystroke
+  clearTimeout(qt);const msg=!q?'':S.hits.length?(S.hits.length===1?'1 match':`${S.hi+1} of ${S.hits.length} matches`):`No lines match "${S.q.trim()}".`;qt=setTimeout(()=>el('qs').textContent=msg,o.media?500:0);
+  const none=!S.hits.length;$('[data-act=qprev]',tx).setAttribute('aria-disabled',none);$('[data-act=qnext]',tx).setAttribute('aria-disabled',none);$('[data-act=qclear]',tx).hidden=!S.q;
+  markHit(false);lastCur=null;hl(true)}
+ function markHit(scroll){const L=el('list');$$('.cue.hitcur',L).forEach(b=>b.classList.remove('hitcur'));if(S.hi<0)return;const b=$(`.cue[data-i="${S.hits[S.hi]}"]`,L);if(!b)return;b.classList.add('hitcur');if(scroll){S.follow=false;L.scrollTop=b.offsetTop-L.clientHeight/3}}
+ function step(d){if(!S.hits.length)return;S.hi=(S.hi+d+S.hits.length)%S.hits.length;el('qs').textContent=S.hits.length===1?'1 match':`${S.hi+1} of ${S.hits.length} matches`;markHit(true)}
  let lastCur=null,auto=false;
  function hl(force){const L=el('list');const bs=$$('.cue:not(.ad)',L);const cur=bs.find(b=>S.t>=+b.dataset.start&&S.t<+b.dataset.end)||null;
   if(cur===lastCur&&!force)return;bs.forEach(b=>b===cur?b.setAttribute('aria-current','true'):b.removeAttribute('aria-current'));lastCur=cur;
-  if(!cur){$('[data-act=jump]',tx).hidden=true;return}
+  const jb=$('[data-act=jump]',tx);if(!cur){jb.hidden=true;return}
   const vis=()=>{const r=cur.getBoundingClientRect(),lr=L.getBoundingClientRect();return r.top>=lr.top&&r.bottom<=lr.bottom};
   if(S.follow&&!RM.matches&&S.playing){auto=true;L.scrollTop=cur.offsetTop-L.clientHeight/3;setTimeout(()=>auto=false,50)}
-  $('[data-act=jump]',tx).hidden=vis()}
- if(tx){const L=el('list');const stop=()=>{if(!auto){S.follow=false;hl(true)}};L.addEventListener('wheel',stop,{passive:true});L.addEventListener('touchmove',stop,{passive:true});L.addEventListener('scroll',()=>{if(!auto)$('[data-act=jump]',tx).hidden=!lastCur||(()=>{const r=lastCur.getBoundingClientRect(),lr=L.getBoundingClientRect();return r.top>=lr.top&&r.bottom<=lr.bottom})()});
+  jb.hidden=vis()}
+ if(tx){const L=el('list'),qi=$('input',tx);const stop=()=>{if(!auto){S.follow=false;hl(true)}};L.addEventListener('wheel',stop,{passive:true});L.addEventListener('touchmove',stop,{passive:true});L.addEventListener('scroll',()=>{if(!auto&&lastCur){const r=lastCur.getBoundingClientRect(),lr=L.getBoundingClientRect();$('[data-act=jump]',tx).hidden=r.top>=lr.top&&r.bottom<=lr.bottom}});
   L.addEventListener('click',e=>{const b=e.target.closest('.cue');if(b){seek(+b.dataset.start+.01);S.follow=true}});
-  $('input',tx).addEventListener('input',buildTx);
-  $('[data-act=jump]',tx).addEventListener('click',e=>{S.follow=true;if(lastCur){L.scrollTop=lastCur.offsetTop-L.clientHeight/3;lastCur.focus()}e.currentTarget.hidden=true})}
+  qi.addEventListener('input',()=>{S.q=qi.value;S.hi=0;buildTx()});
+  qi.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();step(e.shiftKey?-1:1)}});
+  tx.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act;if(b.getAttribute('aria-disabled')==='true')return;
+   if(a==='qprev')step(-1);else if(a==='qnext')step(1);else if(a==='qclear'){qi.value='';S.q='';buildTx();qi.focus()}
+   else if(a==='jump'){S.follow=true;if(lastCur){L.scrollTop=lastCur.offsetTop-L.clientHeight/3;lastCur.focus()}b.hidden=true}
+   else if(a==='dl'){const w=b.parentElement,op=!w.hasAttribute('data-open');w.toggleAttribute('data-open',op);b.setAttribute('aria-expanded',op);if(op)$('a',w).focus()}});
+  tx.addEventListener('keydown',e=>{const w=$('.tx-dl',tx);if(e.key==='Escape'&&w.hasAttribute('data-open')){w.removeAttribute('data-open');const b=$('.dlt',tx);b.setAttribute('aria-expanded','false');b.focus()}})}
  // media
  function seek(t){S.t=Math.min(Math.max(0,t),DUR);if(v)v.currentTime=S.t;if(P.dataset.state==='ended'&&S.t<DUR)setState('paused');render()}
- function setState(s){P.dataset.state=s;el('status').textContent=s==='loading'?'Loading video':s==='buffering'?'Buffering':'';chrome()}
- function play(){if(!v){return}if(P.dataset.state==='poster')setState('loading');v.play().catch(()=>{})}
+ let lt;
+ // Loading video: first load and stalls use the same words; the pill and the polite status appear only after ~1 s
+ function setState(s,now){P.dataset.state=s;clearTimeout(lt);const busy=s==='loading'||(s==='buffering'&&!P.hasAttribute('data-nobuf'));
+  if(busy){const show=()=>{el('pill').textContent='Loading video';el('status').textContent='Loading video'};now?show():lt=setTimeout(show,1000)}else{el('pill').textContent='';el('status').textContent=''}
+  if(s==='error'&&S.interacted){el('alert').textContent='The video didn\'t load.';setTimeout(()=>$('[data-act=retry]',P).focus(),0)}else if(s!=='error')el('alert').textContent='';
+  chrome()}
+ function play(){if(!v)return;S.interacted=true;if(P.dataset.state==='poster')setState('loading');v.play().catch(()=>{})}
  function toggle(){if(!v)return;S.playing?v.pause():play()}
- if(v){v.addEventListener('loadedmetadata',()=>{DUR=v.duration||DUR;if(Math.abs(v.currentTime-S.t)>.25)v.currentTime=S.t;render()});v.addEventListener('timeupdate',()=>{if(v.readyState<1)return;S.t=v.currentTime;render()});
-  v.addEventListener('progress',()=>{try{S.buf=v.buffered.length?v.buffered.end(v.buffered.length-1):0}catch(e){}render()});
-  v.addEventListener('playing',()=>{S.playing=true;setState('playing');render()});v.addEventListener('pause',()=>{S.playing=false;if(P.dataset.state!=='ended'&&P.dataset.state!=='error')setState('paused');render()});
+ if(v){v.volume=S.vol;v.muted=S.muted;v.playbackRate=S.rate;
+  v.addEventListener('loadedmetadata',()=>{DUR=v.duration||DUR;if(Math.abs(v.currentTime-S.t)>.25)v.currentTime=S.t;v.playbackRate=S.rate;render()});v.addEventListener('timeupdate',()=>{if(v.readyState<1)return;S.t=v.currentTime;render()});
+  // mirrors the core's getBuffered(): one segment per range where canReportBufferedRanges (native, HLS), else one fill from fraction
+  v.addEventListener('progress',()=>{try{const r=[];for(let i=0;i<v.buffered.length;i++)r.push([v.buffered.start(i),v.buffered.end(i)]);S.buf={fraction:r.length&&DUR?r[r.length-1][1]/DUR:0,ranges:r}}catch(e){S.buf=null}render()});
+  v.addEventListener('playing',()=>{S.playing=true;setState('playing');render()});v.addEventListener('pause',()=>{S.playing=false;if(!['ended','error'].includes(P.dataset.state))setState('paused');render()});
   v.addEventListener('waiting',()=>{if(P.dataset.state!=='poster')setState('buffering')});v.addEventListener('ended',()=>{S.playing=false;setState('ended');render()});
   v.addEventListener('error',()=>{S.playing=false;setState('error')},true);$('source',v).addEventListener('error',()=>{S.playing=false;setState('error')});
   v.addEventListener('click',toggle)}
@@ -306,67 +444,93 @@ function mount(host,o){const id='vp'+(++n);host.insertAdjacentHTML('beforeend',p
  const toT=e=>{const r=sc.getBoundingClientRect();return (e.clientX-r.left)/r.width*DUR};
  sc.addEventListener('pointerdown',e=>{sc.setPointerCapture(e.pointerId);seek(toT(e));const mv=ev=>seek(toT(ev));sc.addEventListener('pointermove',mv);sc.addEventListener('pointerup',()=>sc.removeEventListener('pointermove',mv),{once:true})});
  sc.addEventListener('keydown',e=>{const k={ArrowRight:5,ArrowUp:5,ArrowLeft:-5,ArrowDown:-5,PageUp:DUR*.1,PageDown:-DUR*.1}[e.key];
-  if(k!==undefined){e.preventDefault();e.stopPropagation();seek(S.t+k)}else if(e.key==='Home'){e.preventDefault();seek(0)}else if(e.key==='End'){e.preventDefault();seek(DUR)}});
- const vol=$('.vol input',P);vol.addEventListener('input',()=>{S.vol=vol.value/100;S.muted=S.vol===0;if(v){v.volume=S.vol;v.muted=S.muted}vol.setAttribute('aria-valuetext',vol.value+'%');render()});
- // popovers
+  if(k!==undefined){e.preventDefault();e.stopPropagation();seek(S.t+k)}else if(e.key==='Home'){e.preventDefault();e.stopPropagation();seek(0)}else if(e.key==='End'){e.preventDefault();e.stopPropagation();seek(DUR)}});
+ const vol=$('.vol input',P);vol.addEventListener('input',()=>{S.vol=vol.value/100;S.muted=S.vol===0;if(v){v.volume=S.vol;v.muted=S.muted}save();render()});
+ // popovers (More, Speed). Caption settings is a modal dialog.
  let openPop=null,opener=null;
  function closePop(ret=true){if(!openPop)return;openPop.hidden=true;$$(`[aria-controls=${openPop.id}]`,P).forEach(b=>b.setAttribute('aria-expanded','false'));if(ret&&opener)opener.focus();openPop=null;chrome()}
- function showPop(p,btn){const same=openPop===p;closePop(false);if(same)return;p.hidden=false;openPop=p;opener=btn;if(btn&&btn.hasAttribute('aria-expanded'))btn.setAttribute('aria-expanded','true');const f=$('input:checked,button,input',p);f&&f.focus();chrome()}
- const setRate=r=>{S.rate=r;if(v)v.playbackRate=r;el('spl').textContent=r+'×';$$(`input[name=sp-${id}],input[name=spm-${id}]`,P).forEach(i=>i.checked=+i.value===r)};
- P.addEventListener('change',e=>{const i=e.target;if(i.name===`sp-${id}`||i.name===`spm-${id}`)setRate(+i.value);for(const k of ['size','style','bg','font'])if(i.name===`${k}-${id}`){S.pref[k]=i.value;savePref()}});
+ function showPop(p,btn){const same=openPop===p;closePop(false);if(same)return;p.hidden=false;openPop=p;opener=btn;if(btn&&btn.hasAttribute('aria-expanded'))btn.setAttribute('aria-expanded','true');const f=$('input:checked,button:not([hidden]),input,select',p);f&&f.focus();chrome()}
+ const caps=Object.assign({rate:true,rates:SPEEDS,volume:true,fullscreen:true},o.caps||{});
+ const setRate=r=>{if(!caps.rates.includes(r))r=1;S.rate=r;if(v)v.playbackRate=r;el('spl').textContent=spLabel(r);$('[data-act=speed]',P).setAttribute('aria-label','Playback speed, '+spLabel(r));$$(`input[name=sp-${id}],input[name=spm-${id}]`,P).forEach(i=>i.checked=+i.value===r)};
+ const stepRate=d=>{if(!caps.rate)return;const R=caps.rates,i=R.indexOf(S.rate);const j=Math.min(R.length-1,Math.max(0,i+d));if(j!==i){setRate(R[j]);save();el('status').textContent='Playback speed, '+spLabel(R[j])}};
+ P.addEventListener('change',e=>{const i=e.target;if(i.name===`sp-${id}`||i.name===`spm-${id}`){setRate(+i.value);save()}
+  for(const k of ['size','color','background','font'])if(i.name===`${k}-${id}`){S.cs[k]=i.value;save();applyCC()}
+  if(i===el('lang')){if(i.value==='off')S.cc.on=false;else{S.cc.on=true;S.cc.track=i.value}save();applyCC();render()}});
  const setTx=on=>{if(!tx)return;tx.hidden=!on;$$('[data-act=tx]',P).forEach(b=>b.setAttribute('aria-expanded',on))};
  const isFs=()=>document.fullscreenElement===P;
- P.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!P.contains(b))return;const a=b.dataset.act;
+ const capOpener=()=>$('[data-act=more]',P);
+ function openCaps(){closePop(false);if(o.demo){dlg.classList.add('demo');dlg.setAttribute('open','');return}dlg.showModal();const c=$('input:checked',dlg);c&&c.focus()}
+ dlg.addEventListener('close',()=>{el('csst').textContent='';capOpener().focus()});
+ P.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!P.contains(b))return;const a=b.dataset.act;if(b.getAttribute('aria-disabled')==='true')return;
   if(a==='play'||a==='toggle')toggle();
-  else if(a==='mute'){S.muted=!S.muted;if(v)v.muted=S.muted;render()}
-  else if(a==='cc'){if(b.getAttribute('aria-disabled')==='true')return;S.pref.on=!S.pref.on;savePref()}
+  else if(a==='mute'){S.muted=!S.muted;if(v)v.muted=S.muted;save();render()}
+  else if(a==='cc'){S.cc.on=!S.cc.on;save();applyCC();render()}
   else if(a==='more')showPop($('#'+id+'-more'),b);
   else if(a==='speed')showPop($('#'+id+'-sp'),b);
-  else if(a==='tx'){setTx(tx.hidden);}
-  else if(a==='ad'){S.ad=!S.ad;P.dataset.ad=S.ad?'on':'off';b.setAttribute('aria-pressed',S.ad);buildTx();render()}
-  else if(a==='capset'){const m=$('[data-act=more]',P);closePop(false);showPop($('#'+id+'-cs'),m)}
-  else if(a==='capreset'){S.pref={...DEF,on:S.pref.on};savePref()}
-  else if(a==='capdone')closePop();
+  else if(a==='tx'){setTx(tx.hidden)}
+  else if(a==='ad'){S.ds.on=!S.ds.on;save();applyAD();render()}
+  else if(a==='voice'){S.ds.voice=!S.ds.voice;if(!S.ds.voice)try{speechSynthesis.cancel()}catch(e){}save();applyAD()}
+  else if(a==='vpause'){S.ds.pause=!S.ds.pause;save();applyAD()}
+  else if(a==='capset')openCaps();
+  else if(a==='capreset'){S.cs={...CS_DEF};save();applyCC();el('csst').textContent='Caption settings reset.'}
   else if(a==='fs'){isFs()?document.exitFullscreen():P.requestFullscreen&&P.requestFullscreen().catch(()=>{})}
-  else if(a==='retry'){setState('loading');v&&v.load()}
-  else if(a==='replay'){seek(0);play()}
-  else if(a==='jump'){S.follow=true;if(lastCur){el('list').scrollTop=lastCur.offsetTop-el('list').clientHeight/3;lastCur.focus()}b.hidden=true}});
+  else if(a==='retry'){S.interacted=true;setState('loading');v&&v.load()}
+  else if(a==='replay'){seek(0);play()}});
  document.addEventListener('pointerdown',e=>{if(openPop&&!openPop.contains(e.target)&&!e.target.closest(`[aria-controls=${openPop.id}],[data-act=more]`))closePop(false)});
- document.addEventListener('fullscreenchange',()=>{const b=$('[data-act=fs]',P);b.innerHTML=svg(isFs()?'fsx':'fs');b.setAttribute('aria-label',isFs()?'Exit full screen':'Full screen');chrome()});
- // player-scoped keys
+ document.addEventListener('fullscreenchange',()=>{const b=$('[data-act=fs]',P);b.innerHTML=svg(isFs()?'fsx':'fs');setTip(b,isFs()?'Exit full screen':'Full screen');chrome()});
+ // player-scoped keys. Never global, never while typing. Shift is allowed only for < and >.
  P.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target;
-  if(e.key==='Escape'&&openPop){e.preventDefault();closePop();return}
-  if(t.closest('.pop')||t.matches('input[type=search],input[type=text],textarea'))return;
-  const k=e.key.toLowerCase();const onVol=t===vol;
+  if(e.key==='Escape'){if(openPop){e.preventDefault();closePop();return}if(P.dataset.tip!=='off'){P.dataset.tip='off'}return}
+  if(t.closest('.pop,dialog')||t.matches('input[type=search],input[type=text],textarea,select'))return;
+  if(e.shiftKey&&e.key!=='<'&&e.key!=='>')return;
+  const k=e.key.toLowerCase(),onVol=t===vol,onBtn=t.matches('button,a');
   if(k==='k'||(e.key===' '&&(t===sc||t===P))){e.preventDefault();toggle()}
   else if((e.key==='ArrowLeft'||e.key==='ArrowRight')&&!onVol){e.preventDefault();seek(S.t+(e.key==='ArrowRight'?5:-5))}
-  else if((e.key==='ArrowUp'||e.key==='ArrowDown')&&!onVol){e.preventDefault();vol.value=Math.min(100,Math.max(0,+vol.value+(e.key==='ArrowUp'?10:-10)));vol.dispatchEvent(new Event('input'))}
+  else if(k==='j'||k==='l'){e.preventDefault();seek(S.t+(k==='l'?10:-10))}
+  else if((e.key==='Home'||e.key==='End')&&!onVol){e.preventDefault();seek(e.key==='Home'?0:DUR)}
+  else if((e.key==='ArrowUp'||e.key==='ArrowDown')&&!onVol&&caps.volume){e.preventDefault();S.vol=Math.min(1,Math.max(0,S.vol+(e.key==='ArrowUp'?.1:-.1)));S.muted=S.vol===0;if(v){v.volume=S.vol;v.muted=S.muted}save();render()}
   else if(k==='m'){e.preventDefault();$('[data-act=mute]',P).click()}
   else if(k==='c'){e.preventDefault();$('[data-act=cc]',P).click()}
-  else if(k==='f'){e.preventDefault();$('[data-act=fs]',P).click()}});
+  else if(k==='d'){if(ad.length){e.preventDefault();$('[data-act=ad]',P).click()}}
+  else if(k==='f'){if(caps.fullscreen){e.preventDefault();$('[data-act=fs]',P).click()}}
+  else if(e.key==='<'||e.key==='>'){e.preventDefault();stepRate(e.key==='>'?1:-1)}
+  else if(k==='t'&&tx){e.preventDefault();setTx(true);const c=$('.cue[aria-current=true]',tx)||$('.cue',tx)||$('h2',tx);c.focus()}});
+ ['pointermove','focusin'].forEach(ev=>P.addEventListener(ev,()=>{if(P.dataset.tip==='off')delete P.dataset.tip},{passive:true}));
  // controls auto-hide: full screen only, while playing, no keyboard focus inside, no open panel, motion allowed
  let ht;function chrome(){clearTimeout(ht);P.dataset.chrome='shown';if(isFs()&&S.playing&&!openPop&&!RM.matches&&!P.querySelector(':focus-visible')&&!P.matches('.bar:hover'))ht=setTimeout(()=>{if(!P.querySelector(':focus-visible')&&!openPop)P.dataset.chrome='hidden'},3000)}
  ['pointermove','keydown','touchstart','focusin'].forEach(ev=>P.addEventListener(ev,chrome,{passive:true}));
  // capabilities from the core Player (PR #33): hide what a source can't do, never offer a control that fails
- const caps=Object.assign({rate:true,rates:SPEEDS,volume:true,fullscreen:true},o.caps||{});
+ if(caps.canReportBuffering===false){S.buf=null;P.dataset.nobuf=''}
+ if(caps.providerCaptions){$('[data-act=cc]',P).dataset.cap='off';el('langf').dataset.cap='off';$('[data-act=capset]',P).dataset.cap='off'}
  if(!caps.volume)$('.vol',P).dataset.cap='off';
  if(!caps.fullscreen)$('[data-act=fs]',P).dataset.cap='off';
- if(!caps.rate||caps.rates.length<2){$('[data-act=speed]',P).dataset.cap='off';$('#'+id+'-more fieldset').dataset.cap='off'}
+ if(!caps.rate||caps.rates.length<2){$('[data-act=speed]',P).dataset.cap='off';$('#'+id+'-more [data-speed]').dataset.cap='off'}
  else $$('input[type=radio][name^=sp]',P).forEach(i=>{if(!caps.rates.includes(+i.value))i.closest('label').dataset.cap='off'});
- applyPref();setRate(1);buildTx();render();
+ applyCC();applyAD();setRate(S.rate);buildTx();render();
  if(o.demo)demo(o.demo);
- function demo(d){if(d==='limited')d='paused';const L={poster:0,loading:0,buffering:21,playing:13.4,paused:30,error:0,ended:DUR,nocc:13.4,capset:13.4};S.t=L[d]??0;S.buf=Math.min(DUR,S.t+14);
-  if(d==='playing'||d==='buffering'||d==='nocc'||d==='capset'){S.playing=d!=='buffering'}
-  setState(d==='nocc'||d==='capset'?'playing':d==='more'?'paused':d);if(d==='paused')setState('paused');
-  if(d==='nocc'){const c=$('[data-act=cc]',P);c.setAttribute('aria-disabled','true');c.setAttribute('aria-pressed','false');c.setAttribute('aria-label','Captions, unavailable');P.dataset.cc='off'}
-  render();if(d==='nocc')P.dataset.cc='off';
-  if(d==='paused'){const m=$('#'+id+'-more');m.hidden=false;$('[data-act=more]',P).setAttribute('aria-expanded','true')}
-  if(d==='capset'){$('#'+id+'-cs').hidden=false}}
+ function demo(d){const L={poster:0,loading:0,buffering:21,buffrac:21,playing:13.4,paused:30,error:0,ended:DUR,nocc:13.4,capset:13.4,limited:30,adon:0.6,unavailable:0,txsearch:8,txempty:13.4};S.t=L[d]??0;if(!P.hasAttribute('data-nobuf'))S.buf=caps.canReportBufferedRanges===false?{fraction:Math.min(DUR,S.t+14)/DUR,ranges:null}:{fraction:Math.min(DUR,S.t+14)/DUR,ranges:[[0,Math.min(DUR,S.t+14)],[Math.min(DUR,S.t+20),Math.min(DUR,S.t+24)]]};
+  S.playing=['playing','nocc','capset','adon','txsearch','txempty'].includes(d);
+  const state={nocc:'playing',capset:'playing',adon:'playing',limited:'paused',txsearch:'playing',txempty:'playing',buffrac:'buffering'}[d]||d;setState(state,true);
+  if(d==='adon'){S.ds.on=true;applyAD()}
+  render();
+  if(d==='paused'||d==='limited'||d==='adon'){showPop($('#'+id+'-more'),$('[data-act=more]',P));document.activeElement&&document.activeElement.blur()}
+  if(d==='capset')openCaps();
+  if(d==='txsearch'){const qi=$('input',tx);qi.value='blood';S.q='blood';buildTx();step(0)}}
  return P}
-Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch(SRC+'ad.vtt').then(r=>r.text())]).then(([c,a])=>{CUES=vtt(c);AD=vtt(a)}).catch(()=>{}).finally(()=>{
- mount($('#live'),{label:'Sintel, excerpt',media:true,tx:true});
- const G=$('#gal');[['poster','Poster: play target with duration'],['loading','Loading'],['buffering','Buffering (static text, no spinner)'],['playing','Playing with captions'],['paused','Paused, More open (narrow) or Speed and Transcript inline (wide)'],['capset','Caption settings open'],['error','Error with Retry'],['ended','Ended with Replay'],['nocc','No captions track: Captions unavailable'],['limited','Limited source, More open: no speed, no volume level, no full screen']].forEach(([d,l])=>{
-  const f=document.createElement('figure');if(d==='paused'||d==='limited')f.className='tall';if(d==='capset')f.className='taller';f.innerHTML=`<figcaption>${l}</figcaption>`;G.appendChild(f);mount(f,{label:'Sintel, state demo: '+l,demo:d,caps:d==='limited'?{rate:false,rates:[1],volume:false,fullscreen:false}:undefined})})});
+Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch('media/captions-fr.vtt').then(r=>r.text()),fetch(SRC+'ad.vtt').then(r=>r.text())]).then(([c,f,a])=>{TRACKS=[{id:'en',lang:'en',label:'English',cues:vtt(c)},{id:'fr',lang:'fr',label:'Français',cues:vtt(f)}];AD=vtt(a)}).catch(()=>{}).finally(()=>{
+ mount($('#live'),{label:TITLE,media:true,tx:true});
+ const G=$('#gal');[['poster','Poster: play target with duration'],['loading','Loading video (shown after about 1 second)'],['buffering','Stalled (native, HLS): same "Loading video" words, one segment per buffered range'],['buffrac','Stalled (YouTube, Vimeo): one fill from the loaded fraction'],['playing','Playing with captions'],['paused','Paused, More open: speed, audio description, caption language'],['adon','Audio description on, More open: Read descriptions aloud available'],['capset','Caption settings dialog'],['error','Error with Retry'],['ended','Ended with Replay'],['nocc','No captions track: Captions unavailable with hint'],['limited','Limited source, More open: no speed, no volume level, no full screen'],['unavailable','Adapter unavailable (Vimeo or hls.js module missing): text link to the video'],['txsearch','Transcript search: count, previous and next'],['txempty','Transcript with no lines']].forEach(([d,l])=>{
+  const f=document.createElement('figure');f.innerHTML=`<figcaption>${l}</figcaption>`;G.appendChild(f);
+  const opt={label:'state demo: '+l,demo:d};
+  if(d==='limited')opt.caps={rate:false,rates:[1],volume:false,fullscreen:false};
+  if(d==='nocc')opt.tracks=[];
+  if(d==='buffrac')opt.caps={canReportBufferedRanges:false};
+  if(d==='txsearch')opt.tx=true;
+  if(d==='txempty'){opt.tx=true;opt.tracks=[];opt.ad=[]}
+  mount(f,opt)});
+ // a figure with an open panel gets top room so the panel never covers the caption above it
+ const pad=()=>$$('.gal figure').forEach(f=>{const p=$('.pop:not([hidden]),dialog[open]',f),vp=$('.vp',f);if(!p)return;vp.style.marginTop='';const over=vp.getBoundingClientRect().top-p.getBoundingClientRect().top;if(over>0)vp.style.marginTop=(over+8)+'px'});
+ pad();new ResizeObserver(pad).observe(G)});
 const R=document.documentElement,mb=$('#mode');
 function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark);mb.textContent=dark?'Light mode':'Dark mode'}
 mb.onclick=()=>{const dark=mb.getAttribute('aria-pressed')==='true';R.dataset.mode=dark?'light':'dark';try{localStorage.setItem('jdilig:mode',R.dataset.mode)}catch(e){}syncMode()};
