@@ -1,0 +1,178 @@
+FAIL light 375 introduction--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 375 introduction--docs A link rgb(11, 87, 164) != --accent-hover #1530d0
+FAIL light 375 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL light 375 tokens--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 375 components-button--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 375 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL light 375 components-table--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 375 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 1280 introduction--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 1280 introduction--docs A link rgb(11, 87, 164) != --accent-hover #1530d0
+FAIL light 1280 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL light 1280 tokens--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 1280 components-button--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 1280 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL light 1280 components-table--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL light 1280 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 375 introduction--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 375 introduction--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 375 introduction--docs A link rgb(11, 87, 164) != --accent #c6f432
+FAIL dark 375 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL dark 375 tokens--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 375 tokens--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 375 components-button--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 375 components-button--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 375 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL dark 375 components-table--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 375 components-table--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 375 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 1280 introduction--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 1280 introduction--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 1280 introduction--docs A link rgb(11, 87, 164) != --accent #c6f432
+FAIL dark 1280 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL dark 1280 tokens--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 1280 tokens--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 1280 components-button--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 1280 components-button--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 1280 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL dark 1280 components-table--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL dark 1280 components-table--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL dark 1280 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 375 introduction--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 375 introduction--docs A link rgb(11, 87, 164) != --accent-hover #1530d0
+FAIL auto/OS-light 375 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL auto/OS-light 375 tokens--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 375 components-button--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 375 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL auto/OS-light 375 components-table--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 375 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL auto/OS-light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 1280 introduction--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 1280 introduction--docs A link rgb(11, 87, 164) != --accent-hover #1530d0
+FAIL auto/OS-light 1280 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL auto/OS-light 1280 tokens--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 1280 components-button--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 1280 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL auto/OS-light 1280 components-table--docs A h1 rgb(46, 52, 56) != --text #111111
+FAIL auto/OS-light 1280 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #f3ecd2
+FAIL auto/OS-light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-light 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 375 introduction--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 375 introduction--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 375 introduction--docs A link rgb(11, 87, 164) != --accent #c6f432
+FAIL auto/OS-dark 375 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL auto/OS-dark 375 tokens--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 375 tokens--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 375 components-button--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 375 components-button--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 375 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL auto/OS-dark 375 components-table--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 375 components-table--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 375 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL auto/OS-dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 375 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 1280 introduction--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 1280 introduction--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 1280 introduction--docs A link rgb(11, 87, 164) != --accent #c6f432
+FAIL auto/OS-dark 1280 introduction--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL auto/OS-dark 1280 tokens--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 1280 tokens--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 1280 components-button--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 1280 components-button--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 1280 components-button--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL auto/OS-dark 1280 components-table--docs A page bg rgb(255, 255, 255) != --surface #1c1c1c
+FAIL auto/OS-dark 1280 components-table--docs A h1 rgb(46, 52, 56) != --text #fdf8e9
+FAIL auto/OS-dark 1280 components-table--docs A code block rgb(255, 255, 255) != --surface-muted #272727
+FAIL auto/OS-dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL auto/OS-dark 1280 components-table--docs B ArgTypes table "*" 3.45 < 4.5
+FAIL D Mode -> Dark
+FAIL D Auto, OS flips to dark
+FAIL E 320 components-button--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 320 components-button--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 320 components-button--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 320 components-table--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 320 components-table--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 320 components-table--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 375 components-button--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 375 components-button--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 375 components-button--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 375 components-table--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 375 components-table--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 375 components-table--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 599 components-button--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 599 components-button--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 599 components-button--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 599 components-table--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 599 components-table--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 599 components-table--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 600 components-button--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 600 components-button--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 600 components-button--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 600 components-table--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 600 components-table--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 600 components-table--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 1280 components-button--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 1280 components-button--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 1280 components-button--docs "Reset zoom" 44.0x44.0 hits 100111111
+FAIL E 1280 components-table--docs "Zoom in" 44.0x44.0 hits 100111111
+FAIL E 1280 components-table--docs "Zoom out" 44.0x44.0 hits 100111111
+FAIL E 1280 components-table--docs "Reset zoom" 44.0x44.0 hits 100111111
+
+Lowest text contrast by mode and kind:
+  dark ArgTypes table: 3.45
+  dark body text: 12.62
+  dark code block: 8.37
+  dark docs button: 12.62
+  dark heading: 5.72
+  dark inline code: 8.88
+  dark link: 7.21
+  dark table: 12.04
+  light ArgTypes table: 3.45
+  light body text: 12.62
+  light code block: 8.37
+  light docs button: 12.62
+  light heading: 5.72
+  light inline code: 8.88
+  light link: 7.21
+  light table: 12.04
+Lowest UI contrast by mode and kind:
+  dark Canvas border: 7.99
+  dark Copy/Show code border: 7.99
+  dark code-block border: 7.99
+  dark focus ring on code block: 3.32
+  dark focus ring on page: 3.79
+  dark zoom icon: 3.96
+  light Canvas border: 7.99
+  light Copy/Show code border: 7.99
+  light code-block border: 7.99
+  light focus ring on code block: 3.80
+  light focus ring on page: 4.50
+  light zoom icon: 3.96
+
+docs-check http://127.0.0.1:8971: 3891 pass, 144 fail
+exit 1

@@ -1,0 +1,2 @@
+axe-docs http://127.0.0.1:8973: 72 runs (docs pages x 2 widths x 3 modes), 0 failing, 156 minor/moderate
+exit 0
