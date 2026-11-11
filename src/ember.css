@@ -162,8 +162,8 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-toast-more { pointer-events: auto; align-self: flex-end; order: 99; }
 /* WCAG 2.4.11: the page keeps the toast stack's height clear at the bottom while toasts are open (set by ToastProvider). */
 html[data-em-toasts] { scroll-padding-bottom: var(--em-toast-safe, 0px); padding-bottom: var(--em-toast-safe, 0px); }
-@media (min-width: 481px) { .em-toast-more { display: none; } }
-@media (max-width: 480px) {
+@media (min-width: 640px) { .em-toast-more { display: none; } }
+@media (max-width: 639px) {
   /* Collapsed: newest toast only. Expanded: the stack scrolls inside half the viewport. */
   .em-toast-viewport:not([data-expanded]) .em-toast:not([data-newest]) { display: none; }
   .em-toast-viewport[data-expanded] { max-height: 50vh; overflow-y: auto; pointer-events: auto; }

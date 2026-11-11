@@ -114,3 +114,8 @@ QA's repro on PR #15 (scripts/focus-obscured.mjs) found that with 3 sticky error
 ## 2026-11-10 6:50 PM PT: ACR report version
 - The ACR now has an explicit **Report version: 1.0** line (Chief Architect ruling). It goes up a minor version for any row or remark change, and a major version when the product version changes. The Version line stays the product version that was evaluated. The jdilig.me generator reads all three and fails if one is missing.
 - The 2.4.11 remark now names the fix card, FU-FSD-TOAST. The row stays Partially Supports until that card ships and `scripts/focus-obscured.mjs` reports 0 hidden stops.
+
+## 2026-11-10 9:05 PM PT: Toast aligned to Chief Architect's spec (FU-FSD-TOAST)
+- The collapsed stack now applies below 640px instead of at 480px and below. It shows the newest toast plus a "+N more" button that expands the list.
+- While any toast is open, the page still reserves the stack's measured height (ResizeObserver) as `scroll-padding-bottom`. Toasts never take focus: after two more toasts open at 600, 639 and 640px, focus stays on the trigger.
+- `test:focus-obscured` adds a narrow-control case: on every row, a 44px button pinned to the right edge, under the toast stack. That's 90 controls per run at 320/375/768/1440, in each registered theme in light and dark, collapsed and expanded below 640px. Result: 1080 checked, 0 fully hidden, 0 partly covered.

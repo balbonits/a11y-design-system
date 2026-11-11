@@ -18,7 +18,7 @@ let partly = 0;
 let checked = 0;
 for (const width of [320, 375, 768, 1440]) {
   for (const [theme, mode] of COMBOS) {
-  for (const expand of width <= 480 ? [false, true] : [false]) {
+  for (const expand of width < 640 ? [false, true] : [false]) {
     const page = await browser.newPage({ viewport: { width, height: 800 }, reducedMotion: expand ? 'reduce' : 'no-preference' });
     await page.goto(`${base}/iframe.html?id=components-toast--error&viewMode=story&globals=theme:${theme};mode:${mode}`, { waitUntil: 'load' });
     await page.waitForSelector('.em-toast');
@@ -32,7 +32,7 @@ for (const width of [320, 375, 768, 1440]) {
       const anims = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length);
       if (anims) { hidden++; console.log(`  FAIL ${width}px ${theme} ${mode}: ${anims} animation(s) running under reduced motion`); }
     }
-    // Page content behind the toasts: 60 buttons and inputs, tall enough to scroll.
+    // Page content behind the toasts: 30 full-width buttons, 30 inputs and 30 narrow right-edge buttons, tall enough to scroll.
     await page.evaluate(() => {
       const main = document.createElement('main');
       for (let i = 0; i < 30; i++) {
@@ -42,7 +42,13 @@ for (const width of [320, 375, 768, 1440]) {
         const inp = document.createElement('input');
         inp.setAttribute('aria-label', `Behind input ${i + 1}`);
         inp.style.cssText = 'display:block;width:100%;min-height:44px;margin:8px 0';
-        main.append(b, inp);
+        // Narrow-control case (Chief Architect): a 44px button pinned to the right edge, where the toast stack sits,
+        // so at 1440px a control narrower than a toast can't end up fully under it.
+        const nb = document.createElement('button');
+        nb.textContent = `${i + 1}`;
+        nb.setAttribute('aria-label', `Narrow button ${i + 1}`);
+        nb.style.cssText = 'display:block;width:44px;min-height:44px;margin:8px 0 8px auto';
+        main.append(b, inp, nb);
       }
       document.querySelector('#storybook-root').append(main);
       document.activeElement?.blur();
