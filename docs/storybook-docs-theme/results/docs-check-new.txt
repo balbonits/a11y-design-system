@@ -1,0 +1,33 @@
+
+Lowest text contrast by mode and kind:
+  dark ArgTypes table: 5.69
+  dark body text: 16.05
+  dark code block: 7.81
+  dark docs button: 16.05
+  dark heading: 16.05
+  dark inline code: 14.07
+  dark link: 13.30
+  dark table: 14.07
+  light ArgTypes table: 6.04
+  light body text: 18.88
+  light code block: 5.24
+  light docs button: 18.88
+  light heading: 18.88
+  light inline code: 15.95
+  light link: 8.88
+  light table: 15.95
+Lowest UI contrast by mode and kind:
+  dark Canvas border: 16.05
+  dark Copy/Show code border: 16.05
+  dark code-block border: 16.05
+  dark focus ring on code block: 3.32
+  dark focus ring on page: 3.79
+  dark zoom icon: 10.18
+  light Canvas border: 18.88
+  light Copy/Show code border: 18.88
+  light code-block border: 18.88
+  light focus ring on code block: 3.80
+  light focus ring on page: 4.50
+  light zoom icon: 10.86
+
+docs-check http://127.0.0.1:8984: 4353 pass, 0 fail

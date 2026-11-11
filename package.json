@@ -20,6 +20,7 @@
     "test:a11y": "node scripts/a11y.mjs",
     "test:mobile": "node scripts/mobile.mjs",
     "test:target-size": "node scripts/target-size.mjs",
+    "test:toast-modal": "node scripts/toast-modal.mjs",
     "test:press": "node scripts/press-offset.mjs",
     "test:hover": "node scripts/hover.mjs",
     "test:vp": "node scripts/vp-gates.mjs",
