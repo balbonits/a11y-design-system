@@ -8,6 +8,7 @@ Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or mo
 |---|---|---|---|---|---|
 | neo | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
 | kinetic | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
+| dusk | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
 
 | Theme.mode | Foreground | Background | Min | Ratio |
 |---|---|---|---|---|
@@ -135,3 +136,65 @@ Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or mo
 | kinetic.dark | focus-ring-color | surface | 3 | 11.10 |
 | kinetic.dark | focus-ring-color | surface-muted | 3 | 9.82 |
 | kinetic.dark | accent | surface-muted | 3 | 5.38 |
+| dusk.light | text | color-bg | 4.5 | 14.40 |
+| dusk.light | text | surface | 4.5 | 15.38 |
+| dusk.light | text-muted | color-bg | 4.5 | 7.37 |
+| dusk.light | text-muted | surface | 4.5 | 7.87 |
+| dusk.light | accent | color-bg | 4.5 | 8.59 |
+| dusk.light | accent | surface | 4.5 | 9.17 |
+| dusk.light | success | color-bg | 4.5 | 6.06 |
+| dusk.light | success | surface | 4.5 | 6.47 |
+| dusk.light | warning | color-bg | 4.5 | 6.42 |
+| dusk.light | warning | surface | 4.5 | 6.86 |
+| dusk.light | danger | color-bg | 4.5 | 6.58 |
+| dusk.light | danger | surface | 4.5 | 7.03 |
+| dusk.light | info | color-bg | 4.5 | 6.25 |
+| dusk.light | info | surface | 4.5 | 6.68 |
+| dusk.light | text | surface-muted | 4.5 | 12.95 |
+| dusk.light | text-muted | surface-muted | 4.5 | 6.63 |
+| dusk.light | text | accent-soft | 4.5 | 12.53 |
+| dusk.light | accent | accent-soft | 4.5 | 7.48 |
+| dusk.light | accent-contrast | accent | 4.5 | 9.17 |
+| dusk.light | accent-contrast | accent-hover | 4.5 | 11.90 |
+| dusk.light | danger-contrast | danger | 4.5 | 7.03 |
+| dusk.light | danger-contrast | danger-hover | 4.5 | 9.36 |
+| dusk.light | color-bg | text | 4.5 | 14.40 |
+| dusk.light | highlight-contrast | highlight | 4.5 | 7.44 |
+| dusk.light | border | color-bg | 3 | 4.30 |
+| dusk.light | border | surface | 3 | 4.59 |
+| dusk.light | border | surface-muted | 3 | 3.86 |
+| dusk.light | focus-ring-color | color-bg | 3 | 5.73 |
+| dusk.light | focus-ring-color | surface | 3 | 6.11 |
+| dusk.light | focus-ring-color | surface-muted | 3 | 5.15 |
+| dusk.light | accent | surface-muted | 3 | 7.72 |
+| dusk.dark | text | color-bg | 4.5 | 17.65 |
+| dusk.dark | text | surface | 4.5 | 16.63 |
+| dusk.dark | text-muted | color-bg | 4.5 | 11.00 |
+| dusk.dark | text-muted | surface | 4.5 | 10.36 |
+| dusk.dark | accent | color-bg | 4.5 | 10.68 |
+| dusk.dark | accent | surface | 4.5 | 10.06 |
+| dusk.dark | success | color-bg | 4.5 | 11.65 |
+| dusk.dark | success | surface | 4.5 | 10.98 |
+| dusk.dark | warning | color-bg | 4.5 | 12.63 |
+| dusk.dark | warning | surface | 4.5 | 11.90 |
+| dusk.dark | danger | color-bg | 4.5 | 9.62 |
+| dusk.dark | danger | surface | 4.5 | 9.06 |
+| dusk.dark | info | color-bg | 4.5 | 10.96 |
+| dusk.dark | info | surface | 4.5 | 10.32 |
+| dusk.dark | text | surface-muted | 4.5 | 14.94 |
+| dusk.dark | text-muted | surface-muted | 4.5 | 9.31 |
+| dusk.dark | text | accent-soft | 4.5 | 12.73 |
+| dusk.dark | accent | accent-soft | 4.5 | 7.71 |
+| dusk.dark | accent-contrast | accent | 4.5 | 10.68 |
+| dusk.dark | accent-contrast | accent-hover | 4.5 | 12.49 |
+| dusk.dark | danger-contrast | danger | 4.5 | 9.62 |
+| dusk.dark | danger-contrast | danger-hover | 4.5 | 12.19 |
+| dusk.dark | color-bg | text | 4.5 | 17.65 |
+| dusk.dark | highlight-contrast | highlight | 4.5 | 8.17 |
+| dusk.dark | border | color-bg | 3 | 5.80 |
+| dusk.dark | border | surface | 3 | 5.47 |
+| dusk.dark | border | surface-muted | 3 | 4.91 |
+| dusk.dark | focus-ring-color | color-bg | 3 | 9.88 |
+| dusk.dark | focus-ring-color | surface | 3 | 9.31 |
+| dusk.dark | focus-ring-color | surface-muted | 3 | 8.37 |
+| dusk.dark | accent | surface-muted | 3 | 9.04 |
