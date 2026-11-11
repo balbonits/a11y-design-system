@@ -1,5 +1,5 @@
 /* Theme "kinetic" (Kinetic Swiss). Source: Chief of Creatives, docs/directions/v3/kinetic/tokens.css (CA-signed at 938e642, PR 20).
-   Copied as-is, plus --hue-shift: 0deg (a registered extra with its neutral default, ARCH-REVIEW Addendum 7 (a)) and
+   Copied as-is, plus --hue-shift: 0 (a unitless 0..1 multiplier, CA 8:10 PM ruling; a registered extra with its neutral default, ARCH-REVIEW Addendum 7 (a)) and
    --parallax-scale/--hue-shift in the reduced-motion block. Register it in registry.json; no component code changes. */
 :root {
   --palette-scrim: #06123F99;
@@ -76,7 +76,7 @@
   --parallax-scale: 0;
   --lift: 0px;
   --weight-shift: 1;
-  --hue-shift: 0deg;
+  --hue-shift: 0;
 }
 [data-theme="kinetic"], [data-theme="kinetic"][data-mode="light"] {
   --scrim: var(--palette-scrim);
@@ -151,5 +151,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="kinetic"] {
-  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0; --parallax-scale: 0; --hue-shift: 0deg;
+  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0; --parallax-scale: 0; --hue-shift: 0;
 } }

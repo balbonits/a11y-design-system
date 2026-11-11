@@ -122,3 +122,7 @@ John asked for switchable themes with the components shown in each. Chief Archit
 ## 2026-11-10 7:47 PM PT: Chief Architect's focus-ring rulings on v0.3.1
 - Ruling 1 accepted with its condition: `npm run contrast` now fails a negative (or non-length) `--focus-ring-offset`, prints the offset per theme, and docs/CONTRAST.md states the rule. Focus ring vs `--color-bg`, `--surface` (cards and raised controls) and `--surface-muted` is required at 3:1 in light and dark at any offset; focus ring vs `--border` is required only at offset 0. Negative-tested with kinetic set to -2px.
 - Ruling 2 accepted as built: kinetic's `--hue-shift: 0deg`, with `--parallax-scale` and `--hue-shift` at 0 in the reduced block.
+
+## 2026-11-10 8:31 PM PT: --hue-shift is unitless (CA ruling), retargeted to main
+- #16 merged as main feba533 and was tagged v0.3.0. This PR now targets main, with main merged in.
+- Chief Architect ruled that `--hue-shift` is a unitless multiplier from 0 to 1, and the consuming CSS holds the angle (`calc(var(--hue-shift) * 40deg)`). Neo and kinetic now use `0` instead of `0deg`. `npm run contrast` now rejects any unit or any value outside 0 to 1, in both the base block and the reduced-motion block. I negative-tested it with kinetic set to `0deg`, and the rule is in docs/CONTRAST.md.

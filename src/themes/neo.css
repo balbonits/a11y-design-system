@@ -72,7 +72,7 @@
   --weight-shift: 0;
   --stagger: 0ms;
   --blur-glass: 0px;
-  --hue-shift: 0deg;
+  --hue-shift: 0;
   /* Addendum 7 (b): dialog backdrop. Resolves against the active mode's --text. */
   --scrim: color-mix(in srgb, var(--text) 45%, transparent);
 }
@@ -146,5 +146,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="neo"] {
-  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --stagger: 0ms; --hue-shift: 0deg;
+  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --stagger: 0ms; --hue-shift: 0;
 } }
