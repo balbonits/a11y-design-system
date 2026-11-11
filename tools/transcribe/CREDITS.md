@@ -7,5 +7,5 @@
 - **Sintel French subtitles** (samples/sintel/reference/sintel_fr.srt): Blender
   Foundation, from https://download.blender.org/durian/subs/, used under the
   same CC BY 3.0 terms as the film.
-- Captions, transcript and audio description: generated or written by this
-  project.
+- Captions, transcript and audio description: generated (faster-whisper) and
+  corrected by hand, or written, by this project.
