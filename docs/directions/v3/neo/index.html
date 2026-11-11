@@ -40,7 +40,7 @@ nav.views a[aria-current="page"]{background:var(--highlight);color:var(--highlig
 .btn[aria-busy=true]::before{content:'';width:1em;height:1em;border-radius:var(--radius-full);border:var(--border-width) solid currentColor;border-right-color:transparent;animation:spin var(--duration-slow) linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.btn[aria-busy=true]::before{animation:none;border-right-color:currentColor;border-style:dotted}}
-.field input[aria-invalid=true]{border-color:var(--danger);border-width:var(--border-width-strong)}
+.field input[aria-invalid=true]{border-color:var(--danger);border-width:var(--border-width-strong);padding-block:calc(.6rem - (var(--border-width-strong) - var(--border-width)))}
 .err{color:var(--danger);font-weight:700;margin-top:.35rem;display:flex;gap:.4rem;align-items:flex-start}
 .err::before{content:'!';flex:none;display:inline-grid;place-items:center;width:1.3em;height:1.3em;border-radius:var(--radius-full);background:var(--danger);color:var(--danger-contrast);font-size:.85em}
 .empty{text-align:center;padding:2rem 1rem;border:var(--border-width) dashed var(--border-subtle);border-radius:var(--radius-lg);background:var(--surface-muted)}
@@ -93,8 +93,8 @@ th{font-family:var(--font-mono);font-size:.8rem;text-transform:uppercase;backgro
 /* toast */
 .toast{position:fixed;left:50%;bottom:1rem;transform:translate(-50%,140%);background:var(--text);color:var(--color-bg);padding:.8rem 1.1rem;border-radius:var(--radius-md);font-weight:700;transition:transform var(--duration-base) var(--ease-press);max-width:calc(100vw - 2rem);z-index:9}
 .toast:empty{visibility:hidden}.toast{visibility:hidden}.toast.show{transform:translate(-50%,0);visibility:visible}
-dialog{border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);background:var(--surface);color:var(--text);max-width:min(440px,calc(100vw - 2rem));padding:1.4rem}
-dialog::backdrop{background:rgb(0 0 0 / .45)}
+dialog{border:var(--border-width) solid var(--dialog-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);background:var(--surface);color:var(--text);max-width:min(440px,calc(100vw - 2rem));padding:1.4rem}
+dialog::backdrop{background:var(--scrim)}
 /* swatches */
 .sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.7rem}
 .sw div{border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--surface)}

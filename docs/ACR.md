@@ -4,7 +4,7 @@ Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-pa
 
 - **Product:** Ember UI, an accessible React design system starter (tokens, 8 components, Storybook docs). Storybook: https://jdilig.me/ux/design-system/storybook/ . Case study: https://jdilig.me/ux/design-system
 - **Version:** `main` at 757da0c (package `ember-ui` 0.2.2)
-- **Report version:** 1.1
+- **Report version:** 1.3 (1.3 moves 2.4.11 Focus Not Obscured (Minimum) to Supports, citing test:focus-obscured; 1.2 is HIT-PATCH: Small buttons and Tabs now meet the 44 px bar, so the 2.5.8 exceptions are gone; 1.1 changed only the 2.5.8 and 302.7 remarks and added the target-size gate)
 - **Report date:** 2026-11-10
 - **Contact:** https://github.com/balbonits/a11y-design-system/issues
 - **Standards:** Revised Section 508 (36 CFR 1194), which incorporates WCAG 2.0 A/AA (the 508 baseline). WCAG 2.1 and 2.2 A/AA criteria are extra rows, marked (2.1) or (2.2).
@@ -14,6 +14,7 @@ Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-pa
 - **Automated (axe-core 4.x, `npm run test:a11y`):** every story and docs page in light and dark at 1024 px: 122 runs (50 stories + 11 docs pages x 2 themes), 0 serious or critical. The 288 moderate findings are all `landmark-one-main`, `page-has-heading-one`, `region` and `landmark-unique`. They come from rendering one component alone in an isolated Storybook story iframe, which has no page landmarks or H1, so they are findings about the test harness, not about the components.
 - **Reduced motion (same script):** the modal, toast and loading-button stories run 0 animations under `prefers-reduced-motion: reduce`.
 - **Mobile (`npm run test:mobile`):** 11 docs pages x 320/375/414/768/920 px x light/dark = 110 runs, 0 failing (page overflow, 44 px targets, axe).
+- **Target size (`npm run test:target-size`, CI gate):** every story (62) at 320 and 1280 px in light and dark = 248 runs, 624 targets. It measures each control's effective hit area: the region where a pointer press actually lands on it (Chrome hit-testing, so a `::before` hit area counts and anything painted over it doesn't), calibrated to within 0.5 px (`--calibrate` checks 40 synthetic boxes) and proved by a negative control that shrinks a button to 24 px and must fail. Inline links in running text are exempt, as 2.5.8 allows. Result with HIT-PATCH: 0 failing, and every shipped component's target is at least 44 x 44 px. The only entry left in `scripts/target-size.known.json` is the 8 measurements on the Email input of the theme-registry story's test-fixture theme, a fixture with a 40 px field height that isn't a shipped theme.
 - **Unit tests (`npm test`, Vitest + Testing Library):** 9 pass. They cover Modal focus in, Esc and close-button focus return (also when the app unmounts it), the Modal Tab trap, Tabs arrows/Home/End with wrap and disabled-skip, Toast roles, Toast auto-dismiss with hover pause, sticky action/error toasts, and the Undo action.
 - **Keyboard:** covered by the unit tests above and the per-component keyboard tables on each docs page. No separate manual keyboard pass is recorded yet.
 - **Screen reader:** **not yet evaluated.** Until a reader pass is recorded in PROGRESS.md (naming the reader, browser and OS), criteria that depend on announcements rest on markup, unit tests and axe only.
@@ -65,7 +66,7 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 2.5.3 Label in Name (2.1) | A | Supports | Accessible names come from the visible label text. Tested: axe. |
 | 2.5.4 Motion Actuation (2.1) | A | Not Applicable | No motion input. |
 | 2.5.7 Dragging Movements (2.2) | AA | Not Applicable | No dragging. |
-| 2.5.8 Target Size (Minimum) (2.2) | AA | Supports | Every control measures at least 44px (tested: mobile target scan); the --target-min CI gate is tracked separately. |
+| 2.5.8 Target Size (Minimum) (2.2) | AA | Supports | Every shipped component's effective hit area is at least 44 x 44 px (Ember's `--target-min`, the 2.5.5 AAA size), well above the 24 px this criterion requires (tested: target-size gate, all stories at 320 and 1280 px, light and dark). Version 1.1 listed two exceptions that HIT-PATCH fixed: Small buttons (including the Toast Undo and dismiss buttons) had a 40 px hit area because their `::before` was measured from inside the 2 px border, and Tabs were 42 px tall because the tab list clipped their bottom 2 px. |
 | 3.1.1 Language of Page | A | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
 | 3.1.2 Language of Parts | AA | Not Applicable | No other-language passages. |
 | 3.2.1 On Focus | A | Supports | Focus causes no context change. |
@@ -92,7 +93,7 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 302.4 Without Hearing | Not Applicable | No audio on main (see 1.2.x). |
 | 302.5 With Limited Hearing | Not Applicable | As 302.4. |
 | 302.6 Without Speech | Not Applicable | No speech input. |
-| 302.7 With Limited Manipulation | Supports | Fully keyboard operable, 44 px targets, no drag or required timing. |
+| 302.7 With Limited Manipulation | Supports | Fully keyboard operable, targets at least 40 px (44 px except the three components named under 2.5.8), no drag or required timing. |
 | 302.8 With Limited Reach and Strength | Supports | As 302.7. |
 | 302.9 With Limited Language, Cognitive, and Learning Abilities | Supports | Plain labels, Undo support in toasts, inline error help. |
 

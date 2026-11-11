@@ -64,3 +64,30 @@
 | neo-dark | accent | surface-muted | 3 | 11.66 |
 | neo-dark | focus-ring-color | border | 3 | 4.24 |
 | neo-dark | border | surface-muted | 3 | 14.07 |
+
+## Scrim (dialog backdrop)
+
+`--scrim` is ink `#111111` plus alpha (45% light `#11111173`, 55% dark `#1111118c`), composited over the page. Each color must dim or stay equal, never lighten, and page text under the scrim keeps at least 3:1 so it stays recognizable. The dialog is an opaque `--surface`, so its text contrast is the text/surface rows above and never depends on the scrim.
+
+| Combo | Token or pair | Base | Under scrim | Rule | Ratio |
+|---|---|---|---|---|---|
+| neo-light | color-bg | `#fdf8e9` | `#939088` | dims |  |
+| neo-light | surface | `#ffffff` | `#949494` | dims |  |
+| neo-light | surface-muted | `#f3ecd2` | `#8d897b` | dims |  |
+| neo-light | text | `#111111` | `#111111` | dims |  |
+| neo-light | text-muted | `#3d3d3d` | `#292929` | dims |  |
+| neo-light | accent | `#1f3dff` | `#192994` | dims |  |
+| neo-light | text on color-bg |  |  | 3:1 | 5.92 |
+| neo-light | text on surface |  |  | 3:1 | 6.22 |
+| neo-light | text-muted on color-bg |  |  | 3:1 | 4.56 |
+| neo-light | dialog-border (opaque) on scrim over color-bg | `#111111` | `#939088` | 3:1 | 5.92 |
+| neo-dark | color-bg | `#111111` | `#111111` | dims |  |
+| neo-dark | surface | `#1c1c1c` | `#161616` | dims |  |
+| neo-dark | surface-muted | `#272727` | `#1b1b1b` | dims |  |
+| neo-dark | text | `#fdf8e9` | `#7b7972` | dims |  |
+| neo-dark | text-muted | `#cfc8b0` | `#676459` | dims |  |
+| neo-dark | accent | `#c6f432` | `#637720` | dims |  |
+| neo-dark | text on color-bg |  |  | 3:1 | 4.33 |
+| neo-dark | text on surface |  |  | 3:1 | 4.15 |
+| neo-dark | text-muted on color-bg |  |  | 3:1 | 3.19 |
+| neo-dark | dialog-border (opaque) on scrim over color-bg | `#fdf8e9` | `#111111` | 3:1 | 17.79 |
