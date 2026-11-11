@@ -80,6 +80,7 @@
 | neo-light | text on color-bg |  |  | 3:1 | 5.92 |
 | neo-light | text on surface |  |  | 3:1 | 6.22 |
 | neo-light | text-muted on color-bg |  |  | 3:1 | 4.56 |
+| neo-light | dialog-border (opaque) on scrim over color-bg | `#111111` | `#939088` | 3:1 | 5.92 |
 | neo-dark | color-bg | `#111111` | `#111111` | dims |  |
 | neo-dark | surface | `#1c1c1c` | `#161616` | dims |  |
 | neo-dark | surface-muted | `#272727` | `#1b1b1b` | dims |  |
@@ -89,3 +90,4 @@
 | neo-dark | text on color-bg |  |  | 3:1 | 4.33 |
 | neo-dark | text on surface |  |  | 3:1 | 4.15 |
 | neo-dark | text-muted on color-bg |  |  | 3:1 | 3.19 |
+| neo-dark | dialog-border (opaque) on scrim over color-bg | `#fdf8e9` | `#111111` | 3:1 | 17.79 |
