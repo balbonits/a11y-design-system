@@ -29,3 +29,5 @@ export async function createPlayer({ source, video, mount, title }: CreatePlayer
   video.src = source.src;
   return createNativePlayer(video);
 }
+export * from './tracks';
+export * from './descriptions';
