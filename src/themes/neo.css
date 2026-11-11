@@ -2,6 +2,9 @@
    A theme file holds its own palette (the :root block is scoped to the theme by npm run tokens) and every
    semantic token in ARCH-REVIEW Addendum 5. Register it in registry.json; no component code changes. */
 :root {
+  /* Dialog backdrop per mode (Addendum 7 (b); UX spec a11y PR #32, e48047a). */
+  --palette-scrim: #11111173;
+  --palette-scrim-dark: #1111118c;
   --palette-ink: #111111;
   --palette-ink-2: #1c1c1c;
   --palette-ink-3: #272727;
@@ -73,10 +76,9 @@
   --stagger: 0ms;
   --blur-glass: 0px;
   --hue-shift: 0;
-  /* Addendum 7 (b): dialog backdrop. Resolves against the active mode's --text. */
-  --scrim: color-mix(in srgb, var(--text) 45%, transparent);
 }
 [data-theme="neo"], [data-theme="neo"][data-mode="light"] {
+  --scrim: var(--palette-scrim);
   --color-bg: var(--palette-cream);
   --surface: var(--palette-paper);
   --surface-muted: var(--palette-cream-2);
@@ -100,6 +102,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { [data-theme="neo"]:not([data-mode]) {
+  --scrim: var(--palette-scrim-dark);
   --color-bg: var(--palette-ink);
   --surface: var(--palette-ink-2);
   --surface-muted: var(--palette-ink-3);
@@ -123,6 +126,7 @@
   color-scheme: dark;
 } }
 [data-theme="neo"][data-mode="dark"] {
+  --scrim: var(--palette-scrim-dark);
   --color-bg: var(--palette-ink);
   --surface: var(--palette-ink-2);
   --surface-muted: var(--palette-ink-3);
