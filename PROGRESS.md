@@ -49,6 +49,21 @@ John flagged the Tokens page on his foldable phone (about 920px wide, dark previ
 - **Screenshots:** before and after at 920, 768 and 375px in both themes are in docs/screenshots/ (2026-11-10-mobile-before-* and -after-*).
 - **Still open:** the docs pages keep Storybook's light page background in dark preview. That gets fixed by the theme work (R-2, v0.3.0). The visual restyle waits for John to pick a direction.
 
+## 2026-11-10: Design: neo identity (UX/UI Designer)
+Neo (Neo-Brutal Playful) is Ember UI's own v3 identity, for the library and its Storybook. Times are merge times in PT, from GitHub.
+- 5:13 PM PT: direction F neo lands on main, with a clickable prototype (components, job tracker, dev dashboard, tokens) in R-2 token shape ([PR #7](https://github.com/balbonits/a11y-design-system/pull/7), `e2c43ca`).
+- 5:21 PM PT: HANDOFF.md (H-1 to H-8), Chief Architect's shape-token names, a pink offset focus ring and the full state set ([PR #10](https://github.com/balbonits/a11y-design-system/pull/10), `b8479e9`).
+- 5:23 PM PT: Visual QA nits: a solid ghost button, and the redundant aria-current loop removed ([PR #11](https://github.com/balbonits/a11y-design-system/pull/11), `f171090`).
+- 5:25 PM PT: `--focus-ring-color` added, with `--focus` and `--radius` kept as deprecated aliases, per Chief Architect's final ruling ([PR #12](https://github.com/balbonits/a11y-design-system/pull/12), `757da0c`).
+- 5:30 PM PT: the full Addendum 5 token set with no aliases (`--radius` and `--focus` removed), 44px targets, and the HANDOFF's For the builder section ([PR #13](https://github.com/balbonits/a11y-design-system/pull/13), `d8e1f93`).
+- Chief Architect signed neo at `d8e1f93`, and Visual QA passed it at the same sha.
+- 7:24 PM PT: v3 README entry page for all three directions ([PR #28](https://github.com/balbonits/a11y-design-system/pull/28), `1835b93`).
+- Live prototype: [neo Ember UI sampler](https://raw.githack.com/balbonits/a11y-design-system/main/docs/directions/v3/neo/index.html). Spec: [neo HANDOFF](docs/directions/v3/neo/HANDOFF.md).
+- Next: R-2 theme registration by Full Stack Developer (`feat/r2-themes`, [PR #16](https://github.com/balbonits/a11y-design-system/pull/16)), not merged yet.
+
+![Neo at 375px, light, annotated (top)](https://raw.githubusercontent.com/balbonits/a11y-design-system/d8e1f93/docs/directions/v3/neo/handoff/neo-375-light-annotated-top.png)
+![Neo at 1440px, dark, annotated (top)](https://raw.githubusercontent.com/balbonits/a11y-design-system/d8e1f93/docs/directions/v3/neo/handoff/neo-1440-dark-annotated-top.png)
+
 ## 2026-11-10 5:40 PM PT: transcripter (Card 1-VP, tools/transcribe)
 - Offline faster-whisper 1.2.1 transcripter (`small.en`, CPU float32) built and run on a Grok Bot box. One cue list drives `cues.json`, `captions.vtt` and `transcript.txt`.
 - Sample media: a 52 s Sintel excerpt (Blender Foundation, CC BY 3.0) at 480p, about 3 MB, credited in the README and `tools/transcribe/CREDITS.md`. Hand-written text audio description in `ad.vtt`, placed in the dialogue gaps.
