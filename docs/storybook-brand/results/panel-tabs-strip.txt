@@ -1,0 +1,15 @@
+FAIL light 320 Controls hits 6/15
+FAIL light 320 Addons hits 7/15
+FAIL light 320 tablist height 40 (baseline 40), want 48 (40)
+FAIL light 599 Controls hits 9/15
+FAIL light 599 Actions hits 9/15
+FAIL light 599 Accessibility hits 9/15
+FAIL light 599 tablist height 40 (baseline 40), want 48 (40)
+FAIL dark 320 Controls hits 6/15
+FAIL dark 320 Addons hits 7/15
+FAIL dark 320 tablist height 40 (baseline 40), want 48 (40)
+FAIL dark 599 Controls hits 9/15
+FAIL dark 599 Actions hits 9/15
+FAIL dark 599 Accessibility hits 9/15
+FAIL dark 599 tablist height 40 (baseline 40), want 48 (40)
+panel-tabs http://127.0.0.1:8983/ (--strip): 74 pass, 14 fail

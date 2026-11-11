@@ -1,6 +1,7 @@
-/* Layer 3 - component tokens. Each one is only var() of a semantic (Addendum 5) or shared token, never a
-   raw value (CI: npm run lint:colors). Themes never set these. Declared on every theme scope so they
-   resolve against that scope's theme. */
+/* Layer 3 - component tokens (ARCH-REVIEW R-2a). Each one is exactly var(--<Addendum 5/7 name>) or a calc() of
+   only those names: no literals, no var() fallbacks, never another component token. Themes never set these.
+   Hit areas read --target-min directly (no alias). CI: npm run tokens fails on any break of these rules.
+   Declared on every theme scope so they resolve against that scope's theme. */
 :is(:root, .em-scope, [data-theme]) {
   --button-radius: var(--radius-md);
   --button-border-width: var(--border-width);
@@ -13,6 +14,7 @@
   --button-fg: var(--accent-contrast);
   --button-bg-hover: var(--accent-hover);
   --button-lift: var(--lift);
+  --button-press-offset: var(--press-offset);
   --button-duration: var(--duration-base);
   --button-press-duration: var(--duration-fast);
   --button-ease: var(--ease-standard);
@@ -33,12 +35,15 @@
   --tabs-track: var(--surface-muted);
   --tabs-active-bg: var(--surface);
   --tabs-indicator-width: var(--border-width-strong);
+  --switch-radius: var(--radius-full);
+  --switch-border-width: var(--border-width);
+  --switch-track-off: var(--surface-muted);
+  --switch-thumb-off: var(--text-muted);
+  --switch-track-on: var(--accent);
+  --switch-thumb-on: var(--accent-contrast);
   --toast-radius: var(--radius-md);
   --toast-stripe-width: var(--border-width-strong);
   --table-border-width: var(--border-width);
   --table-border-color: var(--border-subtle);
   --table-head-bg: var(--surface-muted);
-  --hit-min: var(--target-min);
-  --focus-outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);
-  --focus-outline-offset: var(--focus-ring-offset);
 }

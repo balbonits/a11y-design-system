@@ -1,0 +1,25 @@
+INFO 320-light default ring/inverted fill 1.67 (KI-1, informational)
+INFO 320-light primary ring/inverted fill 1.67 (KI-1, informational)
+INFO 320-light danger ring/inverted fill 1.67 (KI-1, informational)
+INFO 320-dark default ring/inverted fill 1.45 (KI-1, informational)
+INFO 320-dark primary ring/inverted fill 1.45 (KI-1, informational)
+INFO 320-dark danger ring/inverted fill 1.45 (KI-1, informational)
+INFO 1280-light default ring/inverted fill 1.67 (KI-1, informational)
+INFO 1280-light primary ring/inverted fill 1.67 (KI-1, informational)
+INFO 1280-light danger ring/inverted fill 1.67 (KI-1, informational)
+INFO 1280-dark default ring/inverted fill 1.45 (KI-1, informational)
+INFO 1280-dark primary ring/inverted fill 1.45 (KI-1, informational)
+INFO 1280-dark danger ring/inverted fill 1.45 (KI-1, informational)
+320-light  default  hover rgb(10, 27, 92) rgb(251, 248, 241) rgb(20, 52, 184) CR 14.95 | active rgba(0, 0, 0, 0) rgb(10, 27, 92) | #27 active rgb(243, 238, 226) rgb(10, 27, 92) | ring rgb(20, 52, 184) 1.67 8.95
+320-light  primary  hover rgb(10, 27, 92) rgb(251, 248, 241) rgb(10, 27, 92) CR 14.95 | active rgb(194, 24, 7) rgb(255, 255, 255) | #27 active rgb(156, 19, 5) rgb(255, 255, 255) | ring rgb(20, 52, 184) 1.67 8.95
+320-light  danger   hover rgb(10, 27, 92) rgb(251, 248, 241) rgb(10, 27, 92) CR 14.95 | active rgb(163, 18, 42) rgb(255, 255, 255) | #27 active rgb(130, 14, 33) rgb(255, 255, 255) | ring rgb(20, 52, 184) 1.67 9.49
+320-dark   default  hover rgb(251, 248, 241) rgb(7, 15, 51) rgb(154, 176, 255) CR 17.6 | active rgba(0, 0, 0, 0) rgb(251, 248, 241) | #27 active rgb(21, 34, 85) rgb(251, 248, 241) | ring rgb(194, 207, 255) 1.45 12.14
+320-dark   primary  hover rgb(251, 248, 241) rgb(7, 15, 51) rgb(251, 248, 241) CR 17.6 | active rgb(255, 107, 87) rgb(7, 15, 51) | #27 active rgb(255, 139, 122) rgb(7, 15, 51) | ring rgb(194, 207, 255) 1.45 12.14
+320-dark   danger   hover rgb(251, 248, 241) rgb(7, 15, 51) rgb(251, 248, 241) CR 17.6 | active rgb(255, 147, 166) rgb(7, 15, 51) | #27 active rgb(255, 179, 192) rgb(7, 15, 51) | ring rgb(194, 207, 255) 1.45 11.1
+1280-light default  hover rgb(10, 27, 92) rgb(251, 248, 241) rgb(20, 52, 184) CR 14.95 | active rgba(0, 0, 0, 0) rgb(10, 27, 92) | #27 active rgb(243, 238, 226) rgb(10, 27, 92) | ring rgb(20, 52, 184) 1.67 8.95
+1280-light primary  hover rgb(10, 27, 92) rgb(251, 248, 241) rgb(10, 27, 92) CR 14.95 | active rgb(194, 24, 7) rgb(255, 255, 255) | #27 active rgb(156, 19, 5) rgb(255, 255, 255) | ring rgb(20, 52, 184) 1.67 8.95
+1280-light danger   hover rgb(10, 27, 92) rgb(251, 248, 241) rgb(10, 27, 92) CR 14.95 | active rgb(163, 18, 42) rgb(255, 255, 255) | #27 active rgb(130, 14, 33) rgb(255, 255, 255) | ring rgb(20, 52, 184) 1.67 9.49
+1280-dark  default  hover rgb(251, 248, 241) rgb(7, 15, 51) rgb(154, 176, 255) CR 17.6 | active rgba(0, 0, 0, 0) rgb(251, 248, 241) | #27 active rgb(21, 34, 85) rgb(251, 248, 241) | ring rgb(194, 207, 255) 1.45 12.14
+1280-dark  primary  hover rgb(251, 248, 241) rgb(7, 15, 51) rgb(251, 248, 241) CR 17.6 | active rgb(255, 107, 87) rgb(7, 15, 51) | #27 active rgb(255, 139, 122) rgb(7, 15, 51) | ring rgb(194, 207, 255) 1.45 12.14
+1280-dark  danger   hover rgb(251, 248, 241) rgb(7, 15, 51) rgb(251, 248, 241) CR 17.6 | active rgb(255, 147, 166) rgb(7, 15, 51) | #27 active rgb(255, 179, 192) rgb(7, 15, 51) | ring rgb(194, 207, 255) 1.45 11.1
+84 pass, 0 fail

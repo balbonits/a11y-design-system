@@ -1,0 +1,19 @@
+  focus light 320 selected: ring lines {"top":3,"bottom":3,"left":3,"right":3}, underline lines 3/3 (unfocused/focused), glyph gaps l15 r15 t10 b10, inner 28px, ring px inside 0
+  focus light 320 unselected: ring lines {"top":3,"bottom":3,"left":2,"right":2}, glyph gaps l15 r15 t13 b13, inner 28px, ring px inside 0
+  focus light 599 selected: ring lines {"top":3,"bottom":3,"left":3,"right":3}, underline lines 3/3 (unfocused/focused), glyph gaps l15 r15 t10 b10, inner 28px, ring px inside 0
+  focus light 599 unselected: ring lines {"top":3,"bottom":3,"left":2,"right":3}, glyph gaps l15 r15 t13.3 b12.7, inner 28px, ring px inside 0
+  focus light 1280 selected: ring lines {"top":3,"bottom":3,"left":3,"right":3}, underline lines 3/3 (unfocused/focused), glyph gaps l15 r15 t10 b10, inner 28px, ring px inside 0
+  focus light 1280 unselected: ring lines {"top":3,"bottom":3,"left":2,"right":3}, glyph gaps l15 r15 t13.3 b12.7, inner 28px, ring px inside 0
+  light ring #e0217a vs selected tab bg rgb(255,255,255) = 4.50:1
+  light ring #e0217a vs unselected tab bg rgb(255,255,255) = 4.50:1
+  light ring #e0217a vs hovered tab bg rgb(255,255,255) = 4.50:1
+  focus dark 320 selected: ring lines {"top":3,"bottom":3,"left":3,"right":3}, underline lines 3/3 (unfocused/focused), glyph gaps l15 r15 t10 b10, inner 28px, ring px inside 0
+  focus dark 320 unselected: ring lines {"top":3,"bottom":3,"left":2,"right":2}, glyph gaps l15 r15 t13 b13, inner 28px, ring px inside 0
+  focus dark 599 selected: ring lines {"top":3,"bottom":3,"left":3,"right":3}, underline lines 3/3 (unfocused/focused), glyph gaps l15 r15 t10 b10, inner 28px, ring px inside 0
+  focus dark 599 unselected: ring lines {"top":3,"bottom":3,"left":2,"right":3}, glyph gaps l15 r15 t13.3 b12.7, inner 28px, ring px inside 0
+  focus dark 1280 selected: ring lines {"top":3,"bottom":3,"left":3,"right":3}, underline lines 3/3 (unfocused/focused), glyph gaps l15 r15 t10 b10, inner 28px, ring px inside 0
+  focus dark 1280 unselected: ring lines {"top":3,"bottom":3,"left":2,"right":3}, glyph gaps l15 r15 t13.3 b12.7, inner 28px, ring px inside 0
+  dark ring #e0217a vs selected tab bg rgb(28,28,28) = 3.79:1
+  dark ring #e0217a vs unselected tab bg rgb(28,28,28) = 3.79:1
+  dark ring #e0217a vs hovered tab bg rgb(28,28,28) = 3.79:1
+panel-tabs http://127.0.0.1:8983/: 166 pass, 0 fail

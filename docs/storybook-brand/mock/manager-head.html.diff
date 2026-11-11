@@ -1,6 +1,6 @@
---- pr45/manager-head.html	2026-11-11 01:21:21.731790829 -0800
-+++ mock/manager-head.html	2026-11-11 01:28:10.955074549 -0800
-@@ -1,9 +1,73 @@
+--- pr45/manager-head.html	2026-11-11 02:06:34.019783929 -0800
++++ mock/manager-head.html	2026-11-11 02:07:07.379740573 -0800
+@@ -1,9 +1,90 @@
  <title>Ember UI · Storybook</title>
  <style>
    /* SB-MANAGER-AA: Storybook paints the selected sidebar item's label white on colorSecondary. In dark, colorSecondary is
@@ -70,9 +70,26 @@
 +        linear-gradient(to left, var(--eb-border) 3px, var(--eb-surface-muted) 3px, transparent 16px) right center / 16px 100% no-repeat scroll,
 +        var(--eb-surface) !important;
 +    }
++    /* PANEL-TABS-44 start (FU-SB-PANEL-TABS-44, from BED's spike): the addon tabs stay 40px visually; the tablist row becomes 48px with
++       padding-block 4px and margin-block -4px (block only, so Storybook's horizontal margin, the tablist x and its width, and the JS tab-collapse
++       measurements are unchanged). Each tab gets a ::before overlay at inset -5px 0: .tabbutton has 3px transparent top and bottom borders and the
++       overlay is measured from the padding box, so -5px puts it 2px outside the 40px border box, 44px in all. Tabs that Storybook collapses into
++       the "Addons" menu are visibility: hidden, so their overlay is hidden too and takes no taps. */
++    .sb-bar:has(button[title="Close addon panel"]) [role="tablist"] { box-sizing: border-box; height: 48px; padding-block: 4px; margin-block: -4px; }
++    .sb-bar:has(button[title="Close addon panel"]) [role="tablist"] .tabbutton { position: relative; overflow: visible; }
++    .sb-bar:has(button[title="Close addon panel"]) [role="tablist"] .tabbutton::before { content: ""; position: absolute; inset: -5px 0; }
++    /* PANEL-TABS-44 end */
 +    /* The 40px-tall menu button sits 4px inside the 48px bar, so its ring uses offset 0 (3px ring, 1px to spare) to stay inside the bar. */
 +    .sb-bar button[title="Open navigation menu"]:focus-visible { outline-offset: 0; }
 +  }
++  /* PANEL-TABS-FOCUS start (FU-SB-PANEL-TABS-FOCUS, CA/CTE 2026-11-11): Storybook 8.6.19 shows keyboard focus on an unselected addon tab
++     only as its 3px underline, so the selected tab (underline already on) shows no change when focused (WCAG 2.4.7). Every addon tab gets the
++     #52 focus ring, 3px solid --eb-focus (#e0217a), on :focus-visible only (no ring on mouse click). Offset -6px puts the ring inside the tab's
++     border box, just inside its 3px top and bottom borders, so the selected tab's 3px underline stays visible under the ring (selection never
++     rests on label colour alone, WCAG 1.4.1, CA 2026-11-11) and the tablist's overflow: hidden can't clip it at any width. Inner height 28px.
++     All widths, not only below 600. */
++  .sb-bar [role="tablist"] .tabbutton:focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: -6px !important; }
++  /* PANEL-TABS-FOCUS end */
 +  /* Reduced motion: Storybook 8.6's manager has no prefers-reduced-motion handling (mobile drawer slide, sidebar and control transitions). Neo's rule is motion off under reduce, so zero it here. */
 +  @media (prefers-reduced-motion: reduce) {
 +    *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }

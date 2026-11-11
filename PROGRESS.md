@@ -107,6 +107,28 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - The 2.4.11 remark now names the fix card, FU-FSD-TOAST. The row stays Partially Supports until that card ships and `scripts/focus-obscured.mjs` reports 0 hidden stops.
 - 2026-11-10 10:54 PM PT: SB-MANAGER-AA: .storybook/manager.ts neo-palette theme (light + dark, follows OS scheme), dark selected-item label set to ink in manager-head.html, scripts/a11y-manager.mjs runs axe on the manager page itself (light/dark x 1280/375 x story+docs, preview iframe excluded) and is part of test:a11y. Stock UI: 8/8 runs failing; now 0. Stories unchanged.
 
+## 2026-11-10 7:10 PM PT: v0.3.1 (Addendum 7, kinetic, Switch, R-2a component layer)
+
+- Addendum 7: `--scrim` and `--radius-xl` joined the theme contract. Neo backfill: `--radius-xl: var(--radius-lg)` and `--scrim: color-mix(in srgb, var(--text) 45%, transparent)`. `.em-modal::backdrop` reads `var(--scrim)`. The registered extras (`--rule`, `--shadow-overlay`, `--weight-display-min/max`, `--weight-shift`, `--duration-reveal/ticker`, `--stagger`, `--blur-glass`, `--parallax-scale`, `--hue-shift`) are required in every theme, with neutral defaults in neo. Under reduced motion, `--tilt`, `--lift`, `--parallax-scale`, `--hue-shift`, `--stagger`, `--weight-shift` and `--duration-reveal` must be 0 (contrast gate).
+- kinetic registered (light and dark) from docs/directions/v3/kinetic/tokens.css at 938e642, as-is plus `--hue-shift: 0deg` (neutral default) and `--parallax-scale`/`--hue-shift` in its reduced-motion block. Storybook loads its fonts (Bricolage Grotesque 300/700/800, Instrument Sans 400/500/600, IBM Plex Mono 400).
+- The stories-only test fixture is deleted: the Theme registry proof story, the Two registered themes story and the ThemeSwitcher unit tests now use the real registry (neo and kinetic), per R-2b.
+- R-2a: `npm run tokens` (run by every build) now fails when a component token isn't exactly `var(--<contract name>)` or a `calc()` of only contract names, has a fallback, reads another component token, or when a theme sets a component token. `--hit-min` and `--focus-outline(-offset)` are removed; hit areas read `--target-min` directly (Button, Button sm, Checkbox row, Switch row, Tabs, Table sort button, ThemeSwitcher options) and focus outlines read the four focus-ring tokens.
+- Contrast: the focus-ring-color vs border pair now applies only when `--focus-ring-offset` is 0 (the ring touches the border only then). Both themes use a 3px offset. Flagged to Chief Architect.
+- Switch component (role="switch" checkbox, 44x24 track in a --target-min row, label and hint, forced-colors and reduced-motion rules) with stories for every state and a unit test.
+- Gates: tokens and lint:colors 0; contrast 124 pairs and 8 assertions across 2 themes, 0 failures; vitest 15/15; axe 362 runs, 0 failing; mobile 468 runs (13 docs pages x 9 widths x 4 theme/mode combos), 0 failing.
+
+## 2026-11-10 7:46 PM PT: kinetic fonts vendored (CTE ruling)
+- Reverted 48d72ac (the three `@fontsource` devDependencies) with a new commit. Kinetic's fonts are now latin-subset woff2 files in `.storybook/fonts` (Bricolage Grotesque 300/700/800, Instrument Sans 400/500/600, IBM Plex Mono 400), each family's OFL.txt alongside, loaded by `@font-face` with `font-display: swap`. neo's fontsource setup is unchanged, and the Ember package still ships no fonts. Version stays 0.3.1.
+
+## 2026-11-10 7:47 PM PT: Chief Architect's focus-ring rulings on v0.3.1
+- Ruling 1 accepted with its condition: `npm run contrast` now fails a negative (or non-length) `--focus-ring-offset`, prints the offset per theme, and docs/CONTRAST.md states the rule. Focus ring vs `--color-bg`, `--surface` (cards and raised controls) and `--surface-muted` is required at 3:1 in light and dark at any offset; focus ring vs `--border` is required only at offset 0. Negative-tested with kinetic set to -2px.
+- Ruling 2 accepted as built: kinetic's `--hue-shift: 0deg`, with `--parallax-scale` and `--hue-shift` at 0 in the reduced block.
+
+## 2026-11-10 8:31 PM PT: --hue-shift is unitless (CA ruling), retargeted to main
+- #16 merged as main feba533 and was tagged v0.3.0. This PR now targets main, with main merged in.
+- Chief Architect ruled that `--hue-shift` is a unitless multiplier from 0 to 1, and the consuming CSS holds the angle (`calc(var(--hue-shift) * 40deg)`). Neo and kinetic now use `0` instead of `0deg`. `npm run contrast` now rejects any unit or any value outside 0 to 1, in both the base block and the reduced-motion block. I negative-tested it with kinetic set to `0deg`, and the rule is in docs/CONTRAST.md.
+- 2026-11-10 10:37 PM PT: kinetic per-mode scrim from Creatives' #39 (8db8574, CA-confirmed): --palette-scrim #06123F66 light, --palette-scrim-dark #00000080 dark. contrast.mjs now gates, for every theme: open-modal border composited (neo 5.92/17.79, kinetic 3.47/9.57), text-muted under the scrim (both composited) >= 3 (neo 4.56/3.19, kinetic 4.20/3.40), and the scrim never lightens --color-bg. Negative control: #06123F99 fails twice (2.75, lightens). Contrast 132/0, axe 362/0, mobile 468/0.
+
 ## 2026-11-10 9:28 PM PT: HIT-PATCH, effective hit areas (VQA v3 finding 2)
 - Creatives' VQA hit-tested the live v0.3.0 Storybook and found small buttons at 64 by 40, toast Dismiss at 40 by 40 and toast Undo at 60 by 40, under the 44px --target-min, while the ACR claimed 44px. The cause was `.em-btn--sm::before`: its inset assumed a 36px box, but an absolute pseudo-element is placed from the padding box, so the 2px border ate 4px. The rule is deleted; the general `.em-btn::before` rule already sizes from the padding box and gives exactly 44 by 44. No visual change (pixel-identical to live in Button and Toast stories).
 - Built on BED's FU-BED-2 target-size gate (`npm run test:target-size`, PR #34), which measures what a pointer actually hits with a calibrated hit-test and a negative control. With these fixes it reports 0 failing runs and 0 stale entries across 248 runs and 624 targets, so the SM-BORDER, SM-ICON-BORDER and TAB-CLIP allowlist entries (25 targets) are deleted from `scripts/target-size.known.json`. Only the test-fixture entry remains, for #27 to remove.
@@ -115,6 +137,28 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - ACR 2.5.8 now says every shipped target is at least 44 by 44px, with no exceptions; report version 1.2.
 - 2026-11-10 9:42 PM PT: forced colors (CA condition). Chrome's forced-colors emulation dropped the background-line baseline, and because every transparent tab border painted CanvasText, every tab showed the same underline, so selection wasn't visible without color (the transparent-border part was already true on v0.3.0). A `@media (forced-colors: active)` block now draws the baseline as a CanvasText border, hides unselected indicators with Canvas, and gives the selected tab a Highlight bar. Screenshots: `docs/screenshots/hit-patch-forced-colors-tabs-320.png` and `-1280.png`.
 - 2026-11-10 22:37 PST: VQA fix: .em-tab:focus-visible inset ring (outline-offset -focus-ring-width) after .em-tab:disabled, all modes incl. forced colors; ring fully inside the overflow-x tablist at 320 and 1280. Ring vs tab fills: neo light 4.24 (bg) / 3.80 (hover track), dark 4.20 / 3.32.
+
+## 2026-11-11 12:32 AM PT: #27 forward-merge to main aa525f3, `--press-offset`, focus ring vs tab track
+
+- Merged main forward through 346ad36, 6bab275 and aa525f3 (merge, no rebase). Conflicts were only in the 346ad36 merge: `src/ember.css` takes main's HIT-PATCH hit area with `--hit-min` renamed to this branch's `--target-min`; `PROGRESS.md` keeps both sides; `scripts/target-size.known.json` is emptied (the test fixture it listed is deleted on this branch).
+- `--press-offset` (video-player HANDOFF:57, 94, 98-107, 111, 117): a locked per-theme length next to `--lift`, neo 3px and kinetic 1px in light and dark, 0px in each theme's reduced-motion block (added to `REDUCED_ZERO`). Component token `--button-press-offset: var(--press-offset)`; `.em-btn:active` now moves by it for every variant, primary included, replacing the fixed 1px. `npm run contrast` rejects unitless and negative values.
+- New e2e `scripts/press-offset.mjs` (`npm run test:press`, plus a CI step and a negative control): presses each Button variant with a real pointer in every theme, light and dark, at 320 and 1280px, with and without reduced motion. 64 runs, 0 failing; the negative control (press pinned to 0) fails 32 runs as it should.
+- Focus ring on component surfaces: `npm run contrast` has its own section, read through `src/tokens/components.css`, with `--focus-ring-color` vs `--tabs-track` for every theme and mode (kinetic light 8.20, neo dark 3.32 lowest). The inline scrim block is unchanged.
+- Not in this push: the kinetic hover inversion (HANDOFF "set only in kinetic" conflicts with R-2a, where themes can't set component tokens). It's with CTE for a ruling.
+
+## 2026-11-11 1:13 AM PT: kinetic inverted hover, optional contract pair (ARCH-REVIEW Addendum 10)
+
+- Kinetic defines `--hover-fill: var(--text)` and `--hover-label: var(--color-bg)` in each color block (video-player HANDOFF:47, 57). `ember.css` reads them as `var(--hover-fill, <variant hover>)` and `var(--hover-label, <variant label>)` on every Button variant. Kinetic has no lift and no tilt (both are 0). Press restores each variant's own fill and label (HANDOFF:57, "danger's red returns on press").
+- (a) Not `@property`-registered (the one stated exception to Addendum 7), so neo falls back to its own hover.
+- (b) `OPTIONAL_CONTRACT` in `scripts/theme-contract.mjs` lists only these two. `npm run tokens` fails a theme that defines one without the other, or sets any name outside the contract (negative-tested both ways).
+- (c) `npm run contrast` has a section for themes with the pair: label on fill 4.5:1 (kinetic 14.95 light, 17.60 dark), fill against `--color-bg` and `--surface` 3:1, ring against fill gated only when the offset is 0 or less (kinetic 3px, recorded 1.67), and such a theme's `--focus-ring-offset` must be 2px or more (HANDOFF:68-69).
+- (d), (e), (f) New e2e `scripts/hover.mjs` (`npm run test:hover`, in CI): neo's hovered bg and fg match `scripts/hover.baseline.json`, captured from the pre-change head 1b4b3a2, for every variant in light and dark at 320, 375 and 1280. Kinetic fills with the pair. Disabled and aria-disabled buttons don't change on hover. Under forced colors, the hovered colors are system colors. Shots are in `docs/screenshots/hover/`.
+- (g) HANDOFF:57 and :96 name the contract tokens, and README records them as optional contract tokens.
+- Dusk isn't in this branch's registry yet. The baseline test covers it automatically once #30 lands, and it needs a baseline entry from #30's pre-hover head.
+
+## 2026-11-11 1:57 AM PT: pressed-state contrast pairs (CA Decision 1)
+
+CA confirmed that press restores each variant's own fill and label (HANDOFF:57), on condition that the pressed state is gated. scripts/contrast.mjs has a new Pressed state section covering every theme and mode: the label on the pressed fill is 4.5:1 or more for primary, danger, secondary and ghost. Primary's and danger's pressed fill is 3:1 or more against --color-bg and --surface. Secondary and ghost take a --text border on press, so that border is gated instead, with a fallback to the fill when --border-width is 0. 48 rows, 0 failures (190 pairs total). The table is in docs/CONTRAST.md.
 
 ## 2026-11-10 9:02 PM PT: Architecture review, R-4 VideoPlayer core (draft)
 
@@ -125,3 +169,8 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - 2026-11-10 9:45 PM PT: R-4 core reshaped to the CTE/Creatives buffering spec: waiting/resumed pair, getBuffered() {fraction, ranges|null}, throttled bufferedchange, canReportBuffering/canReportBufferedRanges; VideoAdapterUnavailable (vimeo, hls); AD setTrack; CSP plan per path. Tests 40/40, core bundle 0 video refs.
 - 2026-11-10 10:16 PM PT: prefs gain pauseWhileReading (default false) and a typed captionStyle (size/color/background/font, per-field fallback, partial patches) per UX/UI; toVtt escapes & < > (BED). Tests 43/43.
 - 2026-11-10 10:38 PM PT: CA a11y PASS on acd2f93. CSP 5c doc edits per CA: Vimeo is an optional lazy peer served from 'self' after John's install OK; post-deploy curl -I verification step; YouTube img-src i.ytimg.com note.
+
+## 2026-11-11 3:20 AM PT: #33 CTE ruling (A), Option 1 plus scoped Option 3; main b055b5d merged
+- VP_GATES stays `fixme`; FSD flips it in the player PR. The 33 #47 tests are listed in the PR body by group.
+- New `src/video/entry.test.ts`: `ember-ui/video` imports by package name through `exports` and lands on build:lib's `dist/video.js`. Plant: with `dist/video.js` moved away, the suite fails. The other three core items already had direct vitest tests (PR body table).
+- Normal merge of main b055b5d (no rebase); only PROGRESS.md conflicted, resolved by keeping both sides.

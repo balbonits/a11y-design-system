@@ -1,0 +1,542 @@
+{
+ "docs-320-light-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-320-light-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-320-dark-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-320-dark-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-375-light-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-375-light-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-375-dark-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-375-dark-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-599-light-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-599-light-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-599-dark-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-599-dark-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-600-light-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-600-light-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-600-dark-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-600-dark-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-1280-light-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-1280-light-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ],
+ "docs-1280-dark-intro.png": [
+  [
+   1,
+   "1 h1 --font-display, --text on --surface",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 link --accent-hover/--accent, focus 3px --focus-ring-color",
+   "#008a5a"
+  ],
+  [
+   3,
+   "3 inline code: --surface-muted, 1px --border-subtle",
+   "#7a2bd6"
+  ],
+  [
+   4,
+   "4 code block: --surface-muted, 2px --border, radius 12; syntax = tokens",
+   "#7a2bd6"
+  ],
+  [
+   5,
+   "5 Copy 53x44, inset 4px",
+   "#008a5a"
+  ]
+ ],
+ "docs-1280-dark-canvas.png": [
+  [
+   1,
+   "1 Canvas: 2px --border, no shadow",
+   "#7a2bd6"
+  ],
+  [
+   2,
+   "2 Canvas toolbar 48px: barBg --surface, icons --text-muted",
+   "#7a2bd6"
+  ],
+  [
+   3,
+   "3 zoom 44x44, all of it tappable",
+   "#008a5a"
+  ],
+  [
+   4,
+   "4 Show code 85x44, inset 4px",
+   "#008a5a"
+  ],
+  [
+   5,
+   "5 ArgTypes: --text, rules --border-subtle",
+   "#7a2bd6"
+  ]
+ ]
+}
