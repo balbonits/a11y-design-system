@@ -5,7 +5,9 @@
 //     visible (on screen, nothing paints over its centre), and dismissable by keyboard (Tab to Dismiss, Enter; focus stays in the dialog);
 //  2. nested modals: a toast from the nested dialog renders in the nested dialog only; Esc closes only the nested one, and the
 //     toast moves to the outer dialog;
-//  3. closing the modal while a toast shows returns it to the page toaster, where it is in the accessibility tree and visible;
+//  3. closing the modal while a toast shows returns it to the page toaster, where it is in the accessibility tree and visible
+//     but outside any live region; a toast that moves (nested close, modal close) is never re-announced: a mutation spy on
+//     the live regions sees exactly one fill per toast;
 //  4. axe (serious/critical) is 0 with the dialog and a toast open, and no animation runs under reduced motion.
 // Once per width (first theme, light): a toast doesn't auto-dismiss while the page toaster is unreachable (inert), then does.
 // Usage: node scripts/toast-modal.mjs [baseUrl]   (default http://127.0.0.1:6007, a served storybook-static)
@@ -53,6 +55,17 @@ for (const width of [320, 375, 1280]) {
     for (const motion of ['no-preference', 'reduce']) {
       const tag = `${width}px ${theme}~${mode} motion:${motion}`;
       const ctx = await browser.newContext({ viewport: { width, height: 700 }, reducedMotion: motion });
+      // Spy on every node added to a live region (role=status/alert): each toast must be announced exactly once, across
+      // firing, moving between nested modals, and returning to the page when the modal closes.
+      await ctx.addInitScript(() => {
+        window.__fills = [];
+        new MutationObserver((recs) => {
+          for (const r of recs) {
+            if (!r.target.closest?.('[role="status"],[role="alert"]')) continue;
+            for (const n of r.addedNodes) if (n.textContent) window.__fills.push(n.textContent);
+          }
+        }).observe(document, { childList: true, subtree: true });
+      });
       const page = await ctx.newPage();
       await page.goto(`${base}/iframe.html?id=${STORY}&viewMode=story&globals=theme:${theme};mode:${mode}`, { waitUntil: 'load' });
       await page.getByRole('button', { name: 'Open dialog' }).click();
@@ -104,7 +117,7 @@ for (const width of [320, 375, 1280]) {
       const moved = dlg.locator('.em-toast').filter({ hasText: 'Copied' });
       await moved.waitFor({ timeout: 3000 }).catch(() => {});
       check(await moved.count() === 1, `${tag}: showing toast moves to the outer dialog`);
-      check(await announced(dlg, 'status', 'Copied'), `${tag}: moved toast is in the outer dialog's role=status region`);
+      check(!(await announced(dlg, 'status', 'Copied')) && await dlg.locator('[data-em-toast-moved] .em-toast').filter({ hasText: 'Copied' }).count() === 1, `${tag}: moved toast shows in the outer dialog outside any live region (not re-announced)`);
       // 3. Closing the modal returns a showing toast to the page toaster.
       await dlg.getByRole('button', { name: 'Show error toast' }).click();
       await page.waitForTimeout(250);
@@ -113,7 +126,13 @@ for (const width of [320, 375, 1280]) {
       const back = page.locator('.em-toast-viewport:not(.em-toast-viewport--modal) .em-toast').filter({ hasText: 'Could not save' });
       check(await page.locator('dialog[open]').count() === 0, `${tag}: dialog closed`);
       check(await back.count() === 1, `${tag}: toast returns to the page toaster`);
-      check(await announced(page.locator('body'), 'alert', 'Could not save'), `${tag}: returned toast is in the accessibility tree`);
+      check(!(await announced(page.locator('body'), 'alert', 'Could not save')) && await back.evaluate((el) => !el.closest('[role="status"],[role="alert"]') && !!el.closest('[data-em-toast-moved]')), `${tag}: returned toast is outside any live region (not re-announced)`);
+      check((await page.getByText('Could not save').first().ariaSnapshot().catch(() => '')).includes('Could not save'), `${tag}: returned toast is in the accessibility tree`);
+      const fills = await page.evaluate(() => window.__fills);
+      for (const t of ['Draft saved', 'Copied', 'Could not save']) {
+        const n = fills.filter((f) => f.includes(t)).length;
+        check(n === 1, `${tag}: "${t}" announced exactly once across open, move and close (${n})`);
+      }
       await page.waitForTimeout(400);
       check(await back.count() === 1 && await visible(page, back), `${tag}: returned toast is visible`);
       await ctx.close();

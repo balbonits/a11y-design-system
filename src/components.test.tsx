@@ -256,7 +256,9 @@ describe('Toast inside a modal (FU-EMBER-TOAST-MODAL)', () => {
     await u.keyboard('{Escape}');
     expect(inner).not.toHaveAttribute('open');
     expect(outer).toHaveAttribute('open');
-    await waitFor(() => expect(outer.querySelector(':scope > .em-toast-outlet [role="alert"]')).toHaveTextContent('Failed in inner'));
+    // Moved, not re-announced: it shows in the outer modal outside any live region.
+    await waitFor(() => expect(outer.querySelector(':scope > .em-toast-outlet [data-em-toast-moved]')).toHaveTextContent('Failed in inner'));
+    expect(outer.querySelector(':scope > .em-toast-outlet [role="alert"]')).not.toHaveTextContent('Failed in inner');
   });
 
   it('returns a showing toast to the page toaster when the modal closes', async () => {
@@ -267,8 +269,41 @@ describe('Toast inside a modal (FU-EMBER-TOAST-MODAL)', () => {
     await u.click(within(outer).getByRole('button', { name: 'Toast from outer' }));
     await waitFor(() => expect(statusIn(outer)).toHaveTextContent('Saved in outer'));
     await u.keyboard('{Escape}');
-    await waitFor(() => expect(within(pageViewport()).getByRole('status')).toHaveTextContent('Saved in outer'));
+    await waitFor(() => expect(pageViewport().querySelector('[data-em-toast-moved]')).toHaveTextContent('Saved in outer'));
+    expect(within(pageViewport()).getByRole('status')).not.toHaveTextContent('Saved in outer');
     expect(document.querySelector('.em-toast-viewport--modal')).toBeNull();
+  });
+
+  it('announces each toast once: moving it back to the page on close (or into a modal on open) adds nothing to a live region', async () => {
+    const u = userEvent.setup();
+    const fills: string[] = [];
+    const mo = new MutationObserver((recs) => {
+      for (const r of recs) {
+        const live = (r.target as Element).closest?.('[role="status"],[role="alert"]');
+        if (!live) continue;
+        for (const n of r.addedNodes) if (n.textContent) fills.push(n.textContent);
+      }
+    });
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+    render(<ToastProvider><ToastModalDemo duration={600000} /></ToastProvider>);
+    // Fired in the modal, then the modal closes.
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const outer = screen.getByRole('dialog', { name: 'Outer' });
+    await new Promise((r) => setTimeout(r, 150));
+    await u.click(within(outer).getByRole('button', { name: 'Toast from outer' }));
+    await waitFor(() => expect(statusIn(outer)).toHaveTextContent('Saved in outer'));
+    await u.keyboard('{Escape}');
+    await waitFor(() => expect(pageViewport()).toHaveTextContent('Saved in outer'));
+    // Fired on the page, then a modal opens over it.
+    await u.click(screen.getByRole('button', { name: 'Page toast' }));
+    await waitFor(() => expect(within(pageViewport()).getByRole('status')).toHaveTextContent('Page toast'));
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const again = screen.getByRole('dialog', { name: 'Outer' });
+    await waitFor(() => expect(again.querySelector('[data-em-toast-moved]')).toHaveTextContent('Page toast'));
+    await new Promise((r) => setTimeout(r, 50));
+    mo.disconnect();
+    expect(fills.filter((t) => t.includes('Saved in outer'))).toHaveLength(1);
+    expect(fills.filter((t) => t.includes('Page toast'))).toHaveLength(1);
   });
 
   it('does not auto-dismiss while the toaster is unreachable (inert page), and resumes after', async () => {

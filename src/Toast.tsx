@@ -6,7 +6,10 @@ import { cx } from './cx';
 export type ToastTone = 'info' | 'success' | 'error';
 export type ToastAction = { label: string; onAction: () => void };
 export type ToastInput = { tone?: ToastTone; title: string; message?: string; duration?: number; action?: ToastAction };
-type ToastItem = Required<Pick<ToastInput, 'tone' | 'title'>> & ToastInput & { id: number };
+/** `at`: where the toast is first shown and announced ('page' or a modal opening). */
+type ToastItem = Required<Pick<ToastInput, 'tone' | 'title'>> & ToastInput & { id: number; at?: unknown };
+
+const PAGE = 'page';
 
 const Ctx = createContext<((t: ToastInput) => void) | null>(null);
 
@@ -86,8 +89,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const next = useRef(1);
   // Time left per toast, kept here so a toast's timer survives the move between the page and a modal.
   const [left] = useState(() => new Map<number, number>());
+  const hereRef = useRef<unknown>(PAGE);
   const show = useCallback((t: ToastInput) => {
-    setItems((all) => [...all, { tone: 'info', duration: 5000, ...t, id: next.current++ }]);
+    setItems((all) => [...all, { tone: 'info', duration: 5000, ...t, id: next.current++, at: hereRef.current }]);
   }, []);
   const dismiss = useCallback((id: number) => {
     left.delete(id);
@@ -123,10 +127,23 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }, [modal, ready]);
   // A toast's timer only runs while someone can reach it (WCAG 2.2.1).
   const reachable = inModal ? ready === outlet : !blocked;
-  const polite = items.filter((t) => t.tone !== 'error');
-  const urgent = items.filter((t) => t.tone === 'error');
+  // Each toast is announced once (4.1.3). A toast goes into a live region only where it was first shown; when it
+  // moves (modal opened or closed, nested modal closed) it renders in a plain, non-live container instead, so the
+  // move isn't spoken again. `here` is 'page' or this modal opening.
+  const here: unknown = inModal ? top : PAGE;
+  useEffect(() => { hereRef.current = here; }, [here]);
+  const fresh = (t: ToastItem) => t.at === here;
+  const polite = items.filter((t) => t.tone !== 'error' && fresh(t));
+  const urgent = items.filter((t) => t.tone === 'error' && fresh(t));
+  const moved = items.filter((t) => !fresh(t));
   const regions = (filled: boolean) => (
     <>
+      {/* Already announced elsewhere: visible and operable, but not in a live region. */}
+      {filled && moved.length > 0 && (
+        <div className="em-toast-region" data-em-toast-moved="">
+          {moved.map((t) => <Toast key={t.id} item={t} left={left} reachable={reachable} onDismiss={dismiss} />)}
+        </div>
+      )}
       {/* Live regions stay mounted so screen readers announce what is added to them. */}
       <div role="status" aria-live="polite" className="em-toast-region">
         {filled && polite.map((t) => <Toast key={t.id} item={t} left={left} reachable={reachable} onDismiss={dismiss} />)}
