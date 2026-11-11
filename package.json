@@ -27,7 +27,8 @@
     "build:lib": "npm run tokens && vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json",
     "prepare": "npm run build:lib",
     "contrast": "node scripts/contrast.mjs",
-    "lint:colors": "node scripts/lint-colors.mjs"
+    "lint:colors": "node scripts/lint-colors.mjs",
+    "check:core-bundle": "node scripts/check-core-bundle.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -77,6 +78,10 @@
     ".": {
       "types": "./dist/types/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./video": {
+      "types": "./dist/types/video/index.d.ts",
+      "import": "./dist/video.js"
     },
     "./styles.css": "./dist/ember.css",
     "./tokens.json": "./src/tokens.json",
