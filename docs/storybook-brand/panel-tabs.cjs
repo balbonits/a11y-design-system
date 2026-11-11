@@ -1,18 +1,23 @@
 // FU-SB-PANEL-TABS-44 gate (HANDOFF section 4a). Usage: node docs/storybook-brand/panel-tabs.cjs <base-url> [--strip]
 // Runs at 320, 599 and 600 with the addon panel open. --strip removes the PANEL-TABS-44 block from the served manager head
 // (the negative control: hits must fail, collapse and geometry must match). Exits 1 on any failure.
+// FU-SB-PANEL-TABS-FOCUS rows run at 320, 599 and 1280 (focus section below). --strip-focus removes the PANEL-TABS-FOCUS block and runs
+// only those rows (the negative control: the focused selected tab must show no ring and no change, so it must fail).
+// --shots <dir> also writes the focused-selected-tab bar crops for the HANDOFF.
 // Needs playwright-core and Chrome (/usr/bin/google-chrome or CHROME env).
 const { chromium } = require('playwright-core');
 const base = (process.argv[2] || 'http://127.0.0.1:8961/').replace(/\/?$/, '/'), STRIP = process.argv.includes('--strip');
+const STRIP_FOCUS = process.argv.includes('--strip-focus'), SHOTS = process.argv.includes('--shots') ? process.argv[process.argv.indexOf('--shots') + 1] : null;
 // Baseline = the same build with the PANEL-TABS-44 block stripped (what main renders). Collapse, tab widths and the tablist's x and width
 // must equal the baseline; only the hit areas change. Expected collapse in 8.6.19 with Ember UI's addons is also pinned below.
 const EXPECT = { 320: 'Controls|Addons', 599: 'Controls|Actions|Accessibility' };
 let pass = 0, fail = 0, ok0 = true; const ok = (c, m) => { c ? pass++ : (fail++, console.log('FAIL ' + m)); };
 const strip = (html) => html.replace(/\/\* PANEL-TABS-44 start[\s\S]*?\/\* PANEL-TABS-44 end \*\//, '');
+const stripFocus = (html) => html.replace(/\/\* PANEL-TABS-FOCUS start[\s\S]*?\/\* PANEL-TABS-FOCUS end \*\//, '');
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROME || '/usr/bin/google-chrome' });
   const baseG = {};
-  for (const pass0 of (STRIP ? ['test'] : ['baseline', 'test'])) for (const mode of ['light', 'dark']) for (const w of [320, 599, 600]) {
+  for (const pass0 of (STRIP_FOCUS ? [] : STRIP ? ['test'] : ['baseline', 'test'])) for (const mode of ['light', 'dark']) for (const w of [320, 599, 600]) {
     const doStrip = pass0 === 'baseline' || STRIP;
     const ctx = await b.newContext({ viewport: { width: w, height: 800 }, colorScheme: mode }); const p = await ctx.newPage();
     if (doStrip) await p.route(u => { const q = new URL(u).pathname; return q === '/' || q.endsWith('/index.html'); }, async r => { const f = await r.fetch(); r.fulfill({ response: f, body: strip(await f.text()) }); });
@@ -50,5 +55,77 @@ const strip = (html) => html.replace(/\/\* PANEL-TABS-44 start[\s\S]*?\/\* PANEL
       ok(v === EXPECT[ww], `${mode} resize to ${ww} collapse "${v}", want "${EXPECT[ww]}"`); }
     await ctx.close();
   }
-  await b.close(); console.log(`panel-tabs ${base}${STRIP ? ' (--strip)' : ''}: ${pass} pass, ${fail} fail`); process.exit(fail ? 1 : 0);
+
+  // ---- FU-SB-PANEL-TABS-FOCUS (HANDOFF section 4b). Ring = 3px solid --eb-focus, offset -3px, on :focus-visible, every addon tab.
+  if (!STRIP) {
+    const RING = [0xe0, 0x21, 0x7a], near = (d, i) => Math.abs(d[i] - RING[0]) + Math.abs(d[i + 1] - RING[1]) + Math.abs(d[i + 2] - RING[2]) < 60;
+    const lum = (c) => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; return .2126 * f(c[0]) + .7152 * f(c[1]) + .0722 * f(c[2]); };
+    const cr = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+    const dec = await (await b.newContext()).newPage();
+    const pixels = async (buf) => dec.evaluate(async (b64) => { const i = new Image(); i.src = 'data:image/png;base64,' + b64; await i.decode(); const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const x = c.getContext('2d'); x.drawImage(i, 0, 0); return { w: i.width, h: i.height, d: Array.from(x.getImageData(0, 0, i.width, i.height).data) }; }, buf.toString('base64'));
+    // Ring coverage per side, by pixels (not computed style). The clip is the tab's border box rounded outward, so a tab edge on a
+    // fractional x (tabs sit at e.g. 423.8px) still has its whole ring in frame. The ring is 3px at offset -6px, so it covers pixels 3-5
+    // inside each edge. For each side, look at pixel lines 2-5 inside the edge (corners excluded) and count the lines that are at least
+    // 90% ring colour. A 3px ring covers at least 2 of them, whatever the subpixel offset. A clipped or missing side scores 0 or 1.
+    const R = (a, z) => Array.from({ length: Math.max(0, z - a) }, (_, i) => a + i);
+    const cov = (px, xs, ys, m) => { let n = 0, k = 0; for (const y of ys) for (const x of xs) { k++; if (m(px.d, (y * px.w + x) * 4)) n++; } return n / k; };
+    const lines = (arr, f) => arr.filter(i => f(i) >= .9).length;
+    const sides = (px) => { const { w, h } = px, X = R(8, w - 8), Y = R(8, h - 8);
+      return { top: lines(R(2, 6), y => cov(px, X, [y], near)), bottom: lines(R(h - 6, h - 2), y => cov(px, X, [y], near)), left: lines(R(2, 6), x => cov(px, [x], Y, near)), right: lines(R(w - 6, w - 2), x => cov(px, [x], Y, near)) }; };
+    // The selected tab's 3px underline (its border-bottom colour) in the bottom 4 pixel lines: at least 2 full lines, ring or not.
+    const underline = (px, c) => { const m = (d, i) => Math.abs(d[i] - c[0]) + Math.abs(d[i + 1] - c[1]) + Math.abs(d[i + 2] - c[2]) < 60; return lines(R(px.h - 4, px.h), y => cov(px, R(8, px.w - 8), [y], m)); };
+    // No ring pixels inside the ring's inner box (border box inset 7px, the 28px inner height minus the antialiased edge line).
+    const innerRing = (px) => { let n = 0; for (const y of R(7, px.h - 7)) for (const x of R(7, px.w - 7)) if (near(px.d, (y * px.w + x) * 4)) n++; return n; };
+    // The label glyphs (text and badge) must sit inside the ring's inner box: border box inset 6px on every side.
+    const glyphs = (p, sel) => p.evaluate((s) => { const t = document.querySelector(s), q = t.getBoundingClientRect(), r = document.createRange(); r.selectNodeContents(t);
+      const g = [...r.getClientRects()].filter(x => x.width && x.height); const u = { l: Math.min(...g.map(x => x.left)), r: Math.max(...g.map(x => x.right)), t: Math.min(...g.map(x => x.top)), b: Math.max(...g.map(x => x.bottom)) };
+      return { inside: u.l >= q.left + 6 && u.r <= q.right - 6 && u.t >= q.top + 6 && u.b <= q.bottom - 6, innerH: Math.round(q.height - 12), gl: +(u.l - q.left).toFixed(1), gr: +(q.right - u.r).toFixed(1), gt: +(u.t - q.top).toFixed(1), gb: +(q.bottom - u.b).toFixed(1) }; }, sel);
+    const diff = (a, c) => { let n = 0; for (let i = 0; i < a.d.length; i += 4) if (Math.abs(a.d[i] - c.d[i]) + Math.abs(a.d[i + 1] - c.d[i + 1]) + Math.abs(a.d[i + 2] - c.d[i + 2]) > 30) n++; return n; };
+    const effBg = (p, sel) => p.evaluate((s) => { for (let n = document.querySelector(s); n; n = n.parentElement) { const c = getComputedStyle(n).backgroundColor.match(/[\d.]+/g).map(Number); if (c.length < 4 || c[3] > 0) return c.slice(0, 3); } return [255, 255, 255]; }, sel);
+    for (const mode of ['light', 'dark']) for (const w of [320, 599, 1280]) {
+      const tag = `focus ${mode} ${w}`;
+      const ctx = await b.newContext({ viewport: { width: w, height: 800 }, colorScheme: mode }); const p = await ctx.newPage();
+      if (STRIP_FOCUS) await p.route(u => { const q = new URL(u).pathname; return q === '/' || q.endsWith('/index.html'); }, async r => { const f = await r.fetch(); r.fulfill({ response: f, body: stripFocus(await f.text()) }); });
+      await p.goto(base + '?path=/story/components-button--primary'); await p.waitForSelector('#storybook-preview-iframe'); await p.waitForTimeout(1500);
+      if (w < 600) { await p.click('button[title="Open addon panel"]'); await p.waitForTimeout(900); }
+      await p.addStyleTag({ content: '*,*::before,*::after{transition:none!important}' });
+      const SEL = '.sb-bar [role="tablist"] .tabbutton.tabbutton-active', UNSEL = '.sb-bar [role="tablist"] .tabbutton:not(.tabbutton-active)';
+      // The first visible unselected tab (at 320 that's the "Addons" menu tab). Marked with a data attribute; no css-* hashes.
+      await p.evaluate((u) => { const t = [...document.querySelectorAll(u)].find(e => getComputedStyle(e).visibility === 'visible'); if (t) t.setAttribute('data-gate-unsel', ''); }, UNSEL);
+      const UN = '[data-gate-unsel]';
+      const shot = async (sel) => { const q = await p.locator(sel).boundingBox(), x = Math.floor(q.x), y = Math.floor(q.y); return pixels(await p.screenshot({ clip: { x, y, width: Math.ceil(q.x + q.width) - x, height: Math.ceil(q.y + q.height) - y } })); };
+      const kbFocus = async (sel) => { await p.keyboard.press('Shift'); await p.evaluate((s) => document.querySelector(s).focus(), sel); return p.evaluate((s) => document.querySelector(s).matches(':focus-visible'), sel); };
+      const blur = () => p.evaluate(() => document.activeElement && document.activeElement.blur());
+      const eb = await p.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--eb-focus').trim().toLowerCase());
+      ok(STRIP_FOCUS || eb === '#e0217a', `${tag} --eb-focus is ${eb}, want #e0217a`);
+      // Selected tab: unfocused vs keyboard-focused.
+      await p.mouse.move(0, 0); const s0 = await shot(SEL);
+      if (SHOTS && !STRIP_FOCUS) await p.locator('.sb-bar:has([role="tablist"])').first().screenshot({ path: `${SHOTS}/sb-panel-tabs-focus-${w}-${mode}-unfocused.png` }); const fv = await kbFocus(SEL); const s1 = await shot(SEL); const sd = sides(s1), dn = diff(s0, s1);
+      ok(fv, `${tag} selected tab not :focus-visible after keyboard focus`);
+      ok(Object.values(sd).every(v => v >= 2), `${tag} selected focused ring lines per side ${JSON.stringify(sd)}, want >= 2 on every side (unclipped)`);
+      const ulc = await p.evaluate((s) => getComputedStyle(document.querySelector(s)).borderBottomColor.match(/[\d.]+/g).slice(0, 3).map(Number), SEL);
+      const ul0 = underline(s0, ulc), ul1 = underline(s1, ulc); ok(ul0 >= 2 && ul1 >= 2, `${tag} selected tab underline rgb(${ulc}) lines unfocused ${ul0} focused ${ul1}, want >= 2 both (the underline stays visible under the ring, 1.4.1)`);
+      const gs = await glyphs(p, SEL), ir = innerRing(s1); ok(STRIP_FOCUS || (gs.inside && gs.innerH === 28 && ir === 0), `${tag} selected focused label glyphs vs ring inner box ${JSON.stringify(gs)}, ring px inside ${ir}, want inside, 28, 0`);
+      if (!STRIP_FOCUS) console.log(`  ${tag} selected: ring lines ${JSON.stringify(sd)}, underline lines ${ul0}/${ul1} (unfocused/focused), glyph gaps l${gs.gl} r${gs.gr} t${gs.gt} b${gs.gb}, inner ${gs.innerH}px, ring px inside ${ir}`);
+      ok(dn >= (s1.w + s1.h) * 2 * 3 * .5, `${tag} focused selected tab changed ${dn} px, want a visible change`);
+      if (SHOTS && !STRIP_FOCUS) { const bar = p.locator('.sb-bar:has([role="tablist"])').first(); await bar.screenshot({ path: `${SHOTS}/sb-panel-tabs-focus-${w}-${mode}.png` }); }
+      const bgSel = await effBg(p, SEL); await blur();
+      // Unselected tab, keyboard-focused.
+      const u0 = await shot(UN); const fu = await kbFocus(UN); const u1 = await shot(UN); const ud = sides(u1);
+      ok(fu && Object.values(ud).every(v => v >= 2), `${tag} unselected focused ring sides ${JSON.stringify(ud)}`);
+      const gu = await glyphs(p, UN), iu = innerRing(u1); ok(STRIP_FOCUS || (gu.inside && gu.innerH === 28 && iu === 0), `${tag} unselected focused label glyphs vs ring inner box ${JSON.stringify(gu)}, ring px inside ${iu}, want inside, 28, 0`);
+      if (!STRIP_FOCUS) console.log(`  ${tag} unselected: ring lines ${JSON.stringify(ud)}, glyph gaps l${gu.gl} r${gu.gr} t${gu.gt} b${gu.gb}, inner ${gu.innerH}px, ring px inside ${iu}`);
+      const bgUn = await effBg(p, UN); await blur();
+      // Hovered + focused (unselected).
+      await p.hover(UN); const bgHov = await effBg(p, UN); const fh = await kbFocus(UN); const hd = sides(await shot(UN));
+      ok(fh && Object.values(hd).every(v => v >= 2), `${tag} hovered focused ring sides ${JSON.stringify(hd)}`); await blur(); await p.mouse.move(0, 0);
+      // 3:1 against the tab's own (effective) background, selected / unselected / hovered.
+      for (const [k, bg] of [['selected', bgSel], ['unselected', bgUn], ['hovered', bgHov]]) { const c = cr(RING, bg); ok(c >= 3, `${tag} ring vs ${k} bg rgb(${bg}) ${c.toFixed(2)} < 3`); if (!STRIP_FOCUS && w === 1280) console.log(`  ${mode} ring #e0217a vs ${k} tab bg rgb(${bg.join(',')}) = ${c.toFixed(2)}:1`); }
+      // Negative: a mouse click focuses the tab but must not show the ring.
+      await p.click(UN); await p.waitForTimeout(300); const cv = await p.evaluate((s) => { const t = document.querySelector(s); return { focused: document.activeElement === t, fv: t.matches(':focus-visible') }; }, UN);
+      const cd = sides(await shot(UN)); ok(!cv.fv && Object.values(cd).every(v => v === 0), `${tag} mouse click shows a ring (focus-visible ${cv.fv}, sides ${JSON.stringify(cd)})`);
+      await ctx.close();
+    }
+  }
+  await b.close(); console.log(`panel-tabs ${base}${STRIP ? ' (--strip)' : STRIP_FOCUS ? ' (--strip-focus)' : ''}: ${pass} pass, ${fail} fail`); process.exit(fail ? 1 : 0);
 })();
