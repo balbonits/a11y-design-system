@@ -160,6 +160,20 @@ John asked for switchable themes with the components shown in each. Chief Archit
 
 CA confirmed that press restores each variant's own fill and label (HANDOFF:57), on condition that the pressed state is gated. scripts/contrast.mjs has a new Pressed state section covering every theme and mode: the label on the pressed fill is 4.5:1 or more for primary, danger, secondary and ghost. Primary's and danger's pressed fill is 3:1 or more against --color-bg and --surface. Secondary and ghost take a --text border on press, so that border is gated instead, with a fallback to the fill when --border-width is 0. 48 rows, 0 failures (190 pairs total). The table is in docs/CONTRAST.md.
 
+## 2026-11-10 9:02 PM PT: Architecture review, R-4 VideoPlayer core (draft)
+
+- The player ships as a separate entry, `ember-ui/video`, so the core bundle doesn't grow. A new CI step, `npm run check:core-bundle`, fails if `dist/index.js` or anything it imports mentions hls.js, YouTube, Vimeo or the player code. It was proven both ways: 0 references now, and exit 1 when a reference is planted.
+- One internal player interface (play, pause, seek, rate, volume, mute, time and track events) with adapters behind it. Native `<video>` is the default and never autoplays. HLS uses native playback where the browser has it and lazy-loads hls.js (an optional peer) only where it doesn't. YouTube uses youtube-nocookie.com through the IFrame API, loaded only for a YouTube source. Vimeo loads `@vimeo/player` only for a Vimeo source. Each lazy adapter is its own chunk.
+- One WebVTT cue model, parsed once. The caption renderer, the transcript (current cue, click-to-seek, search, `.txt` and `.vtt` download) and the audio-description track will all read it. Tests cover parsing, round-trip, search, the committed Sintel captions and AD files, source detection and both HLS paths: 24/24 vitest.
+- Not in this PR: the visible controls, caption renderer and transcript panel wait for the design handoff. Installing hls.js and @vimeo/player waits on John's OK. The per-path CSP comes with the demo page.
+- 2026-11-10 9:45 PM PT: R-4 core reshaped to the CTE/Creatives buffering spec: waiting/resumed pair, getBuffered() {fraction, ranges|null}, throttled bufferedchange, canReportBuffering/canReportBufferedRanges; VideoAdapterUnavailable (vimeo, hls); AD setTrack; CSP plan per path. Tests 40/40, core bundle 0 video refs.
+- 2026-11-10 10:16 PM PT: prefs gain pauseWhileReading (default false) and a typed captionStyle (size/color/background/font, per-field fallback, partial patches) per UX/UI; toVtt escapes & < > (BED). Tests 43/43.
+- 2026-11-10 10:38 PM PT: CA a11y PASS on acd2f93. CSP 5c doc edits per CA: Vimeo is an optional lazy peer served from 'self' after John's install OK; post-deploy curl -I verification step; YouTube img-src i.ytimg.com note.
+
+## 2026-11-11 3:20 AM PT: #33 CTE ruling (A), Option 1 plus scoped Option 3; main b055b5d merged
+- VP_GATES stays `fixme`; FSD flips it in the player PR. The 33 #47 tests are listed in the PR body by group.
+- New `src/video/entry.test.ts`: `ember-ui/video` imports by package name through `exports` and lands on build:lib's `dist/video.js`. Plant: with `dist/video.js` moved away, the suite fails. The other three core items already had direct vitest tests (PR body table).
+- Normal merge of main b055b5d (no rebase); only PROGRESS.md conflicted, resolved by keeping both sides.
 ## 2026-11-11: FU-EMBER-TOAST-MODAL, toasts inside a modal
 - Problem: a modal `<dialog>` makes everything outside it inert, so a toast fired while a modal was open was hidden from screen readers, unreachable by keyboard and could time out unseen (WCAG 4.1.3 and 2.2.1). Chief Architect ruled that popover or the top layer does not fix this.
 - Fix: `ToastProvider` watches for open modal dialogs. While one is open, toasts render into a `role="status"`/`role="alert"` outlet inside the topmost modal (nested modals: the last opened wins), and they move back to the page toaster when it closes. Ember `Modal` carries the outlet (`data-em-modal`, `.em-toast-outlet`); for any other modal dialog the provider adds one. The outlet's live regions mount empty and toasts arrive 100ms later so they are announced. Each toast keeps its remaining time across moves, and the timer pauses while the toast can't be reached (page inert or tab hidden).
@@ -171,3 +185,6 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 
 ## 2026-11-11 2:15 AM PT: #51 forward-merge of main f9f016d
 - Merged main f9f016d (#47 test:vp, #45, #52, #27 kinetic, pressed-state contrast) with a merge commit, no rebase. Conflicts were only in `package.json` scripts, `.github/workflows/ci.yml` and this file; both sides kept (test:toast-modal next to test:press, test:hover and test:vp, and all their CI steps).
+
+## 2026-11-11 4:15 AM PT: #33 forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (this branch's R-4 entries against #51's toast-modal entries); both sides kept, R-4 first. package.json and ci.yml auto-merged: test:toast-modal, test:press, test:hover, test:vp and check:core-bundle are all there.

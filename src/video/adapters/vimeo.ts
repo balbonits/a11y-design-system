@@ -1,0 +1,95 @@
+// Vimeo adapter: @vimeo/player, imported only when a Vimeo source is used.
+// Pending John's install OK (ARCH-REVIEW R-4 wants it bundled); until then it resolves at runtime.
+import { Emitter, RATES, VideoAdapterUnavailable, canFullscreen, throttle, type Player } from '../player';
+
+interface VimeoPlayer {
+  ready(): Promise<void>;
+  play(): Promise<void>;
+  pause(): Promise<void>;
+  setCurrentTime(s: number): Promise<number>;
+  getDuration(): Promise<number>;
+  setPlaybackRate(r: number): Promise<number>;
+  setVolume(v: number): Promise<number>;
+  setMuted(m: boolean): Promise<boolean>;
+  on(e: string, fn: (d: { seconds?: number; duration?: number; playbackRate?: number; volume?: number; percent?: number }) => void): void;
+  destroy(): Promise<void>;
+}
+type VimeoCtor = new (el: HTMLElement, opts: Record<string, unknown>) => VimeoPlayer;
+
+const VIMEO_MODULE = '@vimeo/player';
+
+export interface VimeoOptions {
+  /** Turn on Vimeo's own text track (only for a source with no VTT of ours, CA ruling): a language code, e.g. 'en'. */
+  providerCaptions?: string | false;
+}
+
+export async function createVimeoPlayer(
+  mount: HTMLElement,
+  id: string,
+  title: string,
+  load: () => Promise<{ default: VimeoCtor }> = () => import(/* @vite-ignore */ VIMEO_MODULE),
+  { providerCaptions = false }: VimeoOptions = {},
+): Promise<Player> {
+  let Ctor: VimeoCtor;
+  try {
+    Ctor = (await load()).default;
+    if (typeof Ctor !== 'function') throw new Error('no default export');
+  } catch (cause) {
+    throw new VideoAdapterUnavailable('vimeo', VIMEO_MODULE, { cause });
+  }
+  const vp = new Ctor(mount, { id: Number(id), autoplay: false, controls: false, dnt: true, title: false, byline: false, portrait: false, playsinline: true, ...(providerCaptions ? { texttrack: providerCaptions } : {}) });
+  await vp.ready();
+  mount.querySelector('iframe')?.setAttribute('title', title);
+  const em = new Emitter();
+  // Rate changes need a Vimeo Plus/Pro owner account; probe once and report it.
+  const rateOk = await vp.setPlaybackRate(1).then(() => true, () => false);
+  const s = { time: 0, duration: await vp.getDuration(), paused: true, rate: 1, volume: 1, muted: false, buffered: 0 };
+  vp.on('timeupdate', (d) => {
+    s.time = d.seconds ?? s.time;
+    em.emit('timeupdate');
+  });
+  vp.on('play', () => ((s.paused = false), em.emit('play')));
+  vp.on('pause', () => ((s.paused = true), em.emit('pause')));
+  vp.on('ended', () => ((s.paused = true), em.emit('ended')));
+  vp.on('durationchange', (d) => ((s.duration = d.duration ?? s.duration), em.emit('durationchange')));
+  vp.on('playbackratechange', (d) => ((s.rate = d.playbackRate ?? s.rate), em.emit('ratechange')));
+  vp.on('volumechange', (d) => ((s.volume = d.volume ?? s.volume), em.emit('volumechange')));
+  vp.on('error', (d) => em.emit('error', d));
+  vp.on('bufferstart', () => em.emit('waiting'));
+  vp.on('bufferend', () => em.emit('resumed'));
+  const buffered = throttle(() => em.emit('bufferedchange'));
+  vp.on('progress', (d) => {
+    s.buffered = Math.min(1, Math.max(0, d.percent ?? s.buffered));
+    buffered();
+  });
+  queueMicrotask(() => em.emit('ready'));
+  return {
+    kind: 'vimeo',
+    capabilities: { rate: rateOk, rates: rateOk ? RATES : [1], volume: true, fullscreen: canFullscreen(), canReportBuffering: true, canReportBufferedRanges: false, providerCaptions: Boolean(providerCaptions) },
+    play: () => vp.play(),
+    pause: () => vp.pause(),
+    seek: async (t) => {
+      s.time = await vp.setCurrentTime(Math.max(0, t));
+      em.emit('timeupdate');
+    },
+    getTime: () => s.time,
+    getDuration: () => s.duration,
+    isPaused: () => s.paused,
+    setRate: async (r) => void (s.rate = await vp.setPlaybackRate(r)),
+    getRate: () => s.rate,
+    setVolume: async (v) => void (s.volume = await vp.setVolume(Math.min(1, Math.max(0, v)))),
+    getVolume: () => s.volume,
+    setMuted: async (m) => {
+      s.muted = await vp.setMuted(m);
+      em.emit('volumechange');
+    },
+    isMuted: () => s.muted,
+    getBuffered: () => ({ fraction: s.buffered, ranges: null }),
+    on: (e, fn) => em.on(e, fn),
+    destroy: () => {
+      buffered.cancel();
+      void vp.destroy();
+      em.clear();
+    },
+  };
+}
