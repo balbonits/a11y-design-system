@@ -1,0 +1,66 @@
+{
+ "neo.light.primary": {
+  "bg": "rgb(21, 48, 208)",
+  "fg": "rgb(255, 255, 255)"
+ },
+ "neo.light.secondary": {
+  "bg": "rgb(243, 236, 210)",
+  "fg": "rgb(17, 17, 17)"
+ },
+ "neo.light.ghost": {
+  "bg": "rgb(243, 236, 210)",
+  "fg": "rgb(17, 17, 17)"
+ },
+ "neo.light.danger": {
+  "bg": "rgb(160, 14, 38)",
+  "fg": "rgb(255, 255, 255)"
+ },
+ "neo.dark.primary": {
+  "bg": "rgb(215, 255, 90)",
+  "fg": "rgb(17, 17, 17)"
+ },
+ "neo.dark.secondary": {
+  "bg": "rgb(39, 39, 39)",
+  "fg": "rgb(253, 248, 233)"
+ },
+ "neo.dark.ghost": {
+  "bg": "rgb(39, 39, 39)",
+  "fg": "rgb(253, 248, 233)"
+ },
+ "neo.dark.danger": {
+  "bg": "rgb(255, 154, 168)",
+  "fg": "rgb(17, 17, 17)"
+ },
+ "kinetic.light.primary": {
+  "bg": "rgb(156, 19, 5)",
+  "fg": "rgb(255, 255, 255)"
+ },
+ "kinetic.light.secondary": {
+  "bg": "rgb(243, 238, 226)",
+  "fg": "rgb(10, 27, 92)"
+ },
+ "kinetic.light.ghost": {
+  "bg": "rgb(243, 238, 226)",
+  "fg": "rgb(10, 27, 92)"
+ },
+ "kinetic.light.danger": {
+  "bg": "rgb(130, 14, 33)",
+  "fg": "rgb(255, 255, 255)"
+ },
+ "kinetic.dark.primary": {
+  "bg": "rgb(255, 139, 122)",
+  "fg": "rgb(7, 15, 51)"
+ },
+ "kinetic.dark.secondary": {
+  "bg": "rgb(21, 34, 85)",
+  "fg": "rgb(251, 248, 241)"
+ },
+ "kinetic.dark.ghost": {
+  "bg": "rgb(21, 34, 85)",
+  "fg": "rgb(251, 248, 241)"
+ },
+ "kinetic.dark.danger": {
+  "bg": "rgb(255, 179, 192)",
+  "fg": "rgb(7, 15, 51)"
+ }
+}

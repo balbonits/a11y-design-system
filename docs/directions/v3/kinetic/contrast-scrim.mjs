@@ -13,9 +13,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { dialogEdge } from '../shared/dialogedge.mjs';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const J = JSON.parse(fs.readFileSync(path.join(dir, 'tokens.json')));
+const EDGE = dialogEdge(dir); // --dialog-border now that the kinetic dialog draws one (Creatives ruling on #49)
 const contrastPath = path.join(dir, 'contrast-notes.md');
 
 const lum = h => {
@@ -68,14 +70,21 @@ for (const [combo, t] of Object.entries(J.semantic)) {
     srows.push([combo, k, o, d, ok ? 'dims' : 'LIGHTENS', gateColorBg && !ok ? 'FAIL' : '']);
   }
 
-  // 1.4.11 gate: opaque dialog border against scrim composited over color-bg.
-  const borderR = cr(t['--border'], comp);
+  // 1.4.11 gate: the dialog's drawn edge (shared/dialogedge.mjs: --dialog-border, or the surface when border is 0) against scrim composited over color-bg.
+  if (!/^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(t[EDGE] || '')) { // lint, ARCH-REVIEW Addendum 9: a FAIL line and exit 1, never a stack trace (VQA nit on #49)
+    fail++;
+    notes.push(`FAIL lint ${combo} ${EDGE} does not resolve to a color`);
+    srows.push([combo, `${EDGE} does not resolve to a color (lint)`, '', comp, '3:1', 'FAIL']);
+    delete summary[combo];
+    continue;
+  }
+  const borderR = cr(t[EDGE], comp);
   const borderOk = borderR >= 3;
   if (!borderOk) {
     fail++;
     notes.push(`FAIL ${combo} border on composite ${borderR.toFixed(2)} < 3`);
   }
-  srows.push([combo, 'border on color-bg (1.4.11, opaque border)', t['--border'], comp, '3:1', borderR.toFixed(2) + (borderOk ? '' : ' FAIL')]);
+  srows.push([combo, `${EDGE} on color-bg (1.4.11, opaque border)`, t[EDGE], comp, '3:1', borderR.toFixed(2) + (borderOk ? '' : ' FAIL')]);
   summary[combo].borderR = borderR;
 
   // Opaque dialog surface against the same composite: informational, not a gate.
@@ -110,8 +119,8 @@ const intro = [
   '',
   'Gates, matching neo\'s method: the opaque dialog border against the scrim composited over `--color-bg` must be 3:1 or better (WCAG 1.4.11); `--text-muted` under the scrim, both composited, must be 3:1 or better; and the dark scrim must not lighten `--color-bg`. The opaque `--surface` against the composite is listed as informational only; the border is the 1.4.11 cue. The dialog is an opaque `--surface`, so its text contrast is the text/surface rows above and never depends on the scrim. There is no uncomposited "text-muted vs the composite" row: neo\'s Scrim section does not include one, and that pairing measures text that isn\'t drawn there.',
   '',
-  light ? `- Light: scrim \`${light.sc}\` over \`${light.bg}\` composites to \`${light.comp}\`. Border \`${J.semantic['kinetic-light']['--border']}\` against that composite is ${light.borderR.toFixed(2)}:1 (pass). \`--text-muted\` under the scrim, both composited, is ${light.tmNeoR.toFixed(2)}:1 (pass). Opaque white \`--surface\` against the composite is ${light.surfaceR.toFixed(2)}:1 (informational, below 3:1).` : '',
-  dark ? `- Dark: scrim \`${dark.sc}\` over \`${dark.bg}\` composites to \`${dark.comp}\`. Border \`${J.semantic['kinetic-dark']['--border']}\` against that composite is ${dark.borderR.toFixed(2)}:1 (pass). \`--text-muted\` under the scrim, both composited, is ${dark.tmNeoR.toFixed(2)}:1 (pass). \`--color-bg\` dims (luminance ${darkLumX.toFixed(2)}×). Opaque \`--surface\` against the composite is ${dark.surfaceR.toFixed(2)}:1 (informational).` : '',
+  light ? `- Light: scrim \`${light.sc}\` over \`${light.bg}\` composites to \`${light.comp}\`. Dialog edge \`${EDGE}\` \`${J.semantic['kinetic-light'][EDGE]}\` against that composite is ${light.borderR.toFixed(2)}:1 (pass). \`--text-muted\` under the scrim, both composited, is ${light.tmNeoR.toFixed(2)}:1 (pass). Opaque white \`--surface\` against the composite is ${light.surfaceR.toFixed(2)}:1 (informational, below 3:1).` : '',
+  dark ? `- Dark: scrim \`${dark.sc}\` over \`${dark.bg}\` composites to \`${dark.comp}\`. Dialog edge \`${EDGE}\` \`${J.semantic['kinetic-dark'][EDGE]}\` against that composite is ${dark.borderR.toFixed(2)}:1 (pass). \`--text-muted\` under the scrim, both composited, is ${dark.tmNeoR.toFixed(2)}:1 (pass). \`--color-bg\` dims (luminance ${darkLumX.toFixed(2)}×). Opaque \`--surface\` against the composite is ${dark.surfaceR.toFixed(2)}:1 (informational).` : '',
   '',
   '| Combo | Token or pair | Base | Under scrim | Rule | Ratio |',
   '|---|---|---|---|---|---|',

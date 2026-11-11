@@ -107,7 +107,7 @@ tbody th{font-weight:600}
 .toast{position:fixed;left:1rem;bottom:1rem;transform:translateY(160%);background:var(--text);color:var(--color-bg);padding:.9rem 1.2rem;font-weight:600;transition:transform var(--duration-base) var(--ease-standard);max-width:calc(100vw - 2rem);z-index:9}
 .toast.show{transform:none}
 .toast:empty{padding:0}
-dialog{border:0;border-top:6px solid var(--accent);border-radius:0;background:var(--surface);color:var(--text);max-width:min(480px,calc(100vw - 2rem));padding:1.8rem}
+dialog{border:var(--border-width) solid var(--dialog-border);border-top:6px solid var(--accent);border-radius:0;background:var(--surface);color:var(--text);max-width:min(480px,calc(100vw - 2rem));padding:1.8rem}
 dialog h2{font-size:2rem;margin-bottom:.6rem}
 dialog::backdrop{background:var(--scrim)}
 /* Deploys page (DASH-SPEC v1.0) */

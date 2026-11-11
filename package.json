@@ -1,6 +1,6 @@
 {
   "name": "ember-ui",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "description": "Ember UI: a small, accessible React design system starter by John Dilig.",
   "type": "module",
@@ -21,6 +21,9 @@
     "test:mobile": "node scripts/mobile.mjs",
     "test:target-size": "node scripts/target-size.mjs",
     "test:toast-modal": "node scripts/toast-modal.mjs",
+    "test:press": "node scripts/press-offset.mjs",
+    "test:hover": "node scripts/hover.mjs",
+    "test:vp": "node scripts/vp-gates.mjs",
     "build:lib": "npm run tokens && vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json",
     "prepare": "npm run build:lib",
     "contrast": "node scripts/contrast.mjs",

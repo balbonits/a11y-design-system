@@ -54,7 +54,7 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 | Theme | Primary | Secondary | Ghost | Danger | Press (all variants) |
 |---|---|---|---|---|---|
 | neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | `--press-offset` 3px into `--shadow-press` (1px), no tilt |
-| kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0). Label 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see below | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | `--press-offset` 1px, `--shadow-press` is none |
+| kinetic | Hover inverts: fill `--hover-fill` (`var(--text)`), label `--hover-label` (`var(--color-bg)`), the optional contract pair (ARCH-REVIEW Addendum 10), no lift or tilt (both are 0). Label 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see below | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | `--press-offset` 1px, `--shadow-press` is none |
 | dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0), plus the inset hover ring in `--color-bg` (see Dusk hover ring) | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--danger-hover`, the same lift and shadow, plus the inset ring in `--color-bg` | `--press-offset` 0: settles flat; no overlay shadow; the inset hover ring stays as the state cue (`--accent` on secondary, `--color-bg` on primary and big play, with the big play halo composed when focused). Primary hover and press keep the `--accent-hover` fill, never `--surface-muted` (label 11.90:1 light, 12.49:1 dark) |
 
 **Kinetic inverted hover and contrast.** The numbers below come from `docs/directions/v3/kinetic/tokens.json`. The label pair is already one of `shared/contrast.mjs`'s TEXT pairs, `['color-bg','text']`, at 4.5:1, so it's reported in `kinetic/CONTRAST.md` (lines 29 and 59). FSD's token PR carries the same pair into `scripts/contrast.mjs`.
@@ -93,7 +93,7 @@ Ring against the hover fill it sits on, 3:1 needed (WCAG 1.4.11). All six pass. 
 - `--button-hover-shadow: var(--shadow-overlay)` for dusk. It's none in kinetic, and neo keeps `--shadow-raised` on hover.
 - `--button-press-offset: var(--press-offset)`
 - `--button-hover-border-width: var(--border-width-strong)`, set only in dusk, for the hover ring.
-- Kinetic's inversion as `--button-hover-bg: var(--text)` and `--button-hover-fg: var(--color-bg)`, set only in kinetic.
+- Kinetic's inversion is the optional contract pair `--hover-fill: var(--text)` and `--hover-label: var(--color-bg)` (ARCH-REVIEW Addendum 10, 2026-11-11), defined only in kinetic's theme file and read in `ember.css` as `var(--hover-fill, <variant hover>)` and `var(--hover-label, <variant label>)`. They are not component tokens and are not `@property`-registered (the one exception to Addendum 7), so themes without them keep each variant's own hover. A theme defines both or neither (`npm run tokens`), and `npm run contrast` gates label on fill 4.5:1 and fill against `--color-bg` and `--surface` 3:1.
 
 **`--press-offset`** (Chief Architect, ARCH-REVIEW Addendum 8, 2026-11-10 10:34 PM PT): a locked per-theme semantic length, defined in each theme's token file next to `--lift`.
 
@@ -151,7 +151,7 @@ Decisions (pushback, with reasons):
 - Transcript button: icon only below a 720px player, icon plus visible "Transcript" from 720px. The copy says "from 480px"; on our layout the button is only in the bar from 560px, and at 560 to 720 the row can't fit the text without wrapping, so the visible text starts at 720 (player width, container query). Its name is "Transcript" at every size.
 - Captions-unavailable hint: a third bar row (`.cchint`, `--text-muted`) only when there is no usable captions track.
 - Transcript header: heading on the left, Download on the right, search on its own row. Downloads are an inline group (`Download` label, Text, Captions file) when the transcript is at least 440px wide, and collapse into a `Download` disclosure (button `aria-expanded` and a panel) below that. That covers 320 and 375 and the side column at 1024 to 1440.
-- Caption settings dialog: `width: min(30rem, 100vw - 1.5rem)`, `max-height: 100dvh - 1.5rem`, scrolls inside. Chips wrap.
+- Caption settings dialog: `width: min(30rem, 100vw - 1.5rem)`, `max-height: 100dvh - 1.5rem`, scrolls inside. Chips wrap. Its outline is `--border-width` solid `--dialog-border` (never `--border`), over the `--scrim` backdrop.
 - Text spacing (1.4.12) and 200% zoom: nothing clips; chips and menu items wrap; the time label never truncates.
 
 ## H-3 Controls per mode
@@ -416,7 +416,7 @@ Track labels in the language picker ("English", "Français") come from the track
 7. ~~Caption colors aren't tokens.~~ Resolved (CA ARCH-REVIEW 9:35): `--caption-text`/`--caption-bg` from `--palette-caption-*`, unthemed (H-8).
 8. ~~Embed captions.~~ Resolved (CA): our VTT captions on every adapter; provider captions and the two fallback notes only for a source with no VTT of ours. AD placement under the frame (H-1 point 4) is approved by CA, with the assistive-tech condition on the AD row (H-3).
 9. Speech voicing uses the browser's speech engine (`speechSynthesis`); voices and timing vary by OS, so Read aloud is hidden where `canVoice()` is false.
-10. **Dusk light:** the dialog edge against the scrim is 1.22:1 (WCAG 1.4.11 needs 3:1), tracked as card DUSK-SCRIM-LIGHT (owner Chief of Creatives, CA a11y sign). Builders use the tokens as shipped and don't hand-patch. The fix lands as a dusk token change with a regenerated `docs/directions/v3/dusk/CONTRAST.md`, not in this PR. Dusk dark passes (5.80:1). Until DUSK-SCRIM-LIGHT lands, `node shared/contrast.mjs dusk` exits 1 on this row; that's expected.
+10. ~~Dusk light dialog edge on the scrim (1.22:1).~~ Resolved (card DUSK-SCRIM-LIGHT, CA ARCH-REVIEW Addendum 9): the caption settings dialog's outline reads the registered extra color token `--dialog-border` (default `var(--border)`; dusk light `var(--text)` `#3D1340`, 4.07:1 against the scrim composite `#8d8086`; dusk dark `var(--border)`, 5.80:1). Neo and kinetic resolve it to their own `--border`, so they look the same. `node shared/contrast.mjs dusk` exits 0. FSD registers `--dialog-border` in Ember (#30).
 
 ## Out of scope
 
