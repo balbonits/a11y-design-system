@@ -151,3 +151,7 @@ narration, run through the same `transcribe.py`.
 - `reference/sintel_fr.srt` may be offered as a reference track only:
   `srclang="fr"`, label "Français (Blender)", never the default, credited
   CC BY 3.0. The English `captions.vtt` stays the default captions track.
+
+## Copies for Storybook
+
+`captions.vtt`, `ad.vtt` and `transcript.txt` are also copied to `stories/media/sintel/` (served at `/media/sintel/`). After any regen, copy them again; a unit test fails if the copies drift.
