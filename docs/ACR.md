@@ -7,16 +7,17 @@ Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-pa
 - **Report date:** 2026-11-10
 - **Contact:** https://github.com/balbonits/a11y-design-system/issues
 - **Standards:** Revised Section 508 (36 CFR 1194), which incorporates WCAG 2.0 A/AA (the 508 baseline). WCAG 2.1 and 2.2 A/AA criteria are extra rows, marked (2.1) or (2.2).
-- **Scope:** the components as rendered in the built Storybook, plus the Storybook docs pages. An app that uses Ember UI is responsible for its own page structure (landmarks, H1, title, language).
+- **Scope:** the components as rendered in the built Storybook. The Storybook docs site is a development tool and is not in scope of this report (its pages are still swept as test evidence below). An app that uses Ember UI is responsible for its own page structure (landmarks, H1, title, language).
 
 ## Evaluation methods
-- **Automated (axe-core 4.x, `npm run test:a11y`):** every story and docs page in light and dark at 1024 px: 122 runs (50 stories + 11 docs pages x 2 themes), 0 serious or critical. The 288 moderate findings are all `landmark-one-main`, `page-has-heading-one`, `region` and `landmark-unique`. They come from rendering one component alone in a Storybook iframe, not from the components.
+- **Automated (axe-core 4.x, `npm run test:a11y`):** every story and docs page in light and dark at 1024 px: 122 runs (50 stories + 11 docs pages x 2 themes), 0 serious or critical. The 288 moderate findings are all `landmark-one-main`, `page-has-heading-one`, `region` and `landmark-unique`. They come from rendering one component alone in an isolated Storybook story iframe, which has no page landmarks or H1, so they are findings about the test harness, not about the components.
 - **Reduced motion (same script):** the modal, toast and loading-button stories run 0 animations under `prefers-reduced-motion: reduce`.
 - **Mobile (`npm run test:mobile`):** 11 docs pages x 320/375/414/768/920 px x light/dark = 110 runs, 0 failing (page overflow, 44 px targets, axe).
 - **Unit tests (`npm test`, Vitest + Testing Library):** 9 pass. They cover Modal focus in, Esc and close-button focus return (also when the app unmounts it), the Modal Tab trap, Tabs arrows/Home/End with wrap and disabled-skip, Toast roles, Toast auto-dismiss with hover pause, sticky action/error toasts, and the Undo action.
 - **Keyboard:** covered by the unit tests above and the per-component keyboard tables on each docs page. No separate manual keyboard pass is recorded yet.
 - **Screen reader:** **not yet evaluated.** Until a reader pass is recorded in PROGRESS.md (naming the reader, browser and OS), criteria that depend on announcements rest on markup, unit tests and axe only.
-- All runs: 2026-11-10 on main 757da0c, Chrome (`/usr/bin/google-chrome`) via Playwright on Linux.
+- **Focus not obscured (`node scripts/focus-obscured.mjs`):** the Toast/Error story with 3 sticky toasts open and 60 full-width controls added behind them, Tabbed through at 320 and 1440 px in light and dark (240 focus stops). A stop fails if every on-screen sample point on it is under a toast. Result: 26 fully hidden, all at 320 px. Limit: the controls are full width, so a narrow control under the toasts at wide widths isn't covered by this check.
+- All runs: 2026-11-10 on main 757da0c (the focus check on feat/r8-conventions, whose component and story code is unchanged from 757da0c), Chrome (`/usr/bin/google-chrome`) via Playwright on Linux.
 
 ## Terms
 Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VPAT 2.5).
@@ -50,25 +51,25 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 2.2.1 Timing Adjustable | A | Supports | Toasts with an action (such as Undo) and error toasts stay until dismissed. Info and success toasts auto-dismiss after 5 s, pause on hover or focus, and carry no required action. Tested: unit tests. |
 | 2.2.2 Pause, Stop, Hide | A | Supports | Nothing moves for more than 5 s. The loading spinner shows only while an action is pending. Tested: reduced-motion check. |
 | 2.3.1 Three Flashes or Below Threshold | A | Supports | Nothing flashes. Tested: code review of `ember.css` animations (one 200 ms pop). |
-| 2.4.1 Bypass Blocks | A | Not Applicable | Components don't form pages. Skip links belong to the app. |
-| 2.4.2 Page Titled | A | Not Applicable | As 2.4.1 (the app sets titles). |
+| 2.4.1 Bypass Blocks | A | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
+| 2.4.2 Page Titled | A | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
 | 2.4.3 Focus Order | A | Supports | Modal moves focus in on open and returns it on close. Tabs use a roving tabindex. Tested: unit tests. |
 | 2.4.4 Link Purpose (In Context) | A | Not Applicable | Components don't render links. |
-| 2.4.5 Multiple Ways | AA | Not Applicable | As 2.4.1. |
+| 2.4.5 Multiple Ways | AA | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
 | 2.4.6 Headings and Labels | AA | Supports | Modal requires a title (used as `aria-labelledby`). Fields require a label. Tested: axe. |
 | 2.4.7 Focus Visible | AA | Supports | A `:focus-visible` ring on every interactive element (`src/ember.css`). Tested: code review; axe doesn't measure focus rings. |
-| 2.4.11 Focus Not Obscured (Minimum) (2.2) | AA | Partially Supports | No sticky component covers content, but the toast region is fixed-position and could overlap a focused element in an app. Not yet tested; needs a check with toasts open. |
+| 2.4.11 Focus Not Obscured (Minimum) (2.2) | AA | Partially Supports | Only the toast viewport is fixed-position. Tested (`scripts/focus-obscured.mjs`): with 3 sticky toasts open over a page of 60 full-width controls, Tabbing through every control left 0 fully hidden at 1440 px, but at 320 px 26 of 120 focus stops (light and dark) were fully hidden behind the toast stack. A fix is logged. |
 | 2.5.1 Pointer Gestures (2.1) | A | Supports | No multipoint or path gestures. |
 | 2.5.2 Pointer Cancellation (2.1) | A | Supports | Native click activation (up-event). |
 | 2.5.3 Label in Name (2.1) | A | Supports | Accessible names come from the visible label text. Tested: axe. |
 | 2.5.4 Motion Actuation (2.1) | A | Not Applicable | No motion input. |
 | 2.5.7 Dragging Movements (2.2) | AA | Not Applicable | No dragging. |
-| 2.5.8 Target Size (Minimum) (2.2) | AA | Partially Supports | Controls are 44 px, and the small button, checkbox row and sort button get a 44 px hit area through `::before` (B-1). Tested: mobile sweep target scan. Partial because ARCH-REVIEW Addendum 5 asks for a `--target-min` token and a CI check on every interactive element's hit area, which isn't built yet. |
-| 3.1.1 Language of Page | A | Not Applicable | The app sets `lang`. Storybook pages use `lang="en"`. |
+| 2.5.8 Target Size (Minimum) (2.2) | AA | Supports | Every control measures at least 44px (tested: mobile target scan); the --target-min CI gate is tracked separately. |
+| 3.1.1 Language of Page | A | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
 | 3.1.2 Language of Parts | AA | Not Applicable | No other-language passages. |
 | 3.2.1 On Focus | A | Supports | Focus causes no context change. |
 | 3.2.2 On Input | A | Supports | Select and Checkbox change only their own value. Tabs change the panel, which is the expected tab behavior. |
-| 3.2.3 Consistent Navigation | AA | Not Applicable | As 2.4.1. |
+| 3.2.3 Consistent Navigation | AA | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
 | 3.2.4 Consistent Identification | AA | Supports | The same component gives the same name and role everywhere. |
 | 3.2.6 Consistent Help (2.2) | A | Not Applicable | No help mechanism. |
 | 3.3.1 Error Identification | A | Supports | `error` renders text tied by `aria-describedby`, plus `aria-invalid`. Tested: axe, stories. |
