@@ -1,144 +1,248 @@
 {
-  "_note": "FU-BED-2 known target-size under-sizes on v0.3.0 (feba533). Each is SKIPPED by scripts/target-size.mjs with its cause. SM-BORDER, SM-ICON-BORDER and TAB-CLIP are removed by FSD's HIT-PATCH card once fixed (the gate prints STALE); FIXTURE-FIELD is permanent.",
+  "_note": "FU-BED-2 known target-size under-sizes on v0.3.0 (feba533). Each is SKIPPED by scripts/target-size.mjs with its cause, card and owner, but only at or above its pinned w x h (measured minimum over all runs): a known under-size that gets smaller fails. An entry that no longer fails prints STALE and is deleted by its card (HIT-PATCH for the component entries, Ember #27 for the fixture).",
   "causes": {
     "SM-BORDER": "em-btn--sm is 36px with a 2px border; .em-btn--sm::before inset calc((36px - var(--hit-min)) / 2) is measured from the padding box, so the hit area is 40px tall, not 44 (src/ember.css:43). Fix is FSD's (no visuals in FU-BED-2).",
     "SM-ICON-BORDER": "Toast dismiss is em-btn--sm em-btn--icon, 36x36 with a 2px border; the same ::before rule (src/ember.css:43) gives a 40x40 hit area. Fix is FSD's.",
     "TAB-CLIP": "em-tab is 44px but its bottom 2px sit under the tablist border and are clipped by .em-tablist overflow-x:auto (src/ember.css:120-128), so the hit area is 42px tall. Fix is FSD's.",
-    "FIXTURE-FIELD": "non-shipped fixture theme; never registered in dist. Permanent exemption (CTE ruling 2026-11-10): the test-fixture theme exists only in stories/fixtures to prove the theme registry swaps tokens; its --field-height is 40px. The gate fails if the theme id ever appears in src/themes/registry.json or any file under dist/."
+    "FIXTURE-FIELD": "non-shipped fixture theme; never registered in dist. The test-fixture theme exists only in stories/fixtures to prove the theme registry swaps tokens; its --field-height is 40px. Kept until R-2b deletes the fixture theme in v0.3.1 (Ember #27); the entry then prints STALE and is removed with FSD's restack. While it exists, the gate fails if the theme id appears in src/themes/registry.json or any file under dist/."
   },
   "targets": [
     {
       "story": "components-button--all-themes-story",
       "target": "button.em-btn \"Small\"",
-      "cause": "SM-BORDER"
+      "cause": "SM-BORDER",
+      "w": 62.5,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-button--sizes",
       "target": "button.em-btn \"Small\"",
-      "cause": "SM-BORDER"
+      "cause": "SM-BORDER",
+      "w": 62.75,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--all-themes-story",
       "target": "button.em-tab \"Contacts\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 89.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--all-themes-story",
       "target": "button.em-tab \"Notes\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 69.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--all-themes-story",
       "target": "button.em-tab \"Overview\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 91.0,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--default",
       "target": "button.em-tab \"Contacts\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 89.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--default",
       "target": "button.em-tab \"Notes\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 69.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--default",
       "target": "button.em-tab \"Overview\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 91.0,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--focus-visible",
       "target": "button.em-tab \"Contacts\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 89.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--focus-visible",
       "target": "button.em-tab \"Notes\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 69.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--focus-visible",
       "target": "button.em-tab \"Overview\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 91.0,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--hover",
       "target": "button.em-tab \"Contacts\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 89.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--hover",
       "target": "button.em-tab \"Notes\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 69.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--hover",
       "target": "button.em-tab \"Overview\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 91.0,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--second-selected",
       "target": "button.em-tab \"Contacts\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 89.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--second-selected",
       "target": "button.em-tab \"Notes\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 69.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--second-selected",
       "target": "button.em-tab \"Overview\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 91.0,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--with-disabled-tab",
       "target": "button.em-tab \"Contacts\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 89.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--with-disabled-tab",
       "target": "button.em-tab \"Notes\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 69.5,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-tabs--with-disabled-tab",
       "target": "button.em-tab \"Overview\"",
-      "cause": "TAB-CLIP"
+      "cause": "TAB-CLIP",
+      "w": 91.0,
+      "h": 42.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-toast--error",
       "target": "button.em-btn \"Dismiss: Could not save\"",
-      "cause": "SM-ICON-BORDER"
+      "cause": "SM-ICON-BORDER",
+      "w": 40.0,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-toast--info",
       "target": "button.em-btn \"Dismiss: Reminder set\"",
-      "cause": "SM-ICON-BORDER"
+      "cause": "SM-ICON-BORDER",
+      "w": 40.0,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-toast--success",
       "target": "button.em-btn \"Dismiss: Role saved\"",
-      "cause": "SM-ICON-BORDER"
+      "cause": "SM-ICON-BORDER",
+      "w": 40.0,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-toast--with-action",
       "target": "button.em-btn \"Dismiss: Reminder done\"",
-      "cause": "SM-ICON-BORDER"
+      "cause": "SM-ICON-BORDER",
+      "w": 40.0,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "components-toast--with-action",
       "target": "button.em-btn \"Undo\"",
-      "cause": "SM-BORDER"
+      "cause": "SM-BORDER",
+      "w": 58.75,
+      "h": 40.0,
+      "card": "HIT-PATCH",
+      "owner": "FSD"
     },
     {
       "story": "tokens-theme-registry--same-component-two-themes",
       "target": "input.em-control \"Email (Test fixture, not a des\"",
-      "cause": "FIXTURE-FIELD"
+      "cause": "FIXTURE-FIELD",
+      "w": 256.0,
+      "h": 40.0,
+      "card": "Ember #27 (R-2b, v0.3.1)",
+      "owner": "FSD"
     }
   ],
-  "permanentFixtureThemes": [
+  "fixtureThemes": [
     "test-fixture"
   ]
 }

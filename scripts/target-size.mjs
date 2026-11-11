@@ -30,8 +30,9 @@ const KNOWN = JSON.parse(fs.readFileSync(new URL('./target-size.known.json', imp
 const knownKey = (story, target) => `${story}\u0000${target}`;
 const known = new Map(KNOWN.targets.map((k) => [knownKey(k.story, k.target), k]));
 const seenKnown = new Set();
+const Q_PIN = 0.25; // pinned sizes are 1/4px-grid measurements
 
-// A permanent fixture-theme exemption only holds while that theme never ships: fail if its id appears in the
+// A fixture-theme exemption only holds while that theme never ships: fail if its id appears in the
 // theme registry or anywhere in the built package (dist/, which `npm run build` writes before this runs).
 {
   const root = new URL('../', import.meta.url);
@@ -39,12 +40,12 @@ const seenKnown = new Set();
   if (!fs.existsSync(distDir)) { console.log('target-size: dist/ not found; run npm run build first (needed for the fixture-theme check)'); process.exit(2); }
   const files = [new URL('src/themes/registry.json', root), ...fs.readdirSync(distDir, { recursive: true }).map((f) => new URL(f, distDir)).filter((u) => fs.statSync(u).isFile())];
   const leaks = [];
-  for (const id of KNOWN.permanentFixtureThemes ?? []) {
+  for (const id of KNOWN.fixtureThemes ?? []) {
     if (REGISTRY.some((t) => t.id === id)) leaks.push(`${id} is registered in src/themes/registry.json`);
     for (const u of files) if (fs.readFileSync(u, 'utf8').includes(id)) leaks.push(`${id} appears in ${u.pathname.slice(root.pathname.length)}`);
   }
-  if (leaks.length) { for (const l of leaks) console.log(`FAIL fixture theme shipped: ${l}`); console.log('target-size: a permanently exempt fixture theme must never ship'); process.exit(1); }
-  console.log(`target-size: fixture themes not shipped (${(KNOWN.permanentFixtureThemes ?? []).join(', ') || 'none'}; ${files.length} files checked)`);
+  if (leaks.length) { for (const l of leaks) console.log(`FAIL fixture theme shipped: ${l}`); console.log('target-size: an exempt fixture theme must never ship'); process.exit(1); }
+  console.log(`target-size: fixture themes not shipped (${(KNOWN.fixtureThemes ?? []).join(', ') || 'none'}; ${files.length} files checked)`);
 }
 
 const index = await (await fetch(`${base}/index.json`)).json();
@@ -151,7 +152,10 @@ for (const width of widths) {
       const fails = [], skips = [];
       for (const o of out) {
         const k = !control && !o.covered && known.get(knownKey(s.id, o.name));
-        if (k) { seenKnown.add(knownKey(s.id, o.name)); skips.push(`${o.name} ${o.w}x${o.h} (${k.cause}: ${KNOWN.causes[k.cause]})`); }
+        // A known under-size is only skipped at or above its pinned size; if it shrinks further it fails.
+        if (k) seenKnown.add(knownKey(s.id, o.name));
+        if (k && (o.w < k.w - Q_PIN || o.h < k.h - Q_PIN)) fails.push(`${o.name} hit area ${o.w}x${o.h} < known ${k.w}x${k.h} (${k.cause}, got worse)`);
+        else if (k) { skips.push(`${o.name} ${o.w}x${o.h} (${k.cause}, ${k.card}, ${k.owner}: ${KNOWN.causes[k.cause]})`); }
         else fails.push(o.covered ? `${o.name} covered at its centre` : `${o.name} hit area ${o.w}x${o.h} < ${o.min}`);
       }
       if (skips.length) { skipped += skips.length; console.log(`SKIP ${width} ${th}~${md} ${s.id}: ${skips.join('; ')}`); }
@@ -169,6 +173,6 @@ if (control) {
   process.exit(ok ? 0 : 1);
 }
 const stale = KNOWN.targets.filter((k) => !seenKnown.has(knownKey(k.story, k.target)));
-for (const k of stale) console.log(`STALE ${k.story}: ${k.target} no longer fails, remove it from scripts/target-size.known.json`);
+for (const k of stale) console.log(`STALE ${k.story}: ${k.target} no longer fails, remove it from scripts/target-size.known.json (${k.card}, ${k.owner})`);
 console.log(`${summary}, ${skipped} known under-sizes skipped, ${stale.length} stale known entries`);
 process.exit(failing ? 1 : 0);
