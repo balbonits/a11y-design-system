@@ -40,15 +40,18 @@ nav.views a:hover{border-bottom-color:var(--border)}
 .btn{font:600 1rem var(--font-body);min-height:max(var(--control-height),var(--target-min));padding:.6rem var(--control-padding-x);border-radius:var(--radius-md);border:var(--border-width) solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;transition:background var(--duration-fast) var(--ease-press),color var(--duration-fast) var(--ease-press)}
 .btn:hover{background:var(--text);color:var(--color-bg)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
-.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn.primary:hover:not(:disabled){background:var(--text);border-color:var(--text);color:var(--color-bg)}
 .btn.danger{background:var(--danger);border-color:var(--danger);color:var(--danger-contrast)}
-.btn.danger:hover{background:var(--danger-hover)}
+.btn.danger:hover:not(:disabled){background:var(--text);border-color:var(--text);color:var(--color-bg)}
 .btn.text{border-color:transparent;padding-inline:.2rem;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em}
 .btn.text:hover{background:none;color:var(--accent)}
 .btn .arr{transition:transform var(--duration-base) var(--ease-standard)}.btn:hover .arr{transform:translateX(4px)}
 #mode{min-height:44px;padding:.4rem .9rem;font-size:.92rem}
 .btn:active{transform:translateY(1px)}
-.btn.primary:active{background:var(--accent-hover);border-color:var(--accent-hover)}
+/* press restores the variant's own fill (FIX-KINETIC-PROTO-HOVER) */
+.btn:not(.primary):not(.danger):not(.text):active:not(:disabled){background:transparent;color:var(--text)}
+.btn.primary:active:not(:disabled){background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.btn.danger:active:not(:disabled){background:var(--danger);border-color:var(--danger);color:var(--danger-contrast)}
 @media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
 /* ticker: the one solid band */
 .ticker{background:var(--highlight);color:var(--highlight-contrast);display:flex;align-items:center;overflow:hidden;--focus-ring-color:var(--highlight-contrast)}
