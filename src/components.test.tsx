@@ -187,7 +187,7 @@ describe('Toast', () => {
 describe('ThemeSwitcher (R-2)', () => {
   const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k), m }; };
   // A second, test-only theme (not in Ember's registry) so the Theme group renders.
-  const themes = [THEME_REGISTRY[0], { id: 'test-fixture', label: 'Test fixture' }];
+  const themes = [THEME_REGISTRY[0], { id: 'test-fixture', label: 'Test fixture, not a design' }];
   const def = THEME_REGISTRY[0];
   afterEach(() => { document.documentElement.removeAttribute('data-theme'); document.documentElement.removeAttribute('data-mode'); });
 
@@ -209,7 +209,7 @@ describe('ThemeSwitcher (R-2)', () => {
     render(<ThemeSwitcher storage={s} themes={themes} />);
     expect(screen.getByRole('group', { name: 'Theme' })).toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Color mode' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Test fixture' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Test fixture, not a design' })).toBeChecked();
     expect(screen.getByRole('radio', { name: 'Dark' })).toBeChecked();
     expect(document.documentElement.dataset.theme).toBe('test-fixture');
     expect(document.documentElement.dataset.mode).toBe('dark');
@@ -228,13 +228,13 @@ describe('ThemeSwitcher (R-2)', () => {
     await u.tab();
     expect(screen.getByRole('radio', { name: def.label })).toHaveFocus();
     await u.keyboard('{ArrowRight}');
-    expect(screen.getByRole('radio', { name: 'Test fixture' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Test fixture, not a design' })).toBeChecked();
     expect(s.m.get('jdilig:theme')).toBe('test-fixture');
     expect(document.documentElement.dataset.theme).toBe('test-fixture');
-    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Test fixture, automatic \((dark|light)\) mode$/);
+    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Test fixture, not a design, automatic \((dark|light)\) mode$/);
     await u.click(screen.getByRole('radio', { name: 'Light' }));
     expect(s.m.get('jdilig:mode')).toBe('light');
-    expect(screen.getByRole('status')).toHaveTextContent('Theme Test fixture, light mode');
+    expect(screen.getByRole('status')).toHaveTextContent('Theme Test fixture, not a design, light mode');
     await u.click(screen.getByRole('radio', { name: def.label }));
     await u.click(screen.getByRole('radio', { name: 'Auto' }));
     expect(s.m.has('jdilig:theme')).toBe(false);

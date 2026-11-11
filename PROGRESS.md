@@ -70,3 +70,8 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - **Removed:** the three candidate directions' token files, specs, prototypes and screenshots (docs/themes, docs/directions v1/v2). Fonts are now Archivo Black, Archivo and JetBrains Mono, as neo names them.
 - **Checks:** token lint 0 failures; contrast 128 pairs (all 64 of neo's CONTRAST.md pairs plus the fixture's) and 8 contract assertions, 0 failures; 14/14 unit tests; axe 160 runs (62 stories and 12 docs pages in neo light and dark, plus the 12 docs pages in OS dark), 0 serious or critical; mobile 216 runs (12 docs pages at 320/375/414/640/768/920/1024/1280/1440 in light and dark, with 640 standing in for a 1280px window at 200% zoom), each with axe, hit areas at `--target-min` and the 1.4.12 text-spacing overflow check, 0 failing; gitleaks clean; zero hits for the retired theme names and tokens outside this log.
 
+
+## 2026-11-10 6:44 PM PT: R-2 follow-ups (R-2b label, commit identity)
+
+- The proof-story fixture is now labelled "Test fixture, not a design" everywhere it appears (Theme registry story, Two registered themes story, unit tests), per ARCH-REVIEW R-2b. Its id stays `test-fixture`, and it stays out of the registry, THEMES, the Theme toolbar and the package build.
+- Commit identity: from this commit on, commits are authored as John Dilig with an `Author-bot: Full Stack Developer` trailer (CTE ruling). Earlier pushed commits are left as they are, with no history rewrite.

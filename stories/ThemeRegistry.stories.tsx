@@ -12,7 +12,7 @@ const meta: Meta = {
 };
 export default meta;
 
-const fixture = { id: 'test-fixture', label: 'Test fixture' };
+const fixture = { id: 'test-fixture', label: 'Test fixture, not a design' };
 
 export const SameComponentTwoThemes: StoryObj = {
   name: 'Same component, two themes',
