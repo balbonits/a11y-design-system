@@ -1,0 +1,26 @@
+[
+  {
+    "cue": 3,
+    "from": "You're a fool for traveling alone so completely unprepared.",
+    "to": "You're a fool for traveling alone, so completely unprepared.",
+    "why": "Punctuation: 'so completely unprepared' is a separate phrase. Blender's French subtitle 3 breaks the line at the same point."
+  },
+  {
+    "cue": 6,
+    "from": "So, what brings you to the land of the gatekeepers?",
+    "to": "So... what brings you to the land of the gatekeepers?",
+    "why": "Pause: the audio has speech at 22.46-23.07 s ('So'), then about 1.2 s of silence before 'what' (spotcheck speech_spans). Blender's French subtitles give 'Alors...' its own subtitle (6)."
+  },
+  {
+    "cue": 8,
+    "from": "Someone very dear.",
+    "to": "Someone very dear?",
+    "why": "Question: Blender's French subtitle 9 reads 'Quelqu'un de tres cher ?', and cue 10 ('A dragon.') answers it."
+  },
+  {
+    "cue": 9,
+    "from": "A kindred spirit.",
+    "to": "A kindred spirit?",
+    "why": "Question, same exchange: Blender's French subtitle 9 reads 'Une ame soeur ?'. Sintel answers 'A dragon.'"
+  }
+]
