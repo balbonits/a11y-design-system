@@ -33,7 +33,46 @@ The layout, states, keyboard, copy and targets in H-1 to H-7 are the same in eve
 - The caption colors and bands (H-8) don't change by theme. Captions sit over video, not over a theme surface.
 - Contrast: every themed pair the player uses (text, text-muted, accent and accent-contrast, borders at 3:1 for 1.4.11, focus ring, scrim under text-muted) is a pair that theme's `CONTRAST.md` already checks. The 30 axe runs above found 0 contrast issues in any theme or mode.
 - Reduced motion: each theme's `prefers-reduced-motion` block sets its durations, `--tilt` and `--lift` to 0, and the player's own reduced-motion rule removes the press and hover transforms in every theme (H-7).
-- For the builder: press and hover belong to the theme, not to the player. If Ember's Button already carries each theme's rules, the player's buttons reuse them; if not, that's a gap to raise with Chief Architect, not something to hard-code in the player.
+- For the builder: press and hover belong to the theme, not to the player. The player's buttons are Ember Buttons, and Ember Button gains the per-theme motion in **Button motion** below. Nothing is hard-coded in the player.
+
+### Button motion
+
+Ember Button today (CA, 2026-11-10) supports: primary hover with `--button-bg-hover` plus `translateY(var(--lift))`; press on every variant with a fixed 1px move plus `--shadow-press`; secondary and ghost hover and press on `--surface-muted` (plus the border on press); danger hover on `--danger-hover`. It doesn't support `--tilt`, a press depth that varies by theme, lift on secondary, ghost or danger, or `--hue-shift`.
+
+**Gaps found against the three-theme prototype:**
+1. **neo tilt.** Hover rotates by `--tilt` (-1.5deg). Button has no tilt.
+2. **neo press depth.** The prototype presses 3px into `--shadow-press`, where Button uses a fixed 1px. Dusk presses 0px (it settles flat), so press depth varies by theme.
+3. **Lift on every variant.** Neo and dusk lift secondary, ghost and danger too, not only primary. Kinetic lifts nothing, because its `--lift` is 0.
+4. **Hover shadow.** Dusk hover adds `--shadow-overlay`. Button has no hover shadow token.
+5. **Kinetic inverted hover.** Kinetic hover fills every variant with `--text` and sets the label to `--color-bg` (from kinetic's own `.btn:hover`). Button only has per-variant hover fills.
+6. **Not a gap, but the prototype differs from Button.** The prototype's neo secondary hover is `--accent-soft`. The player follows Button's `--surface-muted`, so the prototype's value isn't a spec.
+
+No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
+
+**Spec.** Move with `transform` only, so there's no layout shift. Hover is `translateY(var(--button-lift)) rotate(var(--button-tilt))`. Press is `translateY(var(--button-press-offset))` plus `--button-shadow-press`, with no tilt. Fills stay with each variant's existing tokens unless a row says otherwise.
+
+| Theme | Primary | Secondary | Ghost | Danger | Press (all variants) |
+|---|---|---|---|---|---|
+| neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | Offset 3px into `--shadow-press` (1px), no tilt |
+| kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0) | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | Offset 1px, `--shadow-press` is none |
+| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0) | Hover `--surface-muted`, the same lift and shadow | Hover `--surface-muted`, the same lift and shadow | Hover `--danger-hover`, the same lift and shadow | Offset 0 (settles flat), no shadow |
+
+**New component tokens** go in `src/tokens/components.css`, each a `var()` of a theme token, as `lint:colors` requires:
+- `--button-tilt: var(--tilt)`
+- `--button-lift: var(--lift)` already exists and now applies to every variant.
+- `--button-hover-shadow: var(--shadow-overlay)` for dusk. It's none in kinetic, and neo keeps `--shadow-raised` on hover.
+- `--button-press-offset` for the press depth.
+- Kinetic's inversion as `--button-hover-bg: var(--text)` and `--button-hover-fg: var(--color-bg)`, set only in kinetic.
+
+**Open item for Chief Architect: `--button-press-offset` has no Addendum 5 source.** Press depth is 3px in neo, 1px in kinetic and 0 in dusk, and no theme token holds those values. A raw value in components.css breaks `lint:colors`. I see two options:
+- **(a) My recommendation:** a new per-theme token `--press-offset` (3px, 1px, 0) next to `--lift` in each theme, so `--button-press-offset: var(--press-offset)`. It's honest and lint-clean, but it adds a name to Addendum 5.
+- **(b)** Use one depth everywhere, `var(--border-width)` (2px, 2px, and 1px after #44). That adds no new name, but it loses neo's deep press and dusk's flat press.
+
+**Rules for every theme:**
+- **Reduced motion:** each theme's reduce block already zeroes `--tilt` and `--lift`. Under reduce, `--press-offset` (or whatever CA picks) and `--button-hover-shadow`'s movement must zero too, and durations go to 0ms. The color changes stay.
+- **No layout shift:** transforms only, never margin, padding, top or size changes.
+- **Hit area:** the 44px `--target-min` hit area is the untransformed box. A -1.5deg tilt on a 44px-tall button moves its corners under 1px, so the hit area still covers 44px.
+- **Focus ring:** the ring follows the transform. Parents of Buttons don't clip (no `overflow: hidden` on the bar or popovers within ring offset + width + 3px of lift), so a tilted or lifted ring is never cut off.
 
 ## H-1 Layout, mobile-first
 
