@@ -5,7 +5,7 @@
 .states .row{display:flex;flex-wrap:wrap;gap:var(--control-gap);align-items:flex-start}
 .st-col{display:flex;flex-direction:column;gap:.35rem}
 .st-label{margin:1rem 0 .4rem;font-weight:700;color:var(--text-muted)}
-.btn.btn:disabled{border-style:dotted;background:var(--surface-muted);color:var(--text-muted);border-color:var(--text-muted);box-shadow:none;transform:none;cursor:not-allowed}
+.btn.btn:disabled{background:var(--surface-muted);color:var(--text-muted);border-color:var(--border-subtle);box-shadow:none;transform:none;cursor:not-allowed}
 .btn[aria-busy=true]{cursor:progress}
 .spin{flex:none;width:1em;height:1em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:v3spin 700ms linear infinite}
 @keyframes v3spin{to{transform:rotate(360deg)}}
