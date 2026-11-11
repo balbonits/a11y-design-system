@@ -44,8 +44,12 @@ for (const width of widths) {
           const b = getComputedStyle(el, '::before');
           if (b.content !== 'none' && b.position === 'absolute') {
             const n = (v) => (v === 'auto' ? 0 : Math.max(0, -parseFloat(v) || 0));
-            h += n(b.top) + n(b.bottom);
-            w = Math.max(w + n(b.left) + n(b.right), parseFloat(b.minWidth) || 0);
+            // An absolute ::before is offset from the padding box, so the border does not add to its reach (HIT-PATCH).
+            const bw = (s) => parseFloat(cs[s]) || 0;
+            const pw = rc.width - bw('borderLeftWidth') - bw('borderRightWidth');
+            const ph = rc.height - bw('borderTopWidth') - bw('borderBottomWidth');
+            h = Math.max(h, ph + n(b.top) + n(b.bottom));
+            w = Math.max(w, pw + n(b.left) + n(b.right), parseFloat(b.minWidth) || 0);
           }
           // A checkbox or radio whose label covers its row (label::before) is targeted by that row.
           if (el.labels?.length && getComputedStyle(el.labels[0], '::before').position === 'absolute') {
