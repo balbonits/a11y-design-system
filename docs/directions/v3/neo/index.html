@@ -94,7 +94,7 @@ th{font-family:var(--font-mono);font-size:.8rem;text-transform:uppercase;backgro
 .toast{position:fixed;left:50%;bottom:1rem;transform:translate(-50%,140%);background:var(--text);color:var(--color-bg);padding:.8rem 1.1rem;border-radius:var(--radius-md);font-weight:700;transition:transform var(--duration-base) var(--ease-press);max-width:calc(100vw - 2rem);z-index:9}
 .toast:empty{visibility:hidden}.toast{visibility:hidden}.toast.show{transform:translate(-50%,0);visibility:visible}
 dialog{border:var(--border-width) solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-raised);background:var(--surface);color:var(--text);max-width:min(440px,calc(100vw - 2rem));padding:1.4rem}
-dialog::backdrop{background:rgb(0 0 0 / .45)}
+dialog::backdrop{background:var(--scrim)}
 /* swatches */
 .sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.7rem}
 .sw div{border:var(--border-width) solid var(--border);border-radius:var(--radius-md);overflow:hidden;background:var(--surface)}
