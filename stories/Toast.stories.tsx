@@ -27,13 +27,14 @@ const meta: Meta<typeof Trigger> = {
         component: doc({
           use: ['Confirm something finished: saved, copied, sent.', 'Report a background error that is also shown where it happened.'],
           avoid: ['It is the only place an error appears. Always show the error next to the field or item too.', 'People must act on it. Use a Modal or inline message.'],
-          anatomy: ['Viewport fixed bottom right', 'Polite live region (`role="status"`) for info and success', 'Assertive live region (`role="alert"`) for errors', 'Toast: colored edge, title, message, optional action button (e.g. Undo), dismiss button'],
+          anatomy: ['Viewport fixed bottom right', 'Polite live region (`role="status"`) for info and success', 'Assertive live region (`role="alert"`) for errors', 'Toast: colored edge, title, message, optional action button (e.g. Undo), dismiss button', 'At 480px and below: only the newest toast, plus a "+N more" button (`aria-expanded`) that shows the whole stack'],
           variants: '`info`, `success`, `error`. Wrap the app in `<ToastProvider>` and call `useToast()`.',
           states: 'Entering (fades up; none under reduced motion), shown, paused (hover or focus stops the timer), sticky (errors and toasts with an action stay until dismissed), dismissed.',
-          keyboard: [['Tab', 'Reaches the dismiss button'], ['Enter / Space', 'Dismisses the toast']],
+          keyboard: [['Tab', 'Reaches the dismiss button, and the "+N more" button at 480px and below'], ['Enter / Space', 'Dismisses the toast']],
           a11y: [
             ['4.1.3 Status Messages', 'Info and success go to `role="status"`; errors go to `role="alert"`. The regions stay mounted so additions are announced.'],
             ['2.2.1 Timing Adjustable', 'Info and success toasts auto-dismiss (5s by default) and pause while hovered or focused. Error toasts and toasts with an action (e.g. Undo) never auto-dismiss.'],
+            ['2.4.11 Focus Not Obscured', 'While toasts are open, the page keeps the stack\'s height clear at the bottom (`scroll-padding-bottom` and matching padding, kept in sync by a ResizeObserver), so a focused control scrolls clear of the stack. At 480px and below the stack collapses to the newest toast. `npm run test:focus-obscured` tabs through 60 controls behind 3 sticky toasts at 320, 375, 768 and 1440px in every theme and mode, collapsed and expanded, and fails if any is fully hidden.'],
             ['3.3.1 Error Identification', 'Toasts are never the only place an error is shown.'],
             FOCUS_NOTE,
           ],

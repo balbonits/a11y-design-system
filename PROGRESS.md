@@ -70,3 +70,12 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - **Removed:** the three candidate directions' token files, specs, prototypes and screenshots (docs/themes, docs/directions v1/v2). Fonts are now Archivo Black, Archivo and JetBrains Mono, as neo names them.
 - **Checks:** token lint 0 failures; contrast 128 pairs (all 64 of neo's CONTRAST.md pairs plus the fixture's) and 8 contract assertions, 0 failures; 14/14 unit tests; axe 160 runs (62 stories and 12 docs pages in neo light and dark, plus the 12 docs pages in OS dark), 0 serious or critical; mobile 216 runs (12 docs pages at 320/375/414/640/768/920/1024/1280/1440 in light and dark, with 640 standing in for a 1280px window at 200% zoom), each with axe, hit areas at `--target-min` and the 1.4.12 text-spacing overflow check, 0 failing; gitleaks clean; zero hits for the retired theme names and tokens outside this log.
 
+
+## 2026-11-10 6:36 PM PT: Toast, WCAG 2.4.11 Focus Not Obscured (FU-FSD-TOAST)
+
+QA's repro on PR #15 (scripts/focus-obscured.mjs) found that with 3 sticky error toasts open at 320px, focused controls behind the stack were fully hidden; at 1440px none were. On the v0.3.0 build, before this fix, the widened check found 65 of 480 focus stops fully hidden and 207 partly covered.
+
+- **Narrow widths (480px and below):** only the newest toast shows, plus a "+N more" button (`aria-expanded`) that shows the whole stack, capped at half the viewport and scrolling inside it. Hidden toasts were already announced by their live region when they arrived.
+- **Safety net at every width:** while any toast is open, ToastProvider measures the stack with a ResizeObserver and sets `--em-toast-safe` and `data-em-toasts` on `<html>`, which applies `scroll-padding-bottom` and matching `padding-bottom`, so the browser scrolls a focused control clear of the stack, even the last one on the page. Both are removed when the last toast closes.
+- **Reduced motion:** no new motion. The check's expanded runs emulate reduced motion and fail if any animation is running.
+- **Test:** `npm run test:focus-obscured` (now in CI) tabs through 60 controls behind 3 sticky toasts at 320, 375, 768 and 1440px in every registered theme in light and dark, collapsed and expanded: 720 focus stops checked, 0 fully hidden, 0 partly covered. A unit test covers the newest marker, the "+2 more" control and the page reservation. axe 160/0 and mobile 216/0 still pass.

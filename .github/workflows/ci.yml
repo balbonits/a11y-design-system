@@ -28,6 +28,9 @@ jobs:
       - run: npm run test:mobile
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - run: npm run test:focus-obscured
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
   transcribe:
     runs-on: ubuntu-latest
     steps:

@@ -131,6 +131,25 @@ describe('Toast', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Failed');
   });
 
+  it('2.4.11: marks the newest toast, offers "+N more", and reserves the stack height on the page', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastDemo /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Bad' }));
+    expect(document.documentElement).toHaveAttribute('data-em-toasts');
+    expect(screen.queryByRole('button', { name: /more$/ })).toBeNull();
+    await u.click(screen.getByRole('button', { name: 'Bad' }));
+    await u.click(screen.getByRole('button', { name: 'Bad' }));
+    const toasts = document.querySelectorAll('.em-toast');
+    expect(toasts).toHaveLength(3);
+    expect([...toasts].filter((t) => t.hasAttribute('data-newest'))).toEqual([toasts[2]]);
+    const more = screen.getByRole('button', { name: '+2 more' });
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    await u.click(more);
+    expect(screen.getByRole('button', { name: 'Show newest only' })).toHaveAttribute('aria-expanded', 'true');
+    for (const b of screen.getAllByRole('button', { name: /^Dismiss/ })) await u.click(b);
+    expect(document.documentElement).not.toHaveAttribute('data-em-toasts');
+  });
+
   it('auto-dismisses, and pauses while hovered', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const u = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
