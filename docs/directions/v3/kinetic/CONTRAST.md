@@ -30,9 +30,9 @@
 | kinetic-light | highlight-contrast | highlight | 4.5 | 8.95 | pass |
 | kinetic-light | border | color-bg | 3 | 8.95 | pass |
 | kinetic-light | border | surface | 3 | 9.49 | pass |
-| kinetic-light | focus | color-bg | 3 | 8.95 | pass |
-| kinetic-light | focus | surface | 3 | 9.49 | pass |
-| kinetic-light | focus | surface-muted | 3 | 8.20 | pass |
+| kinetic-light | focus-ring-color | color-bg | 3 | 8.95 | pass |
+| kinetic-light | focus-ring-color | surface | 3 | 9.49 | pass |
+| kinetic-light | focus-ring-color | surface-muted | 3 | 8.20 | pass |
 | kinetic-light | accent | surface-muted | 3 | 5.29 | pass |
 | kinetic-dark | text | color-bg | 4.5 | 17.60 | pass |
 | kinetic-dark | text | surface | 4.5 | 16.08 | pass |
@@ -60,7 +60,7 @@
 | kinetic-dark | highlight-contrast | highlight | 4.5 | 6.95 | pass |
 | kinetic-dark | border | color-bg | 3 | 8.91 | pass |
 | kinetic-dark | border | surface | 3 | 8.14 | pass |
-| kinetic-dark | focus | color-bg | 3 | 12.14 | pass |
-| kinetic-dark | focus | surface | 3 | 11.10 | pass |
-| kinetic-dark | focus | surface-muted | 3 | 9.82 | pass |
+| kinetic-dark | focus-ring-color | color-bg | 3 | 12.14 | pass |
+| kinetic-dark | focus-ring-color | surface | 3 | 11.10 | pass |
+| kinetic-dark | focus-ring-color | surface-muted | 3 | 9.82 | pass |
 | kinetic-dark | accent | surface-muted | 3 | 5.38 | pass |

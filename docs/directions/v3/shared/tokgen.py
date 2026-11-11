@@ -42,13 +42,15 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | Token | Light primitive | Light | Dark primitive | Dark |
 |---|---|---|---|---|
 {rows}
-`--highlight` and `--highlight-contrast` are proposed additions, matching direction F: a feature-band fill and the text on it. Every other token uses Ember's existing names.
+Color names are Ember's, plus `--highlight` and `--highlight-contrast` (a feature-band fill and the text on it) and `--focus-ring-color`, all from the locked set in ARCH-REVIEW Addendum 5. There are no `--radius` or `--focus` aliases.
 
 ## Primitives
 | Token | Value |
 |---|---|
 {prim}
 ## Shape, type and motion
+Shape names follow ARCH-REVIEW Addendum 5 (`--radius-sm/md/lg/full`, `--border-width(-strong)`, `--shadow-raised/press`, `--divider-shape`, `--focus-ring-*`, `--control-*`, `--target-min`, `--tilt`, `--lift`). Anything else in this table is a direction-local extra (fonts, motion, and `--shadow-overlay` for floating layers) and is named as such in HANDOFF.md.
+
 | Token | Value |
 |---|---|
 """ + ''.join(f'| `{k}` | `{v}` |\n' for k,v in SHAPE.items()) + '\n' + extra + '\n'

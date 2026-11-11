@@ -47,4 +47,4 @@ const render: S['render'] = (args, { globals }) => {
 export const Default: S = { render };
 export const FocusVisible: S = { render, parameters: { pseudo: { focusVisible: true } } };
 /** With two registered themes the Theme group appears. The second one here is the stories-only test fixture. */
-export const TwoThemes: S = { name: 'Two registered themes', render: (args) => <ThemeSwitcher {...args} storage={{ getItem: () => null, setItem: () => {}, removeItem: () => {} }} themes={[THEME_REGISTRY[0], { id: 'test-fixture', label: 'Test fixture' }]} /> };
+export const TwoThemes: S = { name: 'Two registered themes', render: (args) => <ThemeSwitcher {...args} storage={{ getItem: () => null, setItem: () => {}, removeItem: () => {} }} themes={[THEME_REGISTRY[0], { id: 'test-fixture', label: 'Test fixture, not a design' }]} /> };

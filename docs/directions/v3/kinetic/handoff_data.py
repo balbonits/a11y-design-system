@@ -1,44 +1,158 @@
 import sys; sys.path.insert(0,'../shared'); import handoff
-U='https://raw.githack.com/balbonits/a11y-design-system/main/docs/directions/v3/kinetic/'
-handoff.write('.',dict(title='D "kinetic", Kinetic Swiss',date='2026-11-10, 5:58 PM PT',
-goal='A completely new design direction for all 3 UX projects (Ember UI sampler, job tracker board, dev dashboard overview), clearly unlike A, B, C, v1, v2 and the other v3 directions. D is Kinetic Swiss: big variable-weight type on an asymmetric 12-column grid, no cards, cobalt on warm white with a signal red accent, and type-led motion. Only token values and art direction change; the R-2 token structure stays.',
-done=['index.html: a clickable mobile-first prototype with the Ember sampler, job tracker board and dev dashboard overview, linked, with a light/dark toggle.',
- 'tokens.css in R-2 shape using the semantic names from docs/themes/r2/semantic.css, plus TOKENS.md as a swatch sheet.',
- 'CONTRAST.md from the docs/themes/r2/contrast.mjs logic, with 0 fails in light and dark.',
- 'PNGs at 375 and 1280 px, light and dark.',
- 'axe at 0 serious/critical and 0 horizontal overflow.',
- 'Branch and PR in balbonits/a11y-design-system, merged once its own checks pass, viewable at the raw.githack link below, and the link sent to Chief of Creatives and Visual QA. Nits go to follow-ups.'],
-links=[f'Prototype: {U}index.html (screens: #components, #tracker, #dashboard, #tokens)',f'Token sheet: {U}TOKENS.md',f'Contrast report: {U}CONTRAST.md',
- 'PR: https://github.com/balbonits/a11y-design-system/pull/9 (branch design/v3-kinetic)','Brief: /workspace/ux-projects/directions/v3/BRIEF.md on the shared bot computer',
- 'Sibling direction F (Chief of Creatives): /workspace/ux-projects/directions/v3/neo'],
-files=['index.html, the prototype. It loads tokens.css and ../shared/proto.js.','gen.py writes tokens.json, tokens.css and TOKENS.md via ../shared/tokgen.py. Edit colors there, never in tokens.css by hand.',
- 'CONTRAST.md, written by `node ../shared/contrast.mjs .` (60 pairs).','kinetic-<components|tracker|dashboard>-<light|dark>-<m|d>.png: m is 375x812 and d is 1280x800.',
- 'handoff_data.py writes this file via ../shared/handoff.py.',
- 'Shared tooling in ../shared, used by every v3 direction (rule of three): tokgen.py, contrast.mjs, shoot.cjs (axe, overflow and screenshots; run from docs/directions with NODE_PATH set to /workspace/ux-projects/directions/node_modules) and proto.js (mode toggle, routing, ticker pause, toast, modal, tabs, swatches).'],
-art=['Type: Bricolage Grotesque, variable 300 to 800, for display; Instrument Sans for body (17 px base); IBM Plex Mono for labels and data. All from Google Fonts, with system fallbacks.',
- 'Color: warm white #FBF8F1 paper, cobalt #0A1B5C text, #1434B8 rules and focus, signal red #C21807 for primary actions and the second headline line. Dark mode is a cobalt night (#070F33) with warm white text and a #FF6B57 red.',
- 'Layout: a 12-column grid with a 3-column label rail and a 9-column body offset to column 5. There are no cards, shadows or rounded boxes: sections are split by 1 px rules, fields are underlined, and tabs and nav use a red underline. The only solid band is the cobalt ticker.',
- 'Motion, all from tokens: headlines reveal line by line (--duration-reveal 700ms, --stagger 90ms), the hero headline lightens from 800 to 300 weight over the first 600 px of scroll (--weight-shift), and a marquee ticker runs on --duration-ticker 36s.',
- 'Tracker: 5 stage columns split by vertical rules at 1000 px and up; stacked stages on mobile. Dashboard: oversized numerals in a ruled 4-up grid (2-up on mobile), a hairline line chart and a ruled deploy log.'],
-a11y=['Reduced motion: every duration is 0, the weight stays at 800, line reveals show at once and the ticker starts paused.',
- 'The ticker has a visible "Pause ticker" button (aria-pressed) per WCAG 2.2.2. Its text is aria-hidden, with one sr-only copy that is read once.',
- 'Focus is a 3 px outline in --focus. Inside the cobalt ticker band, --focus is set locally to --highlight-contrast, because cobalt focus on cobalt would be 1:1. That pair is not in the contrast gate.',
- 'Status is never color only: each status has text plus a different glyph shape (square, circle, diamond, bar).',
- 'Route hashes (#components and the rest) select sections with ids prefixed v-, so the page never scroll-jumps under the sticky header.',
- 'Modal: native dialog, focus starts on Cancel, Esc closes it and focus returns to the opener. Tabs use arrow keys, Home and End. Toasts are role=status.',
- 'Targets are at least 44 px; buttons are 48 px.'],
-checks=['Contrast: 60 pairs, 0 fails (text 4.5:1, UI and focus 3:1) in kinetic-light and kinetic-dark.',
- 'shoot.cjs at 375 and 1280, light and dark, on all 4 screens: axe 0 serious/critical and 0 horizontal overflow ("kinetic bad 0").',
- 'I looked at all 12 PNGs.'],
-decisions=['BRIEF.md: banned A/B/C and v1/v2 palettes, type, layouts, blobs, glass and reference sites; R-2 structure kept.',
- '--highlight and --highlight-contrast are proposed additions, the same names direction F uses.',
- 'Microcopy follows UI Copywriter\'s V3-STATE-COPY.md (pasted below): tracker h1 "Board", the delete dialog, button samples and toasts.',
- 'Mode is stored under the existing jdilig:mode key.'],
-issues=['The dashboard overview shows stats, a chart and a deploy list, which DASH-SPEC v1.0 does not include (it is one Deploys table). The values are labeled example data. Chief of Creatives needs to decide whether those blocks belong in the spec; until then, treat them as art-direction samples, not spec.',
- 'Fonts load from Google Fonts. Offline, the system fallbacks show and the variable-weight scroll shift is lost.',
- 'Nit for a follow-up: at 375 the "Dark mode" button wraps under the logo, so the header takes 2 rows plus the nav.',
- 'Not drawn: tracker empty, loading and error states, and the dashboard log drawer. The prototype covers default screens only, as the brief asks.'],
-deps=['Chief of Creatives signs off on art direction and tokens.','Visual QA reviews axe, contrast and visuals once the link lands.','FSD maps the chosen tokens into R-2 after John picks a direction.',
- 'Direction F lives in the box folder /workspace/ux-projects/directions/v3/neo, not yet in the repo. It can use ../shared too.','The v3 README that links D, E and F is owned by Chief of Creatives.'],
-ask=['Prototype screens, layout or a11y in this file: UX/UI Designer.','Art direction, palette and tokens: Chief of Creatives (5f6ac1e2-23a1-42d9-9f0d-1e93e47f6686).','A11y rulings and standards: Chief Architect.','Copy: UI Copywriter (a607b34c-a81f-46c8-8292-a4d70ba322c0).'],
-eta=['D merged by 6:15 PM PT, ahead of the 7:30 PM PT target.','Next: direction E "dusk" on branch design/v3-dusk, target 8:00 PM PT.']))
+BODY=r'''# D "kinetic" HANDOFF: dev dashboard (Deploys page)
+
+Identity for the **dev dashboard** (per neo/HANDOFF.md: job tracker = dusk, dev dashboard = kinetic, Ember UI + Storybook = neo). Kinetic Swiss: warm white paper, cobalt type and hairline rules, one signal red for action, big variable-weight display type on an asymmetric 12-column grid, no cards and no shadows. Dark mode is a cobalt night with warm white type. The prototype opens on the dev dashboard's Deploys page, built to DASH-SPEC v1.0 with every state; the Ember sampler and job tracker views stay as a small style sampler. **Primary project: dev dashboard. Builder: FSD registers the kinetic theme tokens in Ember (R-2); FED applies them in the dev dashboard app. The Ember sampler and tracker views are a style sampler only, not for build** (Chief of Creatives scope ruling, 2026-11-10). H-1 to H-8 below spec the Deploys page in full; the sampler views get one line each.
+
+- Prototype: [index.html](https://raw.githack.com/balbonits/a11y-design-system/main/docs/directions/v3/kinetic/index.html) (opens on `#dashboard`, the Deploys page; `#components`, `#tracker` and `#tokens` are the style sampler; light/dark toggle in the header)
+- Tokens: [TOKENS.md](TOKENS.md), [tokens.css](tokens.css), [tokens.json](tokens.json) (registry-ready, theme id `kinetic`, modes `light` and `dark`), generated by `gen.py` with `../shared/tokgen.py`
+- Contrast: [CONTRAST.md](CONTRAST.md), 60 pairs, 0 fails (`node ../shared/contrast.mjs kinetic` from `..`)
+- Screens: [handoff/](handoff/), plain and annotated, every view at every width in light and dark
+- Re-run checks locally: `python3 -m http.server 8942` in `docs/directions/v3`, then from `docs/directions/v3` run `node shared/annotate.cjs kinetic http://127.0.0.1:8942/kinetic/index.html` (axe, overflow, text spacing, 200% zoom, annotated shots for all 4 views) and from `docs/directions` run `node v3/shared/shoot.cjs kinetic http://127.0.0.1:8942/kinetic/index.html` (375 and 1280 shots). Both need `playwright-core` and `@axe-core/playwright` on `NODE_PATH`.
+
+Verified 2026-11-10, 6:25 PM PT, local Chrome: axe 0 serious or critical in all 4 views; 0 horizontal overflow at 320, 375, 768, 1024 and 1440 in light and dark (40 runs); 0 overflow and 0 clipped text with the WCAG 1.4.12 text-spacing override in every one of those runs; 0 overflow at 200% zoom (640 CSS px) in all 4 views; every interactive target in all 4 views at or above `--target-min` (44px).
+
+## H-1 Layout, mobile-first
+320 is the base. Breakpoints use `min-width` only. The Deploys page (`#dashboard`) top to bottom: prototype note, page head (eyebrow "Dev dashboard", h1 "Deploys", "Keyboard shortcuts" button), environment Tabs and "Search runs", the failures banner (or the all-green line), the "Filters" group, the result count, then the runs table (or one of its states), then the preview-state links and the labeled v1.1 sampler.
+
+| Name | Query | Deploys page | Header |
+|---|---|---|---|
+| base | none (320+) | One column. h1 and the shortcuts button share a row (button is icon-only "?" with `aria-label="Keyboard shortcuts"`). Tabs on one row, "Search runs" full width under them. Filters stack: Status, Service, Branch, then "Clear filters" with its hint under it. The table keeps its columns and scrolls sideways inside its own region; the page never scrolls sideways. | Logo row with the mode toggle; nav links wrap onto a full-width row below. |
+| xs | `(min-width: 480px)` | The shortcuts button shows its text label "Keyboard shortcuts". | same |
+| sm | `(min-width: 700px)` | Filters go 4 across: Status, Service, Branch (equal columns) and "Clear filters" (auto width, top aligned to the fields). | same |
+| md | `(min-width: 900px)` | Tabs and search share a row: Tabs take the rest, search is `minmax(0, 22rem)` on the right, bottom aligned. Side padding 2.5rem. | Nav moves inline between logo and toggle. |
+| lg | `(min-width: 1024px)` | The run log opens as a right side drawer (full height, `min(600px, 48vw)` wide, 6px `--accent` left edge). Below 1024 it is a centered Ember Modal. | same |
+
+Wireframes for the same frames: `/workspace/ux-projects/wireframes/dashboard/` (11 frames at 1280, 768 and 320). Screens: [handoff/](handoff/) as `kinetic-dashboard-<width>-<light|dark>.png`. Sampler views (`#components`, `#tracker`, `#tokens`): one column at base, the 12-column rail grid from 900px; reference only.
+
+## H-2 Fluid rules
+- Content max width 1320px (`.wrap`), side padding 1.25rem below 900px and 2.5rem from 900px. Every grid child has `min-width: 0`.
+- Type: body 1.0625rem (17px), line height 1.6, never under 16px for body copy. h1 "Deploys" `clamp(2.8rem, 11vw, 7rem)`; banner h2 1.5rem; drawer h2 1.7rem (wraps anywhere, so long service names never widen it); Modal h2 2rem. Table header labels are 0.78rem mono uppercase, and every one is also a real button label.
+- The runs table has an 880px min width inside a focusable scroll region (`tabindex="0"`, `role="region"`, `aria-labelledby` the caption "{Env} runs"); the region is `position: relative` so the sr-only "Actions" header can't widen the page. Rows are 44px or taller because each holds an "Open log" button.
+- Commit cell: short sha in mono over the commit message in `--text-muted`; both wrap.
+- The panel has no max width (the Tabs `56ch` cap is for the sampler only).
+- Drawer below 1024: `min(680px, 100vw - 2rem)` wide, `max-height: calc(100vh - 2rem)`, scrolls inside. From 1024: `100vh` tall, `min(600px, 48vw)` wide. Log lines wrap (`white-space: pre-wrap`, `overflow-wrap: anywhere`) and the log box can also scroll sideways.
+- The run link in the drawer is plain selectable text (`user-select: all`, wraps anywhere), so copying by hand always works.
+- `scroll-padding-top` 9rem at base and 6rem from 900px, so the sticky header never covers the focused element (WCAG 2.4.11).
+- No fixed heights on text containers; controls set `min-height`, so text spacing and 200% zoom grow them.
+
+## H-3 Nav per breakpoint
+- "Skip to content" is the first Tab stop and moves focus to `<main id="main" tabindex="-1">`.
+- Header (sticky, `--color-bg`, 1px cobalt bottom rule): logo link "Dev dashboard" with the smaller mono line "Ember UI · v3 D kinetic" (goes to `#dashboard`), then `<nav aria-label="Prototype screens">` with "Deploys", "Components (sampler)", "Tracker (sampler)", "Tokens", then the mode toggle.
+- The page opens on `#dashboard` (`body[data-home="dashboard"]` in `../shared/proto.js`), and "Deploys" carries `aria-current="page"` plus a 3px `--accent` underline.
+- Below 900px the nav row is full width under the logo and **wraps** onto a second line; nothing scrolls out of sight (Visual QA nit). From 900px it sits inline. If the real app grows past six items, collapse it into a "Menu" disclosure (`aria-expanded`, `aria-controls`) below 900px.
+- Focus order on Deploys: skip link, logo, nav links, mode toggle, "Pause ticker", "Exit preview" (only while previewing), "Keyboard shortcuts", the selected Tab (arrows move between Tabs), "Search runs", "View failing deploy", Status, Service, Branch, "Clear filters", the table region, each sortable header, each row's "Open log", then the preview links. It matches the visual order; the annotated shots number every stop.
+- Environment Tabs: own tablist (`data-own`, so the sampler's tab script leaves it alone), Left/Right/Home/End move and select (automatic activation), one `tabindex="0"` Tab, the panel's `aria-labelledby` follows the selected Tab.
+- Mode toggle: label states the action ("Dark mode"/"Light mode"), no `aria-pressed`; stored under `jdilig:mode`, else `prefers-color-scheme`.
+
+## H-4 Component states
+Every state has a non-color cue. Strings are in the Copy section; this table says how each looks and behaves.
+
+| State | Treatment |
+|---|---|
+| Button default / hover / focus / active | 2px `--border` outline, `--radius-md`, 48px tall. Hover inverts to `--text` fill. Focus: 3px solid `--focus-ring-color`, 3px offset. Press moves 1px (none under reduced motion). Primary uses `--accent`; danger (View failing deploy) uses `--danger`. |
+| Disabled button | `disabled`, `--surface-muted` fill, `--text-muted` text, **solid** `--border-subtle` border (no dashed or dotted outline, Visual QA nit), `not-allowed` cursor, and a visible hint next to it with the reason ("No filters to clear.", "No errors in this log."), linked with `aria-describedby`. |
+| Failures banner | Static `section` with h2 "Failed deploys" (diamond glyph plus `--danger` text), count sentence, "View failing deploy". 2px `--danger` top rule. No live role (CA ruling 3). "View failing deploy" sets Status to Failed and Service to the newest failing run's service, then opens that run's log. Shown only when the env has a Failed run in the last hour; {n} is counted from the data. |
+| All green | One bold line with a `--success` square and a 2px `--success` top rule, no banner (Staging in the prototype). |
+| Filters | Group labeled "Filters". Status and Service selects, Branch text input (contains match), all filter as you change them. "Clear filters" clears search too and moves focus to "Search runs"; with nothing set it is disabled with its hint. |
+| Result count | `role="status"` "{n} of {total} runs shown"; updates after 300ms while typing in search, at once otherwise. |
+| Sort | Every data column header is a `<button>` inside the `th`; the sorted `th` carries `aria-sort`; a ↑ or ↓ glyph is shown too. Default: Started, newest first (`aria-sort="descending"`). Clicking the sorted header flips it. Status sorts Failed, Running, In progress, Canceled, Succeeded. |
+| Row | `th scope="row"` is the service. Row with focus inside gets `--surface-muted` and a 3px `--accent` inset left bar (non-color: the bar). |
+| Status cell | Mono uppercase text always shown, with a shape: Succeeded square (`--success`), Failed diamond (`--danger`), Running thin bar (`--info`), In progress circle (`--warning`), Canceled hollow square (`--text-muted`). |
+| No results | Table hidden; bold line plus "Clear filters". Count reads "0 of {total} runs shown". |
+| Loading | 5 skeleton rows (`aria-hidden`, `--surface-muted` bars, no shimmer), table `aria-busy="true"`, one polite status "Loading runs" (CA ruling 4). |
+| Load error | Replaces the table: `role="alert"` block with h2 "Couldn't load deploys", the sentence and a primary "Retry". On Retry the button reads "Retrying…", is disabled, and "Loading runs" plays again; on success focus goes to the table region. |
+| No data yet | Env with zero runs (Preview in the prototype): bold line plus "Go to Production" (or "Go to Staging" on Production). Static. The button selects that Tab and focuses it. No Clear filters. |
+| Log drawer / Modal | Native `<dialog>` opened with `showModal()` at every width (see Known issues 6), `aria-labelledby` the h2 "{service} run {sha}" which takes focus (`tabindex="-1"`). Status line, then Close, "Jump to first error", primary "Copy link to this run", the run link as text, then the "Log output" region (`role="region"`, `tabindex="0"`, numbered `ol`). Esc or Close closes it and focus returns to the row's "Open log". Backdrop `--scrim`. |
+| Log loading / error | "Loading log" polite status and `aria-busy` on the log region while it loads (400ms in the prototype). Error: `role="alert"` "Couldn't load this log." plus "Retry" inside the drawer (the prototype fails the first open of `search-web 9be0f13` to show it). |
+| Jump to first error | Scrolls the first error line into view and focuses it (`tabindex="-1"`). Error lines are `--danger`, bold, and start with the word "ERROR" (text, not color). Disabled with its hint when the log has none. |
+| Toasts | Inside the open dialog (top layer), so they're visible over the scrim: "Link copied" polite; the copy-failed toast is `role="alert"`. Shortcut toggles: polite. 4 seconds. |
+| Shortcuts Modal | Native dialog, h2 "Keyboard shortcuts", the "Single-key shortcuts" checkbox (on by default, stored under `jdilig:dash-shortcuts:v1`), its hint, the storage-blocked hint when `localStorage` throws, the key list (`dl`, keys in `kbd`), Close. Focus returns to the opener. |
+| Single-key shortcuts | `/` search, `f` Status filter, `j`/`k` next/previous row's "Open log", `?` the Modal. Never fire in inputs, selects or textareas, with Ctrl, Alt or Meta held, while a dialog is open, or when switched off. No `role="application"`. Controls carry `aria-keyshortcuts`. Enter and Esc are native and always work (WCAG 2.1.4). |
+| Preview links | "Loading" and "Load error" show those states; the prototype note then says "Previewing the {state} state." with "Exit preview". Prototype only, not for the app. |
+
+Sampler: `#components` keeps the shared States block (03) and Ember parts; `#tracker` is a token test only.
+
+## H-5 Touch targets
+Every target meets `--target-min` (44px), checked per view at 320 and 1440 and by `annotate.cjs` at every width (0 under 44). Buttons 48px tall; "Open log" and the sort header buttons 44px; the icon-only shortcuts button at least 44 × 48; Tabs 44px; nav links 44px; preview and "Exit preview" links 44px tall inline flex; fields 48px; the shortcuts checkbox row 44px. In the drawer: Close 94 × 48, Jump 191 × 48, Copy link 206 × 48 (measured at 320 and 1280).
+
+## H-6 Motion
+Use Ember's R-3 motion primitives; the prototype's `tick` and `drin` keyframes stand in.
+
+| Motion | Purpose | Duration and easing | Reduced motion |
+|---|---|---|---|
+| Drawer open (1024+) | Slides 40px in from the right and fades in | `--duration-base` 260ms, `--ease-standard` | Appears at once |
+| Toast | Announces a result | 260ms slide | Appears without sliding |
+| Button hover and press | Fill change; press moves 1px | `--duration-fast` 140ms, `--ease-press` | Fill change only |
+| Ticker | Release-note marquee | `--duration-ticker` 36s loop | Starts paused; "Pause ticker"/"Play ticker" always there (WCAG 2.2.2) |
+| Skeleton rows | Loading | Static, no shimmer | Same |
+
+The h1 "Deploys" does not animate. Sampler views also use the line reveal and scroll-linked display weight (0 under reduced motion). Nothing flashes; every duration is 0 under `prefers-reduced-motion: reduce`.
+
+## H-7 Tokens
+Full light and dark table in [TOKENS.md](TOKENS.md); registry values in [tokens.json](tokens.json) and [tokens.css](tokens.css). Shape tokens use Chief Architect's locked names (Addendum 5, plus Addendum 7):
+
+| Token | Value and use on Deploys |
+|---|---|
+| `--radius-sm` | 0px (fields, skeleton bars) |
+| `--radius-md` | 2px (buttons) |
+| `--radius-lg` | 0px (dialogs, drawer) |
+| `--radius-xl` | 0px, equal to `--radius-lg` (Addendum 7: kinetic has no extra-large corners) |
+| `--radius-full` | 2px (no pills in kinetic) |
+| `--border-width` / `--border-width-strong` | 2px / 3px |
+| `--shadow-raised` / `--shadow-press` | none / none |
+| `--divider-shape` | none |
+| `--focus-ring-color` | `#1434B8` light, `#C2CFFF` dark |
+| `--focus-ring-width` / `--focus-ring-offset` / `--focus-ring-style` | 3px / 3px / solid |
+| `--control-height` / `--control-padding-x` / `--control-gap` | 48px / 1.3rem / .6rem |
+| `--target-min` | 44px |
+| `--highlight` / `--highlight-contrast` | ticker band (8.95:1 light, 6.95:1 dark) |
+| `--scrim` | `#06123F99` (cobalt-950 at 60%) in light and dark: dialog and drawer backdrop (Addendum 7) |
+| `--lift` / `--tilt` | 0px / 0deg |
+
+Status colors: `--success`, `--danger`, `--info`, `--warning`, `--text-muted`, each with its shape. Registered theme extras (Addendum 7, neutral defaults 0 or none): `--rule` 1px (decorative only; control edges use `--border` at 3:1), `--shadow-overlay` none, `--weight-display` 700 / `-min` 300 / `-max` 800, `--weight-shift` 1, `--stagger` 90ms, `--duration-ticker` 36s, `--parallax-scale` 0; fonts Bricolage Grotesque, Instrument Sans, IBM Plex Mono (Google Fonts, `display=swap`). No `--radius` or `--focus` aliases. The page uses no hard-coded colors or radii.
+
+Contrast in [CONTRAST.md](CONTRAST.md): text 4.5:1, UI 3:1, 60 pairs, 0 fails. Dialog text never depends on the scrim.
+
+## H-8 Annotated screenshots
+`handoff/kinetic-<view>-<width>-<mode>-annotated.png` at 320, 375, 768, 1024 and 1440, light and dark (plain shots drop `-annotated`). Green dashed boxes are landmarks, purple boxes are headings, pink numbered boxes are Tab stops in order with their size in px (red would mean under 44px; there are none). The dashboard row is the build target; the other rows are the sampler.
+
+| View | 320 | 375 | 768 | 1024 | 1440 |
+|---|---|---|---|---|---|
+| dashboard | [light](handoff/kinetic-dashboard-320-light-annotated.png) · [dark](handoff/kinetic-dashboard-320-dark-annotated.png) | [light](handoff/kinetic-dashboard-375-light-annotated.png) · [dark](handoff/kinetic-dashboard-375-dark-annotated.png) | [light](handoff/kinetic-dashboard-768-light-annotated.png) · [dark](handoff/kinetic-dashboard-768-dark-annotated.png) | [light](handoff/kinetic-dashboard-1024-light-annotated.png) · [dark](handoff/kinetic-dashboard-1024-dark-annotated.png) | [light](handoff/kinetic-dashboard-1440-light-annotated.png) · [dark](handoff/kinetic-dashboard-1440-dark-annotated.png) |
+| components | [light](handoff/kinetic-components-320-light-annotated.png) · [dark](handoff/kinetic-components-320-dark-annotated.png) | [light](handoff/kinetic-components-375-light-annotated.png) · [dark](handoff/kinetic-components-375-dark-annotated.png) | [light](handoff/kinetic-components-768-light-annotated.png) · [dark](handoff/kinetic-components-768-dark-annotated.png) | [light](handoff/kinetic-components-1024-light-annotated.png) · [dark](handoff/kinetic-components-1024-dark-annotated.png) | [light](handoff/kinetic-components-1440-light-annotated.png) · [dark](handoff/kinetic-components-1440-dark-annotated.png) |
+| tracker | [light](handoff/kinetic-tracker-320-light-annotated.png) · [dark](handoff/kinetic-tracker-320-dark-annotated.png) | [light](handoff/kinetic-tracker-375-light-annotated.png) · [dark](handoff/kinetic-tracker-375-dark-annotated.png) | [light](handoff/kinetic-tracker-768-light-annotated.png) · [dark](handoff/kinetic-tracker-768-dark-annotated.png) | [light](handoff/kinetic-tracker-1024-light-annotated.png) · [dark](handoff/kinetic-tracker-1024-dark-annotated.png) | [light](handoff/kinetic-tracker-1440-light-annotated.png) · [dark](handoff/kinetic-tracker-1440-dark-annotated.png) |
+| tokens | [light](handoff/kinetic-tokens-320-light-annotated.png) · [dark](handoff/kinetic-tokens-320-dark-annotated.png) | [light](handoff/kinetic-tokens-375-light-annotated.png) · [dark](handoff/kinetic-tokens-375-dark-annotated.png) | [light](handoff/kinetic-tokens-768-light-annotated.png) · [dark](handoff/kinetic-tokens-768-dark-annotated.png) | [light](handoff/kinetic-tokens-1024-light-annotated.png) · [dark](handoff/kinetic-tokens-1024-dark-annotated.png) | [light](handoff/kinetic-tokens-1440-light-annotated.png) · [dark](handoff/kinetic-tokens-1440-dark-annotated.png) |
+
+## For the builder
+- **Builder (tokens):** Full Stack Developer (FSD). Design sign-off comes from Chief Architect first (H-1 to H-8), with Chief of Technology & Engineering copied.
+- **Repo and branch:** `balbonits/a11y-design-system`, on FSD's `feat/r2-themes` branch (the R-2 theme registry). Source: `docs/directions/v3/kinetic/` (tokens.json, tokens.css, TOKENS.md, CONTRAST.md, index.html, handoff/) plus `docs/directions/v3/shared/` (tokgen.py, contrast.mjs, proto.js, states.css, states.html, annotate.cjs, shoot.cjs, handoff.py).
+- **Steps:**
+  1. Register `kinetic` from tokens.json, including `--scrim` and `--radius-xl` (Addendum 7) and the registered extras in H-7.
+  2. Swap component radius, border, shadow, focus and control sizes to these tokens; no per-theme component code.
+  3. Add the lint allowlist entries Addendum 7 allows (none needed for kinetic: it reads no palette primitives directly).
+- **Done means (all numeric):** at 320, 375, 768, 1024 and 1440 in light and dark (10 runs per view): axe 0 serious or critical, horizontal overflow 0, 0 overflow and 0 clipped text with the 1.4.12 text-spacing override, 0 overflow at 200% zoom; contrast CI passes every pair in CONTRAST.md (60 pairs, 0 fails); every hit area at or above `--target-min`; token lint passes with every Addendum 5 and 7 name defined and 0 uses of `--radius` or `--focus`; Visual QA gate green.
+- **Dependencies:** Ember v0.3.0 and the R-2 registry, then the Addendum 5 additive minor. The ticker uses the R-3 marquee CTE owns; until then keep the prototype CSS.
+
+### App: dev dashboard (builder Front End Developer, FED)
+- **Repo and branch:** `balbonits/devtool-dashboard`, branch `feat/kinetic-theme`, cut from `main` after PRs 1 to 4 merge.
+- **Steps:**
+  1. When R-2 publishes with `kinetic` registered, swap the views from PRs 1 to 4 to the kinetic tokens.
+  2. Set `data-theme="kinetic"` as the default and keep the Ember mode toggle (`jdilig:mode`).
+  3. Remove every hard-coded color and radius; the banner, drawer and skeleton rows use semantic and shape tokens only (DASH-SPEC).
+  4. Match H-1 to H-6 and the Copy section on the Deploys page; the prototype's `#dashboard` view is the reference.
+- **Done means (all numeric):** the same list as the token block above, applied to the deploys list, the run log, the log drawer (and the Modal below 1024) and the load error views, in light and dark at all 5 widths.
+- **Dependencies:** Ember v0.3.0 plus R-2 released with `kinetic` registered; PRs 1 to 4 merged.
+- **Who to ask:** Chief of Creatives for visuals and copy, Chief Architect for accessibility and tokens, UX/UI Designer (me) for this spec.
+- **ETA:** one session after R-2 publishes (assumption); FED confirms on receipt.
+
+### Known issues and open questions (each has a proposal, so nothing is left to guess)
+1. Scope (RULED, Chief of Creatives 2026-11-10): kinetic is the dev dashboard's identity. The other views are a style sampler, not build targets.
+2. Dashboard stats row, build-time chart and recent deploys list (RULED, Chief of Creatives 2026-11-10): v1.1 candidates, out of scope for v1.0. They stay on the page under the visible label "v1.1 candidates (not in scope)" as example data, with no strings in the Copy section.
+3. Direction-local tokens (RULED, Chief Architect Addendum 7): approved as registered theme extras with neutral 0 or none defaults; motion extras are 0 under reduced motion; `--rule` is decorative only.
+4. Dialog backdrop (RULED, Chief Architect Addendum 7): `--scrim` joins the semantic set and every theme defines it; dialog text contrast never depends on it and it is never the only sign a modal is open. Kinetic: `#06123F99`.
+5. The `tick` and `drin` keyframes are local CSS; replace them with the R-3 primitives. Both stop under reduced motion.
+6. Drawer modality (RULED, Chief Architect 2026-11-10): the log drawer stays a modal `<dialog>` opened with `showModal()` at every width. The page is inert while it's open, Esc closes it, focus goes to its h2 on open, and focus returns to the row's "Open log" button on close.
+- **Who to ask:** Chief of Creatives for visuals, copy or token values; Chief Architect for accessibility and token rulings; UI Copywriter for strings; UX/UI Designer (me) for this file or the prototype.
+- **ETA (tokens):** kinetic registered within one working session after the Addendum 5 minor lands (assumption); FSD confirms or counters on receipt.
+'''
+handoff.write('.',BODY,'1')

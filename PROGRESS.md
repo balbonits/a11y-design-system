@@ -49,11 +49,37 @@ John flagged the Tokens page on his foldable phone (about 920px wide, dark previ
 - **Screenshots:** before and after at 920, 768 and 375px in both themes are in docs/screenshots/ (2026-11-10-mobile-before-* and -after-*).
 - **Still open:** the docs pages keep Storybook's light page background in dark preview. That gets fixed by the theme work (R-2, v0.3.0). The visual restyle waits for John to pick a direction.
 
+## 2026-11-10: Design: neo identity (UX/UI Designer)
+Neo (Neo-Brutal Playful) is Ember UI's own v3 identity, for the library and its Storybook. Times are merge times in PT, from GitHub.
+- 5:13 PM PT: direction F neo lands on main, with a clickable prototype (components, job tracker, dev dashboard, tokens) in R-2 token shape ([PR #7](https://github.com/balbonits/a11y-design-system/pull/7), `e2c43ca`).
+- 5:21 PM PT: HANDOFF.md (H-1 to H-8), Chief Architect's shape-token names, a pink offset focus ring and the full state set ([PR #10](https://github.com/balbonits/a11y-design-system/pull/10), `b8479e9`).
+- 5:23 PM PT: Visual QA nits: a solid ghost button, and the redundant aria-current loop removed ([PR #11](https://github.com/balbonits/a11y-design-system/pull/11), `f171090`).
+- 5:25 PM PT: `--focus-ring-color` added, with `--focus` and `--radius` kept as deprecated aliases, per Chief Architect's final ruling ([PR #12](https://github.com/balbonits/a11y-design-system/pull/12), `757da0c`).
+- 5:30 PM PT: the full Addendum 5 token set with no aliases (`--radius` and `--focus` removed), 44px targets, and the HANDOFF's For the builder section ([PR #13](https://github.com/balbonits/a11y-design-system/pull/13), `d8e1f93`).
+- Chief Architect signed neo at `d8e1f93`, and Visual QA passed it at the same sha.
+- 7:24 PM PT: v3 README entry page for all three directions ([PR #28](https://github.com/balbonits/a11y-design-system/pull/28), `1835b93`).
+- Live prototype: [neo Ember UI sampler](https://raw.githack.com/balbonits/a11y-design-system/main/docs/directions/v3/neo/index.html). Spec: [neo HANDOFF](docs/directions/v3/neo/HANDOFF.md).
+- Next: R-2 theme registration by Full Stack Developer (`feat/r2-themes`, [PR #16](https://github.com/balbonits/a11y-design-system/pull/16)), not merged yet.
+
+![Neo at 375px, light, annotated (top)](https://raw.githubusercontent.com/balbonits/a11y-design-system/d8e1f93/docs/directions/v3/neo/handoff/neo-375-light-annotated-top.png)
+![Neo at 1440px, dark, annotated (top)](https://raw.githubusercontent.com/balbonits/a11y-design-system/d8e1f93/docs/directions/v3/neo/handoff/neo-1440-dark-annotated-top.png)
+
 ## 2026-11-10 5:40 PM PT: transcripter (Card 1-VP, tools/transcribe)
 - Offline faster-whisper 1.2.1 transcripter (`small.en`, CPU float32) built and run on a Grok Bot box. One cue list drives `cues.json`, `captions.vtt` and `transcript.txt`.
 - Sample media: a 52 s Sintel excerpt (Blender Foundation, CC BY 3.0) at 480p, about 3 MB, credited in the README and `tools/transcribe/CREDITS.md`. Hand-written text audio description in `ad.vtt`, placed in the dialogue gaps.
 - Findings: on int8 the transcript changed on every run and sometimes looped ("for for for"), so it runs on float32, which is repeatable across runs. VAD filtering garbled a quiet line, so it's off for decoding and used only to fix Whisper's early first-word starts.
 - Checks: both `.vtt` files pass a stdlib validator and W3C's webvtt.js parser in strict mode. 14 unit tests pass. All 12 caption starts fall within 0.68 s early and 0.38 s late of Blender's hand-timed subtitles.
+
+## 2026-11-10 6:05 PM PT: R-8 repo conventions
+- Secret scan: gitleaks 8.28.0 over the full history (37 commits, up to 757da0c, before main merged #8 and #13), findings redacted: **no leaks found**. Re-scanned after merging main into this branch (50 commits): no leaks found. CI runs it on every push and PR (`.github/workflows/gitleaks.yml`).
+- [Accessibility Conformance Report](docs/ACR.md) added (VPAT 2.5 Rev 508, self-assessed), linked from the README. Its numbers come from runs on 757da0c: axe 122 runs, 0 serious or critical; reduced-motion 0 running animations; mobile 110 runs, 0 failing; unit tests 9 pass. No screen-reader pass yet, so 4.1.3 and 302.1 are Partially Supports. 2.5.8 is Partially Supports until the Addendum 5 `--target-min` CI check exists, and 2.4.11 until a toasts-open focus check is run.
+- Conventions confirmed: README, this PROGRESS.md, MIT LICENSE ("Copyright (c) 2026 John Dilig"), CI (typecheck, lint, test, build, test:a11y, test:mobile). History is real and unsquashed.
+
+## 2026-11-10 6:12 PM PT: ACR fixes from Chief Architect's review
+- 2.5.8 Target Size is now **Supports**: every control measures at least 44px in the mobile target scan, and the 24px criterion is met. The `--target-min` CI gate is our own process (ARCH-REVIEW Addendum 5) and is tracked separately.
+- 2.4.11 Focus Not Obscured was tested with the new `scripts/focus-obscured.mjs`: 3 sticky toasts open, 60 controls behind them, Tab through every one at 320 and 1440px in light and dark. **At 320px, 26 of 120 focus stops were fully hidden behind the toast stack**; at 1440px, none. The row stays Partially Supports.
+- **Fix logged (not built here):** at narrow widths the toast stack must not fully hide the focused element, for example by reserving scroll padding for the viewport's height while toasts are open, or by collapsing the stack. Re-run `node scripts/focus-obscured.mjs` after the fix. It needs a card.
+- Page-level rows (2.4.1, 2.4.2, 2.4.5, 3.1.1, 3.2.3) now say they're owned by the consuming application and that the Storybook docs site is out of scope. The methods section explains that the 288 moderate findings come from isolated story iframes.
 
 ## 2026-11-10 6:23 PM PT: v0.3.0, theme registry with neo as the default (R-2, breaking)
 
@@ -79,3 +105,12 @@ QA's repro on PR #15 (scripts/focus-obscured.mjs) found that with 3 sticky error
 - **Safety net at every width:** while any toast is open, ToastProvider measures the stack with a ResizeObserver and sets `--em-toast-safe` and `data-em-toasts` on `<html>`, which applies `scroll-padding-bottom` and matching `padding-bottom`, so the browser scrolls a focused control clear of the stack, even the last one on the page. Both are removed when the last toast closes.
 - **Reduced motion:** no new motion. The check's expanded runs emulate reduced motion and fail if any animation is running.
 - **Test:** `npm run test:focus-obscured` (now in CI) tabs through 60 controls behind 3 sticky toasts at 320, 375, 768 and 1440px in every registered theme in light and dark, collapsed and expanded: 720 focus stops checked, 0 fully hidden, 0 partly covered. A unit test covers the newest marker, the "+2 more" control and the page reservation. axe 160/0 and mobile 216/0 still pass.
+
+## 2026-11-10 6:44 PM PT: R-2 follow-ups (R-2b label, commit identity)
+
+- The proof-story fixture is now labelled "Test fixture, not a design" everywhere it appears (Theme registry story, Two registered themes story, unit tests), per ARCH-REVIEW R-2b. Its id stays `test-fixture`, and it stays out of the registry, THEMES, the Theme toolbar and the package build.
+- Commit identity: from this commit on, commits are authored as John Dilig with an `Author-bot: Full Stack Developer` trailer (CTE ruling). Earlier pushed commits are left as they are, with no history rewrite.
+
+## 2026-11-10 6:50 PM PT: ACR report version
+- The ACR now has an explicit **Report version: 1.0** line (Chief Architect ruling). It goes up a minor version for any row or remark change, and a major version when the product version changes. The Version line stays the product version that was evaluated. The jdilig.me generator reads all three and fails if one is missing.
+- The 2.4.11 remark now names the fix card, FU-FSD-TOAST. The row stays Partially Supports until that card ships and `scripts/focus-obscured.mjs` reports 0 hidden stops.

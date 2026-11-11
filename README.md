@@ -4,6 +4,7 @@ A small, accessible React design system: tokens for light and dark themes, eight
 
 - **Storybook:** https://jdilig.me/ux/design-system/storybook/
 - **Case study:** https://jdilig.me/ux/design-system
+- **Accessibility Conformance Report:** [docs/ACR.md](docs/ACR.md) (VPAT 2.5, 508 edition, self-assessed)
 - **Author:** John Dilig
 
 ## What's inside
@@ -55,4 +56,4 @@ See [PROGRESS.md](PROGRESS.md) for the dated build log and `docs/screenshots/` f
 
 ## License
 
-MIT
+MIT, see [LICENSE](LICENSE).
