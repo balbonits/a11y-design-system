@@ -4,6 +4,7 @@ export type PlayerEvent = 'ready' | 'play' | 'pause' | 'timeupdate' | 'durationc
 
 export interface Player {
   readonly kind: SourceKind;
+  readonly capabilities: Capabilities;
   play(): Promise<void>;
   pause(): Promise<void>;
   seek(seconds: number): Promise<void>;
@@ -29,7 +30,24 @@ export interface VideoSource {
 }
 
 /** Playback rates offered by the speed control (1-VP: 0.5x to 2x). */
-export const RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
+export const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2] as const;
+
+/**
+ * What a source can do, so the UI can hide or disable a control instead of offering one that fails.
+ * Captions, descriptions and the transcript are always ours (rendered from the cue model), so they
+ * are not flags. PiP is out of scope (CTE).
+ */
+export interface Capabilities {
+  /** Rate changes work (Vimeo needs a paid owner account; YouTube supports its own list). */
+  rate: boolean;
+  /** Rates this source accepts, a subset of RATES. */
+  rates: readonly number[];
+  /** Volume level is settable (iOS Safari: native volume is read-only, mute still works). */
+  volume: boolean;
+  /** Fullscreen API is available for the player container. */
+  fullscreen: boolean;
+}
+
 
 /** Small event hub shared by the adapters. */
 export class Emitter {
@@ -64,4 +82,19 @@ export function detectKind(s: VideoSource): SourceKind {
   if (vimeoId(s.src)) return 'vimeo';
   if (s.type === 'application/vnd.apple.mpegurl' || s.type === 'application/x-mpegURL' || /\.m3u8(?:$|\?)/.test(s.src)) return 'hls';
   return 'native';
+}
+
+/** Volume is settable unless the platform ignores writes (iOS). Probe once on a scratch element. */
+export function canSetVolume(doc: Document = document): boolean {
+  const v = doc.createElement('video');
+  try {
+    v.volume = 0.5;
+  } catch {
+    return false;
+  }
+  return v.volume === 0.5;
+}
+
+export function canFullscreen(doc: Document = document): boolean {
+  return Boolean(doc.fullscreenEnabled);
 }

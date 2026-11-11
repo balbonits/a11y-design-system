@@ -1,5 +1,5 @@
 // Native <video> adapter: the default and the first choice for every source it can play.
-import { Emitter, type Player, type PlayerEvent } from '../player';
+import { Emitter, RATES, canFullscreen, canSetVolume, type Player, type PlayerEvent } from '../player';
 
 const EVENTS: PlayerEvent[] = ['play', 'pause', 'timeupdate', 'durationchange', 'ended', 'ratechange', 'volumechange', 'error'];
 
@@ -16,6 +16,7 @@ export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hl
   video.autoplay = false;
   return {
     kind,
+    capabilities: { rate: true, rates: RATES, volume: canSetVolume(), fullscreen: canFullscreen() },
     play: () => video.play(),
     pause: async () => video.pause(),
     seek: async (s) => {

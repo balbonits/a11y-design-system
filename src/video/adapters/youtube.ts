@@ -1,6 +1,6 @@
 // YouTube adapter: youtube-nocookie.com via the IFrame API, whose script loads only when a
 // YouTube source is used. That page's CSP needs the exact frame-src and script-src hosts.
-import { Emitter, type Player } from '../player';
+import { Emitter, RATES, canFullscreen, type Player } from '../player';
 
 export const YT_SCRIPT = 'https://www.youtube.com/iframe_api';
 export const YT_HOST = 'https://www.youtube-nocookie.com';
@@ -14,6 +14,7 @@ interface YTPlayer {
   getPlayerState(): number;
   setPlaybackRate(r: number): void;
   getPlaybackRate(): number;
+  getAvailablePlaybackRates(): number[];
   setVolume(v: number): void; // 0..100
   getVolume(): number;
   mute(): void;
@@ -85,8 +86,11 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
       },
     });
   });
+  const ytRates = new Set(yt.getAvailablePlaybackRates());
+  const rates = RATES.filter((r) => ytRates.has(r));
   return {
     kind: 'youtube',
+    capabilities: { rate: rates.length > 1, rates, volume: true, fullscreen: canFullscreen() },
     play: async () => yt.playVideo(),
     pause: async () => yt.pauseVideo(),
     seek: async (s) => {

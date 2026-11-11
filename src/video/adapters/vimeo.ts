@@ -1,6 +1,6 @@
 // Vimeo adapter: @vimeo/player, imported only when a Vimeo source is used.
 // Pending John's install OK (ARCH-REVIEW R-4 wants it bundled); until then it resolves at runtime.
-import { Emitter, type Player } from '../player';
+import { Emitter, RATES, canFullscreen, type Player } from '../player';
 
 interface VimeoPlayer {
   ready(): Promise<void>;
@@ -29,6 +29,8 @@ export async function createVimeoPlayer(
   await vp.ready();
   mount.querySelector('iframe')?.setAttribute('title', title);
   const em = new Emitter();
+  // Rate changes need a Vimeo Plus/Pro owner account; probe once and report it.
+  const rateOk = await vp.setPlaybackRate(1).then(() => true, () => false);
   const s = { time: 0, duration: await vp.getDuration(), paused: true, rate: 1, volume: 1, muted: false };
   vp.on('timeupdate', (d) => {
     s.time = d.seconds ?? s.time;
@@ -44,6 +46,7 @@ export async function createVimeoPlayer(
   queueMicrotask(() => em.emit('ready'));
   return {
     kind: 'vimeo',
+    capabilities: { rate: rateOk, rates: rateOk ? RATES : [1], volume: true, fullscreen: canFullscreen() },
     play: () => vp.play(),
     pause: () => vp.pause(),
     seek: async (t) => {
