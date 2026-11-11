@@ -204,6 +204,20 @@ dialog.drawer{max-width:min(680px,calc(100vw - 2rem));width:100%;max-height:calc
 .spark line{stroke:var(--border-subtle);stroke-width:1}
 .deploys{list-style:none;padding:0;margin:0}
 .deploys li{display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:baseline;padding:.9rem 0;border-bottom:var(--rule) solid var(--border-subtle)}
+/* v1.1 recent deploys (V11-DASHBOARD.md H-1, H-4) */
+.v11prev{margin:1rem 0 0;display:flex;flex-wrap:wrap;gap:.2rem 1rem;align-items:center}
+.v11prev button{font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit;background:none;border:0;padding:0 .1rem;min-height:var(--target-min);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em;cursor:pointer}
+.v11prev button[aria-pressed=true]{color:var(--text);text-decoration-thickness:3px}
+.rdep{list-style:none;padding:0;margin:0;border-top:var(--border-width) solid var(--border)}
+.rd{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"st ago" "main main" "meta meta" "act act";gap:.4rem .8rem;align-items:baseline;padding:1rem 0;border-bottom:var(--rule) solid var(--border-subtle)}
+.rd>.st{grid-area:st}.rd-ago{grid-area:ago;white-space:nowrap}.rd-main{grid-area:main;margin:0;min-width:0}.rd-meta{grid-area:meta;margin:0;min-width:0;display:flex;flex-wrap:wrap;gap:.2rem 1rem}.rd>.btn{grid-area:act;justify-self:start;min-height:var(--target-min)}
+.rd-main b{font-size:1.05rem;overflow-wrap:anywhere}.rd-main .sha{margin-left:.5rem;white-space:nowrap}.rd-main .cmsg,.rd-meta span{overflow-wrap:anywhere}
+.rd-meta{text-transform:none;letter-spacing:.02em}
+@media(min-width:700px){.rd{grid-template-columns:9.5rem minmax(0,1fr) auto;grid-template-areas:"st main ago" "st meta act";align-items:start}.rd>.btn{justify-self:end}}
+.rd.sk{display:block}.rd.sk .skel{height:.9rem;margin:.45rem 0}
+.rdmore{display:inline-flex;align-items:center;min-height:var(--target-min);margin-top:.6rem}
+.v11err{border-top:var(--border-width) solid var(--danger);padding-top:1rem}.v11err h3{font-size:1.2rem;margin:0 0 .4rem}
+.v11empty{border-top:var(--border-width) solid var(--border);padding-top:1rem;font-weight:600}
 /* swatches */
 .sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem 1rem}
 .sw i{display:block;height:72px;border:var(--rule) solid var(--border-subtle)}
@@ -339,7 +353,8 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 
  <div class="v11" aria-labelledby="h-v11">
   <h2 id="h-v11" class="v11h">v1.1 candidates (not in scope)</h2>
-  <p class="muted">Example data, not real metrics. Shown to test the tokens only; not for build.</p>
+  <p class="muted">Specced in <a href="V11-DASHBOARD.md">V11-DASHBOARD.md</a>. Example data from the runs above. Not for build until Chief Architect signs.</p>
+  <div class="v11prev mono muted" role="group" aria-label="v1.1 preview states"><span>v1.1 states:</span><button type="button" data-v11="" aria-pressed="true">Populated</button><button type="button" data-v11="loading" aria-pressed="false">Loading</button><button type="button" data-v11="error" aria-pressed="false">Load error</button><button type="button" data-v11="empty" aria-pressed="false">Empty</button><button type="button" data-v11="long" aria-pressed="false">Long values</button></div>
   <div class="nums">
    <div class="num"><span class="mono muted">Builds today</span><b>12</b><span class="st ok">All green</span></div>
    <div class="num"><span class="mono muted">Open PRs</span><b>4</b><span class="st info">2 need review</span></div>
@@ -350,13 +365,9 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
   <div class="rail"><span class="mono muted">Trend</span><h2>Build time</h2><p class="muted">Example, last 7 days. Down 38%.</p></div>
   <div class="body off"><svg class="spark" viewBox="0 0 600 150" preserveAspectRatio="none" role="img" aria-label="Example line chart: build time trending down over 7 days"><line x1="0" y1="149" x2="600" y2="149"/><line x1="0" y1="75" x2="600" y2="75"/><path d="M5 30 L100 48 L200 40 L300 78 L400 70 L500 104 L592 112" vector-effect="non-scaling-stroke"/><rect class="last" x="584" y="104" width="16" height="16"/></svg></div>
  </div>
- <div class="blk g rule reveal">
-  <div class="rail"><span class="mono muted">Log</span><h2>Recent deploys</h2></div>
-  <div class="body off"><ul class="deploys">
-   <li><span class="st ok">Succeeded</span><span><b>ember-ui</b> v0.2.2</span><span class="mono muted">example</span></li>
-   <li><span class="st ok">Succeeded</span><span><b>job-tracker</b></span><span class="mono muted">example</span></li>
-   <li><span class="st warn">In progress</span><span><b>dev-dashboard</b></span><span class="mono muted">example</span></li>
-  </ul></div>
+ <div class="blk g rule reveal" id="v11-dep">
+  <div class="rail"><span class="mono muted">Log</span><h2 id="h-rdep">Recent deploys</h2><p class="muted" id="rdep-sub"></p></div>
+  <div class="body off" id="rdep-body"><p class="sr" role="status" id="rdep-status"></p><ol class="rdep" id="rdep" aria-labelledby="h-rdep"></ol><a class="rdmore" href="#runs" id="rdep-all"></a></div>
  </div>
  </div>
 </section>
@@ -453,7 +464,7 @@ $$('#runs thead th[data-k]').forEach(th=>th.querySelector('.sort').onclick=()=>{
  $$('#runs thead th[data-k]').forEach(x=>x.removeAttribute('aria-sort'));th.setAttribute('aria-sort',(k==='ago'?sortDir<0:sortDir>0)?'ascending':'descending');render()});
 /* env tabs: own tablist, arrows/Home/End, automatic activation */
 const tabs=$$('#envtabs [role=tab]');
-function selEnv(t){tabs.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});$('#dpanel').setAttribute('aria-labelledby',t.id);env=t.textContent;render();t.focus()}
+function selEnv(t){tabs.forEach(x=>{const on=x===t;x.setAttribute('aria-selected',on);x.tabIndex=on?0:-1});$('#dpanel').setAttribute('aria-labelledby',t.id);env=t.textContent;render();renderV11();t.focus()}
 tabs.forEach((t,i)=>{t.onclick=()=>selEnv(t);t.onkeydown=e=>{const m={ArrowRight:i+1,ArrowLeft:i-1,Home:0,End:tabs.length-1}[e.key];if(m===undefined)return;e.preventDefault();selEnv(tabs[(m+tabs.length)%tabs.length])}});
 /* log drawer */
 const logd=$('#logd');
@@ -482,7 +493,29 @@ document.addEventListener('keydown',e=>{if(!sk||e.ctrlKey||e.altKey||e.metaKey)r
 function setPrev(){$('#pnote-prev').hidden=!preview;$('#pnote-state').textContent=preview?`Previewing the ${preview} state.`:''}
 $$('[data-prev]').forEach(a=>a.onclick=e=>{e.preventDefault();preview=a.dataset.prev;setPrev();render();$('#pnote-prev a').focus()});
 $('#exitprev').onclick=e=>{e.preventDefault();preview='';setPrev();render();$('#h-db').scrollIntoView({block:'start'})};
-render()})();
+/* v1.1 candidates (V11-DASHBOARD.md). Derived from RUNS for the selected env only; no other data source. */
+let v11='',v11T=0;
+const LONG=[R('Production','Failed','notifications-worker-eu-west','a41c9e2','Retry payment webhooks with exponential backoff and jitter when the upstream provider returns 429 or 503','feature/checkout-3ds2-challenge-flow-fallback-for-legacy-cards','alexandra.rivera-montgomery',12,4021),
+ R('Production','Running','search-web','9be0f13','Tune ranking weights','release/2026.11.11-hotfix-ranking-weights-rollback','kchen',4,95),
+ R('Production','Succeeded','checkout-api','18cf3b4','Show tax line on receipt','main','mjones',611,233)];
+const fin=r=>r.status!=='Running'&&r.status!=='In progress';
+const durT=r=>fin(r)&&r.dur!=null?dur(r.dur):'In progress';
+function v11Runs(){if(v11==='empty')return[];if(v11==='long')return LONG;return RUNS.filter(r=>r.env===env)}
+function renderV11(){const ol=$('#rdep'),st=$('#rdep-status'),body=$('#rdep-body'),all=$('#rdep-all');
+ $$('#rdep-body .v11err,#rdep-body .v11empty').forEach(n=>n.remove());ol.hidden=false;all.hidden=false;ol.removeAttribute('aria-busy');
+ $$('.v11prev button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v11===v11)));
+ const runs=v11Runs().slice().sort((a,b)=>a.ago-b.ago).slice(0,5);
+ $('#rdep-sub').textContent=v11==='long'?'Newest 5 in Production (long values).':`Newest 5 in ${env}.`;all.textContent=`View all ${env} runs`;
+ if(v11==='loading'){ol.setAttribute('aria-busy','true');ol.innerHTML=Array.from({length:3},()=>'<li class="rd sk" aria-hidden="true"><div class="skel" style="width:30%"></div><div class="skel" style="width:75%"></div><div class="skel" style="width:55%"></div></li>').join('');all.hidden=true;st.textContent='Loading recent deploys';return}
+ st.textContent='';
+ if(v11==='error'){ol.hidden=true;all.hidden=true;ol.innerHTML='';body.insertAdjacentHTML('afterbegin','<div class="v11err" role="alert"><h3>Couldn\u2019t load recent deploys</h3><p>Check your connection, then try again.</p><button class="btn primary" type="button" id="rdep-retry">Retry</button></div>');
+  $('#rdep-retry').onclick=e=>{const b=e.currentTarget;b.disabled=true;b.textContent='Retrying\u2026';st.textContent='Loading recent deploys';setTimeout(()=>{v11='';renderV11();st.textContent='';$('#h-rdep').setAttribute('tabindex','-1');$('#h-rdep').focus()},1200)};return}
+ if(!runs.length){ol.hidden=true;ol.innerHTML='';body.insertAdjacentHTML('afterbegin',`<p class="v11empty">No deploys in ${env} yet.</p>`);all.hidden=true;return}
+ ol.innerHTML=runs.map(r=>`<li class="rd"><span class="st ${CLS[r.status]}">${r.status}</span><span class="rd-ago mono muted"><span class="sr">Started </span>${ago(r.ago)}</span><p class="rd-main"><b>${esc(r.service)}</b><span class="sha">${r.sha}</span><span class="cmsg">${esc(r.msg)}</span></p><p class="rd-meta mono muted"><span><span class="sr">Branch </span>${esc(r.branch)}</span><span><span class="sr">by </span>${esc(r.author)}</span><span><span class="sr">Duration </span>${durT(r)}</span></p><button class="btn" type="button" data-rsha="${r.sha}" aria-label="Open log for ${esc(r.service)} ${r.sha}">Open log</button></li>`).join('');
+ $$('#rdep button').forEach(b=>b.onclick=()=>openLog(runs.find(r=>r.sha===b.dataset.rsha),b))}
+$$('.v11prev button').forEach(b=>b.onclick=()=>{v11=b.dataset.v11;renderV11()});
+$('#rdep-all').onclick=e=>{e.preventDefault();const t=$('.dtable');t.scrollIntoView({block:'start'});t.focus()};
+render();renderV11()})();
 </script>
 <script>
 /* D only: line reveal on headlines and scroll-linked display weight (off when --weight-shift is 0). */
