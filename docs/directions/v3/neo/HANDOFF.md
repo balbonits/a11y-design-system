@@ -4,7 +4,7 @@ Identity for **Ember UI and its Storybook** (balbonits/a11y-design-system). Chun
 
 - Prototype: [index.html](https://raw.githack.com/balbonits/a11y-design-system/main/docs/directions/v3/neo/index.html) (views `#components`, `#tracker`, `#dashboard`, `#tokens`; the tracker and dashboard views are Ember component demos, not those products' designs)
 - Tokens: [TOKENS.md](TOKENS.md), [tokens.css](tokens.css), [tokens.json](tokens.json) (registry-ready, theme id `neo`, modes `light` and `dark`)
-- Contrast: [CONTRAST.md](CONTRAST.md), 64 pairs, 0 fails
+- Contrast: [CONTRAST.md](CONTRAST.md), 64 pairs plus 18 scrim rows, 0 fails
 - Screens: [handoff/](handoff/), plain and annotated, every width in light and dark
 - Re-run checks locally: `python3 -m http.server 8931` in this folder, then `node annotate.cjs` (axe, overflow, text spacing, 200% zoom, annotated shots) and `node shoot.cjs` from `..` (all 4 views)
 
@@ -19,6 +19,8 @@ Verified 2026-11-10, 6:40 PM PT, local Chrome: axe 0 serious or critical, 0 hori
 | md | `(min-width: 760px)` | Nav moves inline beside the logo. `.cols-2` and `.cols-3` grids turn on. Stats 4 across. |
 | lg | `(min-width: 1000px)` | Tracker lanes sit side by side with no scroll, and the "Swipe for more stages" cue hides. |
 
+| dialog open | every width | The page sits under `--scrim`, the dialog backdrop: ink `#111111` at 45% in light (`#11111173`) and 55% in dark (`#1111118c`). It always dims the page, never lightens it, and page text under it stays recognizable (3:1 or more, see the Scrim section of [CONTRAST.md](CONTRAST.md)). The dialog is an opaque `--surface`, so its own contrast never depends on the scrim. Crops: 320 [light](handoff/neo-modal-scrim-320-light.png) and [dark](handoff/neo-modal-scrim-320-dark.png), 1280 [light](handoff/neo-modal-scrim-1280-light.png) and [dark](handoff/neo-modal-scrim-1280-dark.png). |
+
 Frames: 320, 375, 768, 1024 and 1440, in [handoff/](handoff/) as `neo-<width>-<light|dark>.png`.
 
 ## H-2 Fluid rules
@@ -27,7 +29,7 @@ Frames: 320, 375, 768, 1024 and 1440, in [handoff/](handoff/) as `neo-<width>-<l
 - Line length: prose capped at 56–65ch.
 - Grids are `1fr` at base and switch at md. Stat tiles, panels and lanes use fr or `minmax()`, never fixed widths.
 - Tables sit in a focusable scroll region (`role=region`, label "… scrolls sideways") with a 480px min table width, so the page never scrolls sideways.
-- Dialog width `min(440px, 100vw - 2rem)`; toast `max-width: calc(100vw - 2rem)`.
+- Dialog width `min(440px, 100vw - 2rem)`, backdrop `--scrim`; toast `max-width: calc(100vw - 2rem)`.
 - Charts are SVG with `preserveAspectRatio="none"` at 100% width and fixed 110px height (decorative, the numbers are in text).
 - No fixed heights on text containers. Controls set `min-height`, so text spacing and 200% zoom grow them instead of clipping.
 
@@ -99,10 +101,11 @@ The full table for light and dark, with primitives and hex, is in [TOKENS.md](TO
 | `--target-min` | 44px (CI fails any hit area below it) |
 | `--highlight` / `--highlight-contrast` | lime-400 / ink (light, 14.74:1); blue-600 / paper (dark, 6.63:1) |
 | `--lift` / `--tilt` | -3px / -1.5deg; both 0 under reduced motion |
+| `--scrim` | `#11111173` (ink at 45%) in light, `#1111118c` (ink at 55%) in dark: dialog and drawer backdrop (Addendum 7). Never built from `--text`, which is cream in dark and would lighten the page. |
 
 This is the full locked set from ARCH-REVIEW Addendum 5. There are no aliases: `--radius` and `--focus` are deleted, and any leftover use fails QA. `--shadow-press` is never the only pressed cue (pressed buttons also shift 3px and change fill, current nav pills also take `--highlight`, and toggles carry `aria-pressed`), and `--divider-shape` is decorative only.
 
-Contrast for every pair in both modes is in [CONTRAST.md](CONTRAST.md): text 4.5:1, borders, focus and states 3:1, 64 pairs, 0 fails.
+Contrast for every pair in both modes is in [CONTRAST.md](CONTRAST.md): text 4.5:1, borders, focus and states 3:1, 64 pairs, 0 fails, plus 18 scrim rows (every page color dims under `--scrim`, and page text under it stays at 3:1 or more).
 
 ## H-8 Annotated screenshots
 `handoff/neo-<width>-<mode>-annotated.png` for 320, 375, 768, 1024 and 1440 in light and dark. Green dashed boxes are landmarks (header, nav, region, main, footer), purple boxes are heading levels (H1–H3), and pink numbered boxes are Tab stops in order with their size in px (red would mean under 44px; there are none). `handoff/neo-<width>-<mode>-annotated-top.png` is the same shot cropped to the first 900px viewport, for a quick look at header and nav.
@@ -121,7 +124,8 @@ Contrast for every pair in both modes is in [CONTRAST.md](CONTRAST.md): text 4.5
 - **Steps:**
   1. Add the Addendum 5 semantic tokens above to every Ember theme as an additive minor after v0.3.0 (themes that don't use one set it to `0` or `none`), then register `neo` from tokens.json.
   2. Swap component radius, border, shadow, focus and control sizes to these tokens; no per-theme component code.
-  3. Wire the states in H-4 with the ARIA listed, and the motion in H-6 with its reduced-motion fallbacks.
+  3. Set the dialog backdrop to `var(--scrim)` (today `src/ember.css` uses `color-mix(in srgb, var(--text) 45%, transparent)`, which lightens the page in dark).
+  4. Wire the states in H-4 with the ARIA listed, and the motion in H-6 with its reduced-motion fallbacks.
 - **Done means (all numeric):** at 320, 375, 768, 1024 and 1440 in light and dark (10 runs): axe 0 serious or critical, horizontal overflow 0, 0 overflow and 0 clipped text with the 1.4.12 text-spacing override, 0 overflow at 200% zoom; contrast CI passes every pair in CONTRAST.md (64 pairs, 0 fails, focus ring 3:1 or more against both bg and border); every hit area at or above `--target-min`; token lint passes with every Addendum 5 name defined in every theme and 0 uses of `--radius` or `--focus`; Visual QA gate green.
 - **Dependencies:** Ember v0.3.0 and the R-2 registry must land first. The ticker (marquee) and the busy spinner use the R-3 marquee and spinner primitives that CTE owns; until R-3 lands, keep the prototype's CSS from index.html.
 - **Known issues:** the prototype's `tick` (ticker) and `spin` (busy button) keyframes are local CSS and should be replaced by the R-3 primitives, not copied into components. Both already stop under reduced motion (ticker paused with a Play button, spinner becomes a dotted static ring).
