@@ -37,11 +37,12 @@ const MODES = ['light', 'dark'];
 const ROOT = 'section[aria-label^="Video player: "]';
 
 // H-4 states as stories (FSD: one story per state, Storybook title Media/VideoPlayer).
-const STORIES = ['default', 'poster', 'loading', 'stalled', 'error', 'ended', 'no-captions', 'limited', 'unavailable',
-  'provider-captions', 'transcript-search', 'transcript-empty', 'caption-settings'];
+// Story ids confirmed by FSD (Nov 10): one per H-4 state, plus Storybook's --docs page, which isn't a state.
+const STORIES = ['default', 'poster', 'loading', 'stalled', 'playing', 'paused', 'error', 'ended', 'no-captions',
+  'caption-settings', 'limited', 'audio-description-on', 'unavailable', 'provider-captions', 'transcript-search', 'transcript-empty'];
 // Prototype gallery demo key for each story ('default' is the live player).
 const PROTO_DEMO = { poster: 'poster', loading: 'loading', stalled: 'buffering', error: 'error', ended: 'ended',
-  'no-captions': 'nocc', limited: 'limited', unavailable: 'unavailable', 'provider-captions': 'provcc',
+  playing: 'playing', paused: 'paused', 'audio-description-on': 'adon', 'no-captions': 'nocc', limited: 'limited', unavailable: 'unavailable', 'provider-captions': 'provcc',
   'transcript-search': 'txsearch', 'transcript-empty': 'txempty', 'caption-settings': 'capset' };
 
 // The test list, with the H-9 DONE line each one proves.
@@ -116,6 +117,8 @@ const snap = (root) => root.evaluate((P) => {
     cc: P.dataset.cc ?? null, ad: P.dataset.ad ?? null, state: P.dataset.state ?? null,
     speed: q('[data-act=speed]')?.getAttribute('aria-label') ?? null, status: q('[data-slot=status]')?.textContent.trim() ?? '',
     qs: (q('[data-slot=qs]') || tx?.querySelector('[data-slot=qs]'))?.textContent.trim() ?? '',
+    hit: (() => { const h = tx?.querySelector('.em-vp-cue--hitcur, .cue.hitcur'); return h ? [...tx.querySelectorAll('.em-vp-cue, .cue')].indexOf(h) : -1; })(),
+    inSearch: a?.matches?.('input[type=search]') ?? false,
     txShown: !!tx && vis(tx), ccShown: vis(q('[data-act=cc]')),
     groups: [...P.querySelectorAll('[role=group]')].filter(vis).map((g) => g.getAttribute('aria-label')),
     fs: (window.__fs || []).filter((e) => e === P).length,
@@ -252,7 +255,10 @@ kt('Enter / Shift+Enter in transcript search step through matches', 'transcript-
   const input = await txSearch(root); await input.focus(); await page.waitForTimeout(600);
   const s0 = await snap(root); const m0 = s0.qs.match(/^(\d+) of (\d+) matches$/); expect(m0 && Number(m0[2]) > 1, `search count "${s0.qs}", expected "1 of N matches" with N > 1`);
   await key(page, 'Enter'); let s = await snap(root); expect(s.qs === `${Number(m0[1]) + 1} of ${m0[2]} matches`, `Enter: "${s.qs}"`);
+  // FSD: focus stays in the field, and the current match is marked .em-vp-cue--hitcur (aria-current stays the playback cue)
+  expect(s.inSearch, `focus left the search field after Enter (${s.focus})`); expect(s.hit >= 0 && s.hit !== s0.hit, `current-match marker: ${s0.hit} -> ${s.hit}`);
   await key(page, 'Shift+Enter'); s = await snap(root); expect(s.qs === s0.qs, `Shift+Enter: "${s.qs}", expected "${s0.qs}"`);
+  expect(s.inSearch, 'focus left the search field after Shift+Enter'); expect(s.hit === s0.hit, `Shift+Enter marker ${s.hit}, expected ${s0.hit}`);
 });
 kt('Shortcuts are scoped: not outside the player, not in search, not in panels or the dialog, not with Ctrl/Alt/Meta', 'default', async ({ page, root }) => {
   const keys = ['k', 'm', 'c', 'd', 'l', 'f', 't'];
@@ -276,10 +282,23 @@ kt('Shortcuts are ignored in the caption settings dialog', 'caption-settings', a
 });
 
 // ---------- layout, targets, text spacing, zoom, axe: every story ----------
-// H-9 overflow is the page's horizontal overflow. Also flagged: any visible element inside the player that sticks out of
-// the player's box sideways (by its rect, so visually hidden 1px text doesn't count).
+// H-9 overflow is the page's horizontal overflow. Also (CA ruling, Nov 10): any element inside the player whose border box
+// (getBoundingClientRect, which never includes outlines) sticks out of the player's box sideways fails, except this list:
+const CONTAIN_EXEMPT = [
+  'visually hidden (sr-only): clip/clip-path set, or a 1x1 box',
+  'inside a scroll container (overflow other than visible) that is itself inside the player, e.g. the transcript list or an overflow-x row',
+  'top layer: an open <dialog> or :popover-open, and their contents',
+  'anything under :fullscreen',
+];
 const overflowOf = (page, root) => root.evaluate((P) => { const pr = P.getBoundingClientRect();
-  const out = [...P.querySelectorAll('*')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 1 && r.height > 1 && getComputedStyle(e).visibility !== 'hidden' && (r.right > pr.right + 0.5 || r.left < pr.left - 0.5); });
+  const exempt = (e) => {
+    const cs = getComputedStyle(e); const r = e.getBoundingClientRect();
+    if ((cs.clip && cs.clip !== 'auto') || (cs.clipPath && cs.clipPath !== 'none') || (r.width <= 1 && r.height <= 1)) return true;
+    if (e.closest('dialog[open]') || e.closest(':popover-open') || e.closest(':fullscreen')) return true;
+    for (let a = e.parentElement; a && a !== P; a = a.parentElement) { const c = getComputedStyle(a);
+      if (c.overflowX !== 'visible' || c.overflow !== 'visible') { const ar = a.getBoundingClientRect(); if (ar.left >= pr.left - 0.5 && ar.right <= pr.right + 0.5) return true; } }
+    return false; };
+  const out = [...P.querySelectorAll('*')].filter((e) => { const r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(e).visibility !== 'hidden' && (r.right > pr.right + 0.5 || r.left < pr.left - 0.5) && !exempt(e); });
   return { doc: document.documentElement.scrollWidth - innerWidth, root: out.length, what: out.slice(0, 3).map((e) => e.dataset.act || e.dataset.slot || e.tagName.toLowerCase()).join(',') }; });
 const clippedIn = (root) => root.evaluate((P) => [...P.querySelectorAll('button,a,label,h1,h2,h3,[data-slot],.tnum,.time')]
   .filter((e) => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
@@ -296,7 +315,7 @@ async function captionsOn(page, root) { // H-8: the text-spacing scan runs with 
   return shown();
 }
 const combos = () => THEMES.flatMap((th) => MODES.map((md) => [th, md]));
-const groupFor = (name) => ({ KB: 'KB', OVERFLOW: 'OVERFLOW', TARGETS: 'TARGETS', SPACING: 'SPACING', ZOOM: 'ZOOM', AXE: 'AXE', CONTRAST: 'CONTRAST' })[name.split(' ')[0]];
+const groupFor = (name) => ({ KB: 'KB', OVERFLOW: 'OVERFLOW', TARGETS: 'TARGETS', SPACING: 'SPACING', ZOOM: 'ZOOM', AXE: 'AXE', CONTRAST: 'CONTRAST', ACR: 'ACR' })[name.split(' ')[0]];
 
 test('OVERFLOW + TARGETS + SPACING every story', `${DONE.overflow}; ${DONE.targets}; ${DONE.spacing}`, async () => {
   const bad = [];
@@ -317,7 +336,7 @@ test('OVERFLOW + TARGETS + SPACING every story', `${DONE.overflow}; ${DONE.targe
       if (o.errors.length) bad.push(`ERRORS ${at}: ${o.errors.join('; ')}`);
     } finally { await o.ctx.close(); }
   }
-  if (bad.length) throw new Error(`${bad.length} problems\n    ${bad.slice(0, 40).join('\n    ')}`);
+  if (bad.length) throw new Error(`${bad.length} problems (containment exemptions: ${CONTAIN_EXEMPT.join('; ')})\n    ${bad.slice(0, 40).join('\n    ')}`);
 });
 // Panels the repo-wide target-size gate never opens. HANDOFF control table: below a 560px container, Speed is radio chips
 // inside More (so the More case covers it) and Transcript is a More item; at 560 and up both are bar buttons.
@@ -358,13 +377,15 @@ test('ZOOM 200% (640 css px at scale 2) every story', DONE.zoom, async () => {
   }
   if (bad.length) throw new Error(`${bad.length} problems\n    ${bad.join('\n    ')}`);
 });
+// CA ruling (Nov 10): minor and moderate fail too. A rule is exempt only by a named entry here with a reason and CA's sign.
+const AXE_EXEMPT = [ /* { rule: 'rule-id', reason: '...', signedBy: 'Chief Architect, date' } */ ];
 test('AXE all impacts every story, plus each panel open', DONE.axe, async () => {
-  const bad = [];
+  const bad = []; for (const x of AXE_EXEMPT) expect(x.rule && x.reason && x.signedBy, `AXE_EXEMPT entry missing rule/reason/signedBy: ${JSON.stringify(x)}`);
   const run = async (o, at) => {
     await o.page.addScriptTag({ content: axeSrc });
     const v = await o.page.evaluate(async (sel) => (await window.axe.run(sel ? { include: [[sel]] } : document, { resultTypes: ['violations'] })).violations
       .map((x) => `${x.impact} ${x.id} (${x.nodes.length}) ${String(x.nodes[0]?.target)}`), o.scope);
-    for (const x of v) bad.push(`AXE ${at}: ${x}`);
+    for (const x of v) if (!AXE_EXEMPT.some((e) => x.split(' ')[1] === e.rule)) bad.push(`AXE ${at}: ${x}`);
   };
   for (const [th, md] of combos()) {
     for (const story of STORIES) { const o = await open(story, { theme: th, md }); o.scope = PROTO ? await scopeSel(o) : null; try { await run(o, `${story} ${th}~${md}`); } finally { await o.ctx.close(); } }
@@ -382,7 +403,7 @@ test('CONTRAST caption pairs in contrast.mjs (4 Solid, 4 Translucent), all 4.5:1
   const r = spawnSync(process.execPath, [new URL('./contrast.mjs', import.meta.url).pathname], { encoding: 'utf8' });
   expect(r.status === 0, `contrast.mjs exited ${r.status}: ${(r.stdout || '').split('\n').filter((l) => l.startsWith('FAIL')).slice(0, 5).join('; ')}`);
   const rows = fs.readFileSync(new URL('../docs/CONTRAST.md', import.meta.url), 'utf8').split('\n')
-    .filter((l) => /^\|/.test(l) && /caption/i.test(l)).map((l) => l.split('|').map((c) => c.trim()).filter(Boolean));
+    .filter((l) => /^\|/.test(l)).map((l) => l.split('|').map((c) => c.trim()).filter(Boolean)).filter((c) => /^captions\./.test(c[0] || '')); // FSD: first column 'captions.{color}'
   const ratios = rows.map((c) => Number(c[c.length - 1])).filter((n) => !Number.isNaN(n));
   expect(ratios.length >= 8, `docs/CONTRAST.md has ${ratios.length} caption rows, expected 8 (4 Solid, 4 Translucent over the worst frame)`);
   expect(ratios.every((n) => n >= 4.5), `caption rows under 4.5: ${rows.filter((c) => Number(c[c.length - 1]) < 4.5).map((c) => c.join(' ')).join('; ')}`);
@@ -390,7 +411,7 @@ test('CONTRAST caption pairs in contrast.mjs (4 Solid, 4 Translucent), all 4.5:1
 test('CONTRAST rendered caption tokens follow data-caption-color (H-8 mapping)', DONE.contrast, async () => {
   if (PROTO) return 'n/a';
   const expectMap = { white: ['#ffffff', '#000000'], yellow: ['#ffe600', '#000000'], cyan: ['#00e5ff', '#000000'], black: ['#000000', '#ffffff'] };
-  const o = await open('default');
+  const o = await open('caption-settings'); // FSD: the story for the rendered check
   try {
     for (const [c, [fg, bg]] of Object.entries(expectMap)) {
       const got = await o.root.evaluate((P, c) => { P.setAttribute('data-caption-color', c); const cs = getComputedStyle(P);
@@ -400,6 +421,14 @@ test('CONTRAST rendered caption tokens follow data-caption-color (H-8 mapping)',
       expect(hex(got[0]) === fg && hex(got[1]) === bg, `data-caption-color=${c}: --caption-text ${hex(got[0])} on --caption-bg ${hex(got[1])}, expected ${fg} on ${bg}`);
     }
   } finally { await o.ctx.close(); }
+});
+test('ACR 1.2.x rows present; 1.2.2 not Supports while the listening-pass TODO is open (CA)', 'CA ruling: ACR 1.2.x is a docs review item, plus this static check', async () => {
+  const acr = fs.readFileSync(new URL('../docs/ACR.md', import.meta.url), 'utf8').split('\n');
+  const row = (sc) => acr.find((l) => l.startsWith(`| ${sc} `));
+  for (const sc of ['1.2.1', '1.2.2', '1.2.3', '1.2.4', '1.2.5']) expect(row(sc), `docs/ACR.md has no ${sc} row`);
+  const todo = acr.some((l) => /TODO/.test(l) && /listening/i.test(l));
+  const level = (row('1.2.2') || '').split('|').map((c) => c.trim())[3];
+  expect(!(todo && level === 'Supports'), `1.2.2 says Supports while the listening-pass TODO is open`);
 });
 
 // ---------- runner ----------
