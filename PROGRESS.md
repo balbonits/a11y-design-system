@@ -119,3 +119,6 @@ QA's repro on PR #15 (scripts/focus-obscured.mjs) found that with 3 sticky error
 - The collapsed stack now applies below 640px instead of at 480px and below. It shows the newest toast plus a "+N more" button that expands the list.
 - While any toast is open, the page still reserves the stack's measured height (ResizeObserver) as `scroll-padding-bottom`. Toasts never take focus: after two more toasts open at 600, 639 and 640px, focus stays on the trigger.
 - `test:focus-obscured` adds a narrow-control case: on every row, a 44px button pinned to the right edge, under the toast stack. That's 90 controls per run at 320/375/768/1440, in each registered theme in light and dark, collapsed and expanded below 640px. Result: 1080 checked, 0 fully hidden, 0 partly covered.
+
+## 2026-11-10 8:59 PM PT: ACR 2.4.11 moved to Supports
+- With #15 (the ACR) merged and the toast fix in this PR, the ACR's row 2.4.11 Focus Not Obscured (Minimum) now reads Supports. It cites `test:focus-obscured`: 1080 focus stops at 320/375/768/1440 in light and dark, collapsed and expanded, with 0 fully hidden.
