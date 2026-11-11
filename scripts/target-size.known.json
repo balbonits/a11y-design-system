@@ -1,10 +1,10 @@
 {
-  "_note": "FU-BED-2 known WCAG 2.5.8 under-sizes on v0.3.0 (feba533). Each is SKIPPED by scripts/target-size.mjs with its cause; remove an entry once its fix lands (the gate prints STALE).",
+  "_note": "FU-BED-2 known target-size under-sizes on v0.3.0 (feba533). Each is SKIPPED by scripts/target-size.mjs with its cause. SM-BORDER, SM-ICON-BORDER and TAB-CLIP are removed by FSD's HIT-PATCH card once fixed (the gate prints STALE); FIXTURE-FIELD is permanent.",
   "causes": {
     "SM-BORDER": "em-btn--sm is 36px with a 2px border; .em-btn--sm::before inset calc((36px - var(--hit-min)) / 2) is measured from the padding box, so the hit area is 40px tall, not 44 (src/ember.css:43). Fix is FSD's (no visuals in FU-BED-2).",
     "SM-ICON-BORDER": "Toast dismiss is em-btn--sm em-btn--icon, 36x36 with a 2px border; the same ::before rule (src/ember.css:43) gives a 40x40 hit area. Fix is FSD's.",
     "TAB-CLIP": "em-tab is 44px but its bottom 2px sit under the tablist border and are clipped by .em-tablist overflow-x:auto (src/ember.css:120-128), so the hit area is 42px tall. Fix is FSD's.",
-    "FIXTURE-FIELD": "test-fixture theme only (not a shipped theme): its --field-height is 40px and an <input> can't take a ::before hit area. Neo inputs measure 44px. Exemption pending CTE ruling."
+    "FIXTURE-FIELD": "non-shipped fixture theme; never registered in dist. Permanent exemption (CTE ruling 2026-11-10): the test-fixture theme exists only in stories/fixtures to prove the theme registry swaps tokens; its --field-height is 40px. The gate fails if the theme id ever appears in src/themes/registry.json or any file under dist/."
   },
   "targets": [
     {
@@ -137,5 +137,8 @@
       "target": "input.em-control \"Email (Test fixture, not a des\"",
       "cause": "FIXTURE-FIELD"
     }
+  ],
+  "permanentFixtureThemes": [
+    "test-fixture"
   ]
 }

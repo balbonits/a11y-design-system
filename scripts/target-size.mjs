@@ -31,6 +31,22 @@ const knownKey = (story, target) => `${story}\u0000${target}`;
 const known = new Map(KNOWN.targets.map((k) => [knownKey(k.story, k.target), k]));
 const seenKnown = new Set();
 
+// A permanent fixture-theme exemption only holds while that theme never ships: fail if its id appears in the
+// theme registry or anywhere in the built package (dist/, which `npm run build` writes before this runs).
+{
+  const root = new URL('../', import.meta.url);
+  const distDir = new URL('dist/', root);
+  if (!fs.existsSync(distDir)) { console.log('target-size: dist/ not found; run npm run build first (needed for the fixture-theme check)'); process.exit(2); }
+  const files = [new URL('src/themes/registry.json', root), ...fs.readdirSync(distDir, { recursive: true }).map((f) => new URL(f, distDir)).filter((u) => fs.statSync(u).isFile())];
+  const leaks = [];
+  for (const id of KNOWN.permanentFixtureThemes ?? []) {
+    if (REGISTRY.some((t) => t.id === id)) leaks.push(`${id} is registered in src/themes/registry.json`);
+    for (const u of files) if (fs.readFileSync(u, 'utf8').includes(id)) leaks.push(`${id} appears in ${u.pathname.slice(root.pathname.length)}`);
+  }
+  if (leaks.length) { for (const l of leaks) console.log(`FAIL fixture theme shipped: ${l}`); console.log('target-size: a permanently exempt fixture theme must never ship'); process.exit(1); }
+  console.log(`target-size: fixture themes not shipped (${(KNOWN.permanentFixtureThemes ?? []).join(', ') || 'none'}; ${files.length} files checked)`);
+}
+
 const index = await (await fetch(`${base}/index.json`)).json();
 let stories = Object.values(index.entries).filter((e) => e.type === 'story');
 if (control) stories = stories.filter((s) => s.id === CONTROL_STORY);
