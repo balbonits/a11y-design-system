@@ -1,7 +1,7 @@
 // Native <video> adapter: the default and the first choice for every source it can play.
-import { Emitter, RATES, canFullscreen, canSetVolume, type Player, type PlayerEvent } from '../player';
+import { Emitter, RATES, canFullscreen, canSetVolume, bufferedFraction, type Player, type PlayerEvent } from '../player';
 
-const EVENTS: PlayerEvent[] = ['play', 'pause', 'timeupdate', 'durationchange', 'ended', 'ratechange', 'volumechange', 'error'];
+const EVENTS: PlayerEvent[] = ['play', 'pause', 'timeupdate', 'durationchange', 'ended', 'ratechange', 'volumechange', 'error', 'waiting', 'progress'];
 
 export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hls' = 'native'): Player {
   const em = new Emitter();
@@ -12,11 +12,14 @@ export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hl
   });
   const ready = () => em.emit('ready');
   video.addEventListener('loadedmetadata', ready);
+  // 'playing' ends a 'waiting' stall; the UI clears its Buffering state on the next 'play'.
+  const playing = () => em.emit('play');
+  video.addEventListener('playing', playing);
   // 1-VP: never autoplay.
   video.autoplay = false;
   return {
     kind,
-    capabilities: { rate: true, rates: RATES, volume: canSetVolume(), fullscreen: canFullscreen() },
+    capabilities: { rate: true, rates: RATES, volume: canSetVolume(), fullscreen: canFullscreen(), buffered: true, providerCaptions: false },
     play: () => video.play(),
     pause: async () => video.pause(),
     seek: async (s) => {
@@ -38,10 +41,12 @@ export function createNativePlayer(video: HTMLVideoElement, kind: 'native' | 'hl
       video.muted = m;
     },
     isMuted: () => video.muted,
+    getBuffered: () => bufferedFraction(video.buffered, video.currentTime, video.duration),
     on: (e, fn) => em.on(e, fn),
     destroy: () => {
       offs.forEach((o) => o());
       video.removeEventListener('loadedmetadata', ready);
+      video.removeEventListener('playing', playing);
       em.clear();
     },
   };

@@ -15,6 +15,7 @@ interface YTPlayer {
   setPlaybackRate(r: number): void;
   getPlaybackRate(): number;
   getAvailablePlaybackRates(): number[];
+  getVideoLoadedFraction(): number;
   setVolume(v: number): void; // 0..100
   getVolume(): number;
   mute(): void;
@@ -52,19 +53,38 @@ export function loadYouTubeApi(w: YTWindow = window as YTWindow): Promise<YTName
 
 const PLAYING = 1;
 const ENDED = 0;
+const BUFFERING = 3;
 
-export async function createYouTubePlayer(mount: HTMLElement, videoId: string, title: string): Promise<Player> {
+export interface YouTubeOptions {
+  /** Turn on YouTube's own captions (only for a source with no VTT of ours, CA ruling). A language code or true. */
+  providerCaptions?: string | boolean;
+}
+
+export async function createYouTubePlayer(mount: HTMLElement, videoId: string, title: string, { providerCaptions = false }: YouTubeOptions = {}): Promise<Player> {
   const YT = await loadYouTubeApi();
   const em = new Emitter();
   let timer: ReturnType<typeof setInterval> | undefined;
-  const tick = () => em.emit('timeupdate');
+  let loaded = -1;
+  const tick = () => {
+    em.emit('timeupdate');
+    const f = yt.getVideoLoadedFraction();
+    if (f !== loaded) {
+      loaded = f;
+      em.emit('progress');
+    }
+  };
   let yt!: YTPlayer;
   await new Promise<void>((resolve) => {
     yt = new YT.Player(mount, {
       host: YT_HOST,
       videoId,
-      // No autoplay; YouTube's own controls off, ours drive it; captions come from our VTT.
-      playerVars: { autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, playsinline: 1, cc_load_policy: 0, iv_load_policy: 3 },
+      // No autoplay; YouTube's own controls off, ours drive it; captions come from our VTT unless
+      // the source has none, then YouTube's own (CA ruling).
+      playerVars: {
+        autoplay: 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0, playsinline: 1, iv_load_policy: 3,
+        cc_load_policy: providerCaptions ? 1 : 0,
+        ...(typeof providerCaptions === 'string' ? { cc_lang_pref: providerCaptions } : {}),
+      },
       events: {
         onReady: () => {
           const iframe = mount.tagName === 'IFRAME' ? mount : mount.querySelector('iframe');
@@ -78,6 +98,9 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
           if (e.data === PLAYING) {
             timer = setInterval(tick, 250);
             em.emit('play');
+          } else if (e.data === BUFFERING) {
+            timer = setInterval(tick, 250);
+            em.emit('waiting');
           } else if (e.data === ENDED) em.emit('ended');
           else em.emit('pause');
         },
@@ -90,7 +113,7 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
   const rates = RATES.filter((r) => ytRates.has(r));
   return {
     kind: 'youtube',
-    capabilities: { rate: rates.length > 1, rates, volume: true, fullscreen: canFullscreen() },
+    capabilities: { rate: rates.length > 1, rates, volume: true, fullscreen: canFullscreen(), buffered: true, providerCaptions: Boolean(providerCaptions) },
     play: async () => yt.playVideo(),
     pause: async () => yt.pauseVideo(),
     seek: async (s) => {
@@ -113,6 +136,7 @@ export async function createYouTubePlayer(mount: HTMLElement, videoId: string, t
       em.emit('volumechange');
     },
     isMuted: () => yt.isMuted(),
+    getBuffered: () => Math.min(1, Math.max(0, yt.getVideoLoadedFraction() || 0)),
     on: (e, fn) => em.on(e, fn),
     destroy: () => {
       clearInterval(timer);

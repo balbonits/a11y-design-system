@@ -11,27 +11,33 @@ interface VimeoPlayer {
   setPlaybackRate(r: number): Promise<number>;
   setVolume(v: number): Promise<number>;
   setMuted(m: boolean): Promise<boolean>;
-  on(e: string, fn: (d: { seconds?: number; duration?: number; playbackRate?: number; volume?: number }) => void): void;
+  on(e: string, fn: (d: { seconds?: number; duration?: number; playbackRate?: number; volume?: number; percent?: number }) => void): void;
   destroy(): Promise<void>;
 }
 type VimeoCtor = new (el: HTMLElement, opts: Record<string, unknown>) => VimeoPlayer;
 
 const VIMEO_MODULE = '@vimeo/player';
 
+export interface VimeoOptions {
+  /** Turn on Vimeo's own text track (only for a source with no VTT of ours, CA ruling): a language code, e.g. 'en'. */
+  providerCaptions?: string | false;
+}
+
 export async function createVimeoPlayer(
   mount: HTMLElement,
   id: string,
   title: string,
   load: () => Promise<{ default: VimeoCtor }> = () => import(/* @vite-ignore */ VIMEO_MODULE),
+  { providerCaptions = false }: VimeoOptions = {},
 ): Promise<Player> {
   const Ctor = (await load()).default;
-  const vp = new Ctor(mount, { id: Number(id), autoplay: false, controls: false, dnt: true, title: false, byline: false, portrait: false, playsinline: true });
+  const vp = new Ctor(mount, { id: Number(id), autoplay: false, controls: false, dnt: true, title: false, byline: false, portrait: false, playsinline: true, ...(providerCaptions ? { texttrack: providerCaptions } : {}) });
   await vp.ready();
   mount.querySelector('iframe')?.setAttribute('title', title);
   const em = new Emitter();
   // Rate changes need a Vimeo Plus/Pro owner account; probe once and report it.
   const rateOk = await vp.setPlaybackRate(1).then(() => true, () => false);
-  const s = { time: 0, duration: await vp.getDuration(), paused: true, rate: 1, volume: 1, muted: false };
+  const s = { time: 0, duration: await vp.getDuration(), paused: true, rate: 1, volume: 1, muted: false, buffered: 0 };
   vp.on('timeupdate', (d) => {
     s.time = d.seconds ?? s.time;
     em.emit('timeupdate');
@@ -43,10 +49,15 @@ export async function createVimeoPlayer(
   vp.on('playbackratechange', (d) => ((s.rate = d.playbackRate ?? s.rate), em.emit('ratechange')));
   vp.on('volumechange', (d) => ((s.volume = d.volume ?? s.volume), em.emit('volumechange')));
   vp.on('error', (d) => em.emit('error', d));
+  vp.on('bufferstart', () => em.emit('waiting'));
+  vp.on('bufferend', () => {
+    if (!s.paused) em.emit('play');
+  });
+  vp.on('progress', (d) => ((s.buffered = Math.min(1, Math.max(0, d.percent ?? s.buffered))), em.emit('progress')));
   queueMicrotask(() => em.emit('ready'));
   return {
     kind: 'vimeo',
-    capabilities: { rate: rateOk, rates: rateOk ? RATES : [1], volume: true, fullscreen: canFullscreen() },
+    capabilities: { rate: rateOk, rates: rateOk ? RATES : [1], volume: true, fullscreen: canFullscreen(), buffered: true, providerCaptions: Boolean(providerCaptions) },
     play: () => vp.play(),
     pause: () => vp.pause(),
     seek: async (t) => {
@@ -65,6 +76,7 @@ export async function createVimeoPlayer(
       em.emit('volumechange');
     },
     isMuted: () => s.muted,
+    getBuffered: () => s.buffered,
     on: (e, fn) => em.on(e, fn),
     destroy: () => {
       void vp.destroy();

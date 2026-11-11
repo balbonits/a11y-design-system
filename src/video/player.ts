@@ -1,6 +1,6 @@
 // R-4: the one internal player interface. Controls, the caption renderer and the transcript
 // panel are built only on this; every source adapter (native, HLS, YouTube, Vimeo) implements it.
-export type PlayerEvent = 'ready' | 'play' | 'pause' | 'timeupdate' | 'durationchange' | 'ended' | 'ratechange' | 'volumechange' | 'error';
+export type PlayerEvent = 'ready' | 'play' | 'pause' | 'timeupdate' | 'durationchange' | 'ended' | 'ratechange' | 'volumechange' | 'error' | 'waiting' | 'progress';
 
 export interface Player {
   readonly kind: SourceKind;
@@ -17,6 +17,8 @@ export interface Player {
   getVolume(): number;
   setMuted(m: boolean): Promise<void>;
   isMuted(): boolean;
+  /** Fraction of the duration loaded (0..1); 0 when the source doesn't report it (see capabilities.buffered). */
+  getBuffered(): number;
   on(e: PlayerEvent, fn: (detail?: unknown) => void): () => void;
   destroy(): void;
 }
@@ -46,8 +48,29 @@ export interface Capabilities {
   volume: boolean;
   /** Fullscreen API is available for the player container. */
   fullscreen: boolean;
+  /** getBuffered() and 'progress' report real data; when false the UI hides the buffered fill. 'waiting' fires on every adapter. */
+  buffered: boolean;
+  /** The provider renders its own captions (YouTube/Vimeo source with no VTT of ours, CA ruling); the UI hides our caption controls. */
+  providerCaptions: boolean;
 }
 
+
+/**
+ * Fraction loaded from TimeRanges: the end of the range holding the playhead (else the furthest end)
+ * over the duration. Returns 0 for an unknown or infinite duration.
+ */
+export function bufferedFraction(ranges: Pick<TimeRanges, 'length' | 'start' | 'end'>, time: number, duration: number): number {
+  if (!Number.isFinite(duration) || duration <= 0 || ranges.length === 0) return 0;
+  let end = 0;
+  for (let i = 0; i < ranges.length; i++) {
+    if (ranges.start(i) <= time && time <= ranges.end(i)) {
+      end = ranges.end(i);
+      break;
+    }
+    end = Math.max(end, ranges.end(i));
+  }
+  return Math.min(1, Math.max(0, end / duration));
+}
 
 /** Small event hub shared by the adapters. */
 export class Emitter {
