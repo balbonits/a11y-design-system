@@ -54,22 +54,35 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 | Theme | Primary | Secondary | Ghost | Danger | Press (all variants) |
 |---|---|---|---|---|---|
 | neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | Offset 3px into `--shadow-press` (1px), no tilt |
-| kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0) | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | Offset 1px, `--shadow-press` is none |
+| kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0). Label contrast: 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see the note under the table | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | Offset 1px, `--shadow-press` is none |
 | dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0) | Hover `--surface-muted`, the same lift and shadow | Hover `--surface-muted`, the same lift and shadow | Hover `--danger-hover`, the same lift and shadow | Offset 0 (settles flat), no shadow |
+
+**Kinetic inverted hover and contrast** (from `docs/directions/v3/kinetic/tokens.json`; same formula as `contrast.mjs`):
+
+| Mode | `--color-bg` label on `--text` fill (4.5:1) | `--focus-ring-color` on what the ring sits on, `--color-bg` / `--surface` (3:1) | `--focus-ring-color` against the `--text` fill itself |
+|---|---|---|---|
+| Light | 14.95:1 pass | 8.95:1 / 9.49:1 pass | 1.67:1 |
+| Dark | 17.60:1 pass | 12.14:1 / 11.10:1 pass | 1.45:1 |
+
+The ring doesn't reach 3:1 against the `--text` fill, but it never touches the fill. Kinetic's `--focus-ring-offset` is 3px, so a 3px band of the page or bar color (`--color-bg` or `--surface`) always sits between the ring and the fill. The ring's own contrast is against that band, and it passes in both modes. Two rules keep it that way:
+- In kinetic, `--focus-ring-offset` must stay at 2px or more on Buttons.
+- A hovered and focused kinetic Button never gets an inset ring (`outline-offset` less than or equal to 0).
+
+If CA wants the ring to also reach 3:1 against the fill, the only token-clean fix is an inverted ring color on hover (`--color-bg`, which is 14.95:1 / 17.60:1 against `--text`). I'm not proposing that here.
 
 **New component tokens** go in `src/tokens/components.css`, each a `var()` of a theme token, as `lint:colors` requires:
 - `--button-tilt: var(--tilt)`
 - `--button-lift: var(--lift)` already exists and now applies to every variant.
 - `--button-hover-shadow: var(--shadow-overlay)` for dusk. It's none in kinetic, and neo keeps `--shadow-raised` on hover.
-- `--button-press-offset` for the press depth.
+- `--button-press-offset: var(--press-offset)` for the press depth (option (a) below, **pending CA**).
 - Kinetic's inversion as `--button-hover-bg: var(--text)` and `--button-hover-fg: var(--color-bg)`, set only in kinetic.
 
-**Open item for Chief Architect: `--button-press-offset` has no Addendum 5 source.** Press depth is 3px in neo, 1px in kinetic and 0 in dusk, and no theme token holds those values. A raw value in components.css breaks `lint:colors`. I see two options:
-- **(a) My recommendation:** a new per-theme token `--press-offset` (3px, 1px, 0) next to `--lift` in each theme, so `--button-press-offset: var(--press-offset)`. It's honest and lint-clean, but it adds a name to Addendum 5.
+**Pending CA: press-offset source.** Written here as option (a), which Chief of Creatives recommended to CA on 2026-11-10: a new per-theme semantic `--press-offset` in each theme's token file, 3px in neo, 1px in kinetic and 0 in dusk, with `--button-press-offset: var(--press-offset)`. Each theme's reduced-motion block sets `--press-offset: 0px`. Reasoning: (b) would tie press depth to border width, so border changes like #41 and #44 would quietly change it. Until CA rules, the open question is this: `--button-press-offset` has no Addendum 5 source. Press depth is 3px in neo, 1px in kinetic and 0 in dusk, and no theme token holds those values. A raw value in components.css breaks `lint:colors`. I see two options:
+- **(a) Written into this spec, pending CA:** a new per-theme token `--press-offset` (3px, 1px, 0) next to `--lift` in each theme, so `--button-press-offset: var(--press-offset)`. It's honest and lint-clean, but it adds a name to Addendum 5.
 - **(b)** Use one depth everywhere, `var(--border-width)` (2px, 2px, and 1px after #44). That adds no new name, but it loses neo's deep press and dusk's flat press.
 
 **Rules for every theme:**
-- **Reduced motion:** each theme's reduce block already zeroes `--tilt` and `--lift`. Under reduce, `--press-offset` (or whatever CA picks) and `--button-hover-shadow`'s movement must zero too, and durations go to 0ms. The color changes stay.
+- **Reduced motion:** each theme's reduce block already zeroes `--tilt` and `--lift`. Under reduce, `--press-offset` goes to 0px in each theme's reduce block, and `--button-hover-shadow`'s movement must zero too, and durations go to 0ms. The color changes stay.
 - **No layout shift:** transforms only, never margin, padding, top or size changes.
 - **Hit area:** the 44px `--target-min` hit area is the untransformed box. A -1.5deg tilt on a 44px-tall button moves its corners under 1px, so the hit area still covers 44px.
 - **Focus ring:** the ring follows the transform. Parents of Buttons don't clip (no `overflow: hidden` on the bar or popovers within ring offset + width + 3px of lift), so a tilted or lifted ring is never cut off.
