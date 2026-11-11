@@ -3,7 +3,7 @@
 Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-party audited.** Assessed by the Back End Developer bot for John Dilig from the repo's own checks.
 
 - **Product:** Ember UI, an accessible React design system starter (tokens, 8 components, Storybook docs). Storybook: https://jdilig.me/ux/design-system/storybook/ . Case study: https://jdilig.me/ux/design-system
-- **Version:** `main` at 2d59d7b plus `fix/toast-more-label` (PR #37, which contains #21) (package `ember-ui` 0.3.1)
+- **Version:** `main` at 5e16a66 plus `fix/toast-more-label` (PR #37, which contains #21). `package.json` says 0.3.1, which is unreleased: there is no v0.3.1 tag or publish, so cite the commit SHA, not a version number.
 - **Report version:** 1.3 (1.3 moves 2.4.11 Focus Not Obscured (Minimum) to Supports, citing test:focus-obscured, and adds the in-modal toast outlet to the 4.1.3 remark; 1.2 is HIT-PATCH: Small buttons and Tabs now meet the 44 px bar, so the 2.5.8 exceptions are gone; 1.1 changed only the 2.5.8 and 302.7 remarks and added the target-size gate)
 - **Report date:** 2026-11-10
 - **Contact:** https://github.com/balbonits/a11y-design-system/issues
