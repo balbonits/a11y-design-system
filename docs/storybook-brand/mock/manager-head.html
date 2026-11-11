@@ -63,6 +63,15 @@
         linear-gradient(to left, var(--eb-border) 3px, var(--eb-surface-muted) 3px, transparent 16px) right center / 16px 100% no-repeat scroll,
         var(--eb-surface) !important;
     }
+    /* PANEL-TABS-44 start (FU-SB-PANEL-TABS-44, from BED's spike): the addon tabs stay 40px visually; the tablist row becomes 48px with
+       padding-block 4px and margin-block -4px (block only, so Storybook's horizontal margin, the tablist x and its width, and the JS tab-collapse
+       measurements are unchanged). Each tab gets a ::before overlay at inset -5px 0: .tabbutton has 3px transparent top and bottom borders and the
+       overlay is measured from the padding box, so -5px puts it 2px outside the 40px border box, 44px in all. Tabs that Storybook collapses into
+       the "Addons" menu are visibility: hidden, so their overlay is hidden too and takes no taps. */
+    .sb-bar:has(button[title="Close addon panel"]) [role="tablist"] { box-sizing: border-box; height: 48px; padding-block: 4px; margin-block: -4px; }
+    .sb-bar:has(button[title="Close addon panel"]) [role="tablist"] .tabbutton { position: relative; overflow: visible; }
+    .sb-bar:has(button[title="Close addon panel"]) [role="tablist"] .tabbutton::before { content: ""; position: absolute; inset: -5px 0; }
+    /* PANEL-TABS-44 end */
     /* The 40px-tall menu button sits 4px inside the 48px bar, so its ring uses offset 0 (3px ring, 1px to spare) to stay inside the bar. */
     .sb-bar button[title="Open navigation menu"]:focus-visible { outline-offset: 0; }
   }
