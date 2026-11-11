@@ -7,7 +7,7 @@ import { AllThemes } from './AllThemes';
  *  shadow, focus ring and control height all change with zero component changes. */
 const meta: Meta = {
   title: 'Tokens/Theme registry',
-  parameters: { docs: { description: { component: 'One component, two registered themes (neo and kinetic). Each theme is one token file plus one registry entry, with zero component changes.' } } },
+  parameters: { docs: { description: { component: 'One component, three registered themes (neo, kinetic and dusk). Each theme is one token file plus one registry entry, with zero component changes.' } } },
 };
 export default meta;
 

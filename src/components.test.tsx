@@ -186,7 +186,7 @@ describe('Toast', () => {
 
 describe('ThemeSwitcher (R-2)', () => {
   const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k), m }; };
-  // Ember's registry has two themes (neo, kinetic), so the Theme group renders.
+  // Ember's registry has three themes (neo, kinetic, dusk), so the Theme group renders.
   const themes = THEME_REGISTRY;
   const def = THEME_REGISTRY[0];
   afterEach(() => { document.documentElement.removeAttribute('data-theme'); document.documentElement.removeAttribute('data-mode'); });
@@ -194,7 +194,7 @@ describe('ThemeSwitcher (R-2)', () => {
   it('reads themes from the registry: the default is the first entry and no theme is hardcoded', () => {
     expect(THEMES).toEqual(THEME_REGISTRY.map((t) => t.id));
     expect(DEFAULT_THEME).toBe(THEMES[0]);
-    expect(prepaintScript(themes)).toContain("['kinetic']");
+    expect(prepaintScript(themes)).toContain("['kinetic','dusk']");
     expect(PREPAINT_SCRIPT).toContain(JSON.stringify(THEMES.slice(1)).replace(/"/g, "'"));
   });
 

@@ -107,3 +107,9 @@ John asked for switchable themes with the components shown in each. Chief Archit
 ## 2026-11-10 7:47 PM PT: Chief Architect's focus-ring rulings on v0.3.1
 - Ruling 1 accepted with its condition: `npm run contrast` now fails a negative (or non-length) `--focus-ring-offset`, prints the offset per theme, and docs/CONTRAST.md states the rule. Focus ring vs `--color-bg`, `--surface` (cards and raised controls) and `--surface-muted` is required at 3:1 in light and dark at any offset; focus ring vs `--border` is required only at offset 0. Negative-tested with kinetic set to -2px.
 - Ruling 2 accepted as built: kinetic's `--hue-shift: 0deg`, with `--parallax-scale` and `--hue-shift` at 0 in the reduced block.
+
+## 2026-11-10 7:50 PM PT: v0.3.2, dusk registered (job tracker identity)
+- Added `src/themes/dusk.css` from Creatives' `docs/directions/v3/dusk/tokens.css` (HANDOFF baseline 748d492) and a `Dusk` entry in `registry.json`. No component code changed.
+- Copied as-is apart from three things: the registered extras dusk doesn't use (`--rule`, `--weight-display-min/max`, `--weight-shift`, `--stagger`) at neutral defaults, `--stagger` and `--weight-shift` added to the reduced-motion block, and the two shadows reading `--palette-plum-900` through `color-mix` at the same alpha so the token lint passes.
+- Storybook vendors Young Serif 400 and Nunito Sans 400 to 800 (one latin variable woff2) in `.storybook/fonts` with their OFL files, same pattern as kinetic. The package ships no fonts.
+- Contract: 186 pairs and 15 assertions across 3 themes, 0 failures. Stacked on v0.3.1 (#27).

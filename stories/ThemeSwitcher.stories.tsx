@@ -45,5 +45,5 @@ const render: S['render'] = (args, { globals }) => {
 };
 export const Default: S = { render };
 export const FocusVisible: S = { render, parameters: { pseudo: { focusVisible: true } } };
-/** With two registered themes (neo and kinetic) the Theme group appears. */
+/** With three registered themes (neo, kinetic and dusk) the Theme group appears. */
 export const TwoThemes: S = { name: 'Two registered themes', render: (args) => <ThemeSwitcher {...args} storage={{ getItem: () => null, setItem: () => {}, removeItem: () => {} }} themes={THEME_REGISTRY} /> };
