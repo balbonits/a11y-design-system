@@ -57,5 +57,6 @@ jobs:
       - name: Regenerated output matches the committed files
         run: |
           if ! git diff --exit-code -- tools/transcribe/samples; then
-            echo "::warning::Regenerated captions differ from the committed ones on this CPU; review the diff above."
+            echo "::error::Regenerated captions differ from the committed ones; the committed outputs must be reproducible."
+            exit 1
           fi
