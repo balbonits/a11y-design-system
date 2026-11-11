@@ -160,6 +160,21 @@ John asked for switchable themes with the components shown in each. Chief Archit
 
 CA confirmed that press restores each variant's own fill and label (HANDOFF:57), on condition that the pressed state is gated. scripts/contrast.mjs has a new Pressed state section covering every theme and mode: the label on the pressed fill is 4.5:1 or more for primary, danger, secondary and ghost. Primary's and danger's pressed fill is 3:1 or more against --color-bg and --surface. Secondary and ghost take a --text border on press, so that border is gated instead, with a fallback to the fill when --border-width is 0. 48 rows, 0 failures (190 pairs total). The table is in docs/CONTRAST.md.
 
+## 2026-11-10 9:02 PM PT: Architecture review, R-4 VideoPlayer core (draft)
+
+- The player ships as a separate entry, `ember-ui/video`, so the core bundle doesn't grow. A new CI step, `npm run check:core-bundle`, fails if `dist/index.js` or anything it imports mentions hls.js, YouTube, Vimeo or the player code. It was proven both ways: 0 references now, and exit 1 when a reference is planted.
+- One internal player interface (play, pause, seek, rate, volume, mute, time and track events) with adapters behind it. Native `<video>` is the default and never autoplays. HLS uses native playback where the browser has it and lazy-loads hls.js (an optional peer) only where it doesn't. YouTube uses youtube-nocookie.com through the IFrame API, loaded only for a YouTube source. Vimeo loads `@vimeo/player` only for a Vimeo source. Each lazy adapter is its own chunk.
+- One WebVTT cue model, parsed once. The caption renderer, the transcript (current cue, click-to-seek, search, `.txt` and `.vtt` download) and the audio-description track will all read it. Tests cover parsing, round-trip, search, the committed Sintel captions and AD files, source detection and both HLS paths: 24/24 vitest.
+- Not in this PR: the visible controls, caption renderer and transcript panel wait for the design handoff. Installing hls.js and @vimeo/player waits on John's OK. The per-path CSP comes with the demo page.
+- 2026-11-10 9:45 PM PT: R-4 core reshaped to the CTE/Creatives buffering spec: waiting/resumed pair, getBuffered() {fraction, ranges|null}, throttled bufferedchange, canReportBuffering/canReportBufferedRanges; VideoAdapterUnavailable (vimeo, hls); AD setTrack; CSP plan per path. Tests 40/40, core bundle 0 video refs.
+- 2026-11-10 10:16 PM PT: prefs gain pauseWhileReading (default false) and a typed captionStyle (size/color/background/font, per-field fallback, partial patches) per UX/UI; toVtt escapes & < > (BED). Tests 43/43.
+- 2026-11-10 10:38 PM PT: CA a11y PASS on acd2f93. CSP 5c doc edits per CA: Vimeo is an optional lazy peer served from 'self' after John's install OK; post-deploy curl -I verification step; YouTube img-src i.ytimg.com note.
+
+## 2026-11-11 3:20 AM PT: #33 CTE ruling (A), Option 1 plus scoped Option 3; main b055b5d merged
+- VP_GATES stays `fixme`; FSD flips it in the player PR. The 33 #47 tests are listed in the PR body by group.
+- New `src/video/entry.test.ts`: `ember-ui/video` imports by package name through `exports` and lands on build:lib's `dist/video.js`. Plant: with `dist/video.js` moved away, the suite fails. The other three core items already had direct vitest tests (PR body table).
+- Normal merge of main b055b5d (no rebase); only PROGRESS.md conflicted, resolved by keeping both sides.
+
 ## 2026-11-11 12:40 AM PT: SCRIM-GATE, one scrim gate in scripts/lib/scrim.mjs (CTE ruling X)
 - Built on #27 (feat/switch d963cbd); merges after #27. #27's inline scrim check in contrast.mjs moved into scripts/lib/scrim.mjs, so there is one scrim gate. Same numbers as before for neo and kinetic.
 - New: a missing or non-8-digit `--scrim` fails; the dialog border token is a parameter (default `--border`; contrast.mjs passes #27's card tokens, and CA Addendum 9's `--dialog-border` is a one-line change in FSD's #30); scripts/contrast.known.json (empty) pins known fails, which fail again when stale, changed or orphaned; docs/CONTRAST.md gets a `## Scrim (dialog backdrop)` table.
@@ -179,8 +194,14 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 ## 2026-11-11 2:15 AM PT: #51 forward-merge of main f9f016d
 - Merged main f9f016d (#47 test:vp, #45, #52, #27 kinetic, pressed-state contrast) with a merge commit, no rebase. Conflicts were only in `package.json` scripts, `.github/workflows/ci.yml` and this file; both sides kept (test:toast-modal next to test:press, test:hover and test:vp, and all their CI steps).
 
+## 2026-11-11 4:15 AM PT: #33 forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (this branch's R-4 entries against #51's toast-modal entries); both sides kept, R-4 first. package.json and ci.yml auto-merged: test:toast-modal, test:press, test:hover, test:vp and check:core-bundle are all there.
+
 ## 2026-11-11 4:20 AM PT: SCRIM-GATE forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
 - Normal merge commit, no rebase. Only PROGRESS.md conflicted (SCRIM-GATE entries against #51's toast-modal entries); both sides kept, SCRIM-GATE first. scripts/contrast.mjs, scripts/lib/scrim.mjs, package.json and ci.yml merged without conflict; #27's hover-pair and pressed-state sections and the scrim lib are unchanged, and test:toast-modal, test:press, test:hover and test:vp are all in package.json and CI.
+
+## 2026-11-11 5:55 AM PT: SCRIM-GATE forward-merge of main 5e16a66 (#33 R-4 core)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (2 hunks: SCRIM-GATE entries against #33 R-4 entries); both sides kept, main first. No code file changed.
 
 ## 2026-11-11 1:30 AM PT: FOCUS-RING-GATE, focus ring gate in scripts/lib/focus-ring.mjs (CTE card, moved from FSD)
 - Stacked on SCRIM-GATE (#48, daa49c2) and merges after it. It goes in the same gate family in scripts/lib, so there's no third edit to contrast.mjs that could conflict.
@@ -202,3 +223,6 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 
 ## 2026-11-11 4:50 AM PT: FOCUS-RING-GATE carries the new SCRIM-GATE head 63b02fa (main 2d59d7b, #51)
 - Normal merge commit, no rebase, so the stack stays #48 then #53. Only PROGRESS.md conflicted (#51's and SCRIM-GATE's new entries against the FOCUS-RING-GATE entries); both sides kept, FOCUS-RING-GATE entries last. scripts/contrast.mjs, scripts/lib/focus-ring.mjs, scripts/lib/scrim.mjs, package.json and ci.yml merged cleanly; CA's option 1 (3bd3b06) is unchanged.
+
+## 2026-11-11 6:35 AM PT: FOCUS-RING-GATE carries the new SCRIM-GATE head 72be779 (main 5e16a66, #33)
+- Normal merge commit, no rebase; stack stays #48 then #53. Only PROGRESS.md conflicted (1 hunk); both sides kept, FOCUS-RING-GATE entries last. No code conflict.
