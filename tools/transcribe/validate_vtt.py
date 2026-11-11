@@ -3,7 +3,8 @@
 
 Checks: UTF-8, optional BOM, "WEBVTT" signature line, blank line after the
 header, cue timing lines "HH:MM:SS.mmm --> HH:MM:SS.mmm" (hours optional),
-end > start, cue start times non-decreasing, no "-->" in cue text or ids,
+end > start, cue start times non-decreasing, no cue starting before the
+previous cue ends (no overlaps within a track), no "-->" in cue text or ids,
 no empty cue payloads. Exit 0 when every file is valid, 1 otherwise.
 
 Usage: python3 validate_vtt.py FILE.vtt [FILE.vtt ...]
@@ -40,6 +41,7 @@ def validate(text: str) -> list[str]:
             errs.append(f"line {i+1}: header must end with a blank line before cues")
         i += 1
     prev_start = -1.0
+    prev_end = -1.0
     ncues = 0
     while i < len(lines):
         while i < len(lines) and lines[i] == "":
@@ -70,7 +72,10 @@ def validate(text: str) -> list[str]:
             errs.append(f"line {block_start+j+1}: end {m.group(2)} not after start {m.group(1)}")
         if start < prev_start:
             errs.append(f"line {block_start+j+1}: cue starts before the previous cue")
+        elif start < prev_end:
+            errs.append(f"line {block_start+j+1}: cue overlaps the previous cue (starts {m.group(1)} before it ends)")
         prev_start = start
+        prev_end = max(prev_end, end)
         payload = block[j + 1:]
         if not payload or not any(p.strip() for p in payload):
             errs.append(f"line {block_start+j+1}: empty cue payload")
