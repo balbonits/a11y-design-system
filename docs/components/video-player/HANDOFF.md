@@ -212,23 +212,23 @@ Caption settings follow the approved copy (viewer overrides) in a native dialog.
 - Two registered extras the component reads, and nothing else: `--caption-text` and `--caption-bg`. Neutral defaults are the White pair (`--caption-text: var(--palette-caption-white)`, `--caption-bg: var(--palette-caption-black)`).
 - Mapping in the token layer: `[data-caption-color=white|yellow|cyan|black]` sets both extras, and `[data-caption-bg=none|half|solid]` sets the band opacity. The component sets those attributes on the player root from the saved prefs. No raw values in the component.
 
-| Text color (`data-caption-color`) | `--caption-text` | `--caption-bg` | Solid | Half (70%) over the worst frame |
+| Text color (`data-caption-color`) | `--caption-text` | `--caption-bg` | Solid | Translucent (70%) over the worst frame |
 |---|---|---|---|---|
 | White (default) | `--palette-caption-white` | `--palette-caption-black` | 21.00:1 | 8.45:1 over a white frame |
 | Yellow | `--palette-caption-yellow` | `--palette-caption-black` | 16.57:1 | 6.67:1 over a white frame |
 | Cyan | `--palette-caption-cyan` | `--palette-caption-black` | 13.65:1 | 5.50:1 over a white frame |
 | Black | `--palette-caption-black` | `--palette-caption-white` (light band) | 21.00:1 | 9.90:1 over a black frame |
 
-- **Half is 70% band opacity, not 50%.** Checked over a bright frame as Creatives asked: at 50%, white text over a white frame is 3.95:1, yellow 3.12:1 and cyan 2.57:1, all under 4.5:1. 70% is the lowest round value where every pair passes (cyan is the worst at 5.50:1). The label stays "Half" per the copy.
-- **None** is a viewer opt-out: no band, only a 1px outline in `--caption-bg` (Half has it too). It can't guarantee 4.5:1 over every frame, so it's never the default (Known issue 4).
-- For `scripts/contrast.mjs` (FSD adds these pairs, unthemed, checked once): the four Solid pairs above at 4.5:1 or better, plus the four Half pairs composited over the worst frame (white for White/Yellow/Cyan, black for Black).
+- **Translucent is a 70% band, not 50%.** (It was labeled "Half"; Creatives renamed it at 70%, pending UI Copywriter's confirmation. The stored value stays `half`, so the prefs shape and FSD's validation don't change.) Checked over a bright frame as Creatives asked: at 50%, white text over a white frame is 3.95:1, yellow 3.12:1 and cyan 2.57:1, all under 4.5:1. 70% is the lowest round value where every pair passes (cyan is the worst at 5.50:1).
+- **None** is a viewer opt-out: no band, only a 1px outline in `--caption-bg` (Translucent has it too). It can't guarantee 4.5:1 over every frame, so it's never the default (Known issue 4).
+- For `scripts/contrast.mjs` (FSD adds these pairs, unthemed, checked once): the four Solid pairs above at 4.5:1 or better, plus the four Translucent pairs composited over the worst frame (white for White/Yellow/Cyan, black for Black).
 - Captions on must still pass WCAG 1.4.12 text spacing (the prototype's text-spacing scan runs with captions on).
 
 | Setting | Values (stored value) | Rule |
 |---|---|---|
 | Text size | Small, Medium (default), Large, Extra large (`s`, `m`, `l`, `xl`); chips show S, M, L, XL with the full name as hidden text | `clamp(.875rem,.45rem+2cqi,1.6rem)` / `clamp(1rem,.55rem+2.4cqi,1.9rem)` / `clamp(1.2rem,.7rem+3cqi,2.3rem)` / `clamp(1.45rem,.85rem+3.8cqi,2.8rem)` |
 | Text color | White (default), Yellow, Cyan, Black (`white`, `yellow`, `cyan`, `black`) | the token pairs above |
-| Background | None, Half, Solid (default) (`none`, `half`, `solid`) | band opacity 0 / 70% / 100% of `--caption-bg` |
+| Background | None, Translucent, Solid (default) (`none`, `half`, `solid`) | band opacity 0 / 70% / 100% of `--caption-bg` |
 | Font | Sans serif (default), Serif, Monospace (`sans`, `serif`, `mono`) | `--font-body` / `Georgia, serif` (no serif token) / `--font-mono` |
 
 **Saved prefs:** one JSON object in `localStorage["ember:video:v1"]` (override with the `storageKey` prop), the same shape as the core's `readVideoPrefs`/`writeVideoPrefs`: `{ volume, muted, rate, captions: lang | 'off' | null, descriptions: 'off' | 'text' | 'voice', pauseWhileReading, captionStyle: { size, color, background, font } }`. A bad field falls back to its default, and a storage error falls back silently. Only the main player saves; demos don't. Reset restores the caption style defaults only.
@@ -275,7 +275,7 @@ Track labels in the language picker ("English", "Français") come from the track
 1. ~~Buffering needs a core addition.~~ Resolved in the core (5b, FSD commit `1fa5c04`, pushed with the player PR): `waiting` and `progress` on all four adapters, `getBuffered()` 0..1 and `capabilities.buffered`.
 2. **YouTube and Vimeo** run in iframes: our captions and transcript still work (they're ours), but the iframe takes focus when clicked, so our shortcuts stop until focus returns; the provider's own UI must be hidden (`controls=0` / Vimeo `controls:false`). Vimeo rate needs a paid owner account (core reports `rate:false`).
 3. **iOS Safari:** volume level is read-only (slider hidden, Mute works); iPhone has no element full screen (button hidden).
-4. Caption backgrounds Half and None are user choices and can drop below contrast over bright frames even with the outline; Solid is the default.
+4. Caption background None is a viewer choice and can drop below contrast over bright frames even with the outline. Solid (default) and Translucent pass 4.5:1 over any frame (H-8).
 5. No hover time preview (thumbnails) on the scrubber.
 6. Captions don't show in native full screen on iOS when the browser takes over the video element.
 7. ~~Caption colors aren't tokens.~~ Resolved (CA ARCH-REVIEW 9:35): `--caption-text`/`--caption-bg` from `--palette-caption-*`, unthemed (H-8).
