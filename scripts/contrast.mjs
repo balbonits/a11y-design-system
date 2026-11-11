@@ -1,14 +1,15 @@
 // CI contrast and theme-contract gate (R-2, ARCH-REVIEW Addendum 5 / V-2b). For every registered theme
-// (src/themes/registry.json) in light and dark, plus the stories-only test fixture:
+// (src/themes/registry.json) in light and dark:
 //  - every text/bg pair reaches 4.5:1, every UI/bg pair 3:1 (incl. focus ring vs bg, surface AND border,
 //    and --highlight-contrast on --highlight at 4.5:1);
 //  - --focus-ring-style is never none/hidden and --focus-ring-width is at least 2px;
 //  - --target-min is at least 44px;
-//  - --tilt and --lift resolve to 0 under prefers-reduced-motion.
+//  - every contract name is defined (Addendum 5 and 7, incl. --scrim, --radius-xl and the registered extras);
+//  - --tilt, --lift and the motion extras (REDUCED_ZERO) resolve to 0 under prefers-reduced-motion.
 // (--shadow-press is never the only pressed cue: src/ember.css also moves and recolors pressed buttons.)
 // Writes docs/CONTRAST.md and exits 1 on any failure.
 import fs from 'node:fs';
-import { COLOR_TOKENS, SHAPE_TOKENS, TYPE_MOTION_TOKENS, parseTheme, registry, resolver } from './theme-contract.mjs';
+import { COLOR_TOKENS, EXTRA_TOKENS, REDUCED_ZERO, SHAPE_TOKENS, TYPE_MOTION_TOKENS, parseTheme, registry, resolver } from './theme-contract.mjs';
 
 const hex = (c) => { if (!/^#[0-9a-f]{6}$/i.test(c)) throw new Error(`not a 6-digit hex: ${c}`); return c; };
 const lum = (h) => { const c = [1, 3, 5].map((i) => parseInt(hex(h).slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4)); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
@@ -22,22 +23,22 @@ const TEXT = [
 const UI = [['border', 'color-bg'], ['border', 'surface'], ['border', 'surface-muted'], ['focus-ring-color', 'color-bg'], ['focus-ring-color', 'surface'],
   ['focus-ring-color', 'surface-muted'], ['focus-ring-color', 'border'], ['accent', 'surface-muted']];
 const px = (v) => { const m = String(v).match(/^(-?[\d.]+)px$/); return m ? Number(m[1]) : NaN; };
-const zero = (v) => /^-?0(\.0+)?(px|deg|rem|em)?$/.test(String(v).trim());
+const zero = (v) => /^-?0(\.0+)?(px|deg|rem|em|ms|s)?$/.test(String(v).trim());
 
 let fail = 0; const rows = []; const checks = [];
 const bad = (msg) => { fail++; console.log('FAIL', msg); };
-const sources = [
-  ...registry().map(({ id }) => ({ id, file: `src/themes/${id}.css`, shipped: true })),
-  { id: 'test-fixture', file: 'stories/fixtures/test-fixture.css', shipped: false },
-];
-for (const { id, file, shipped } of sources) {
-  const t = parseTheme(fs.readFileSync(file, 'utf8'), id);
-  const name = shipped ? id : `${id} (fixture, not shipped)`;
-  for (const k of [...SHAPE_TOKENS, ...TYPE_MOTION_TOKENS]) if (!(k in t.base)) bad(`${name}: missing ${k}`);
+for (const { id } of registry()) {
+  const t = parseTheme(fs.readFileSync(`src/themes/${id}.css`, 'utf8'), id);
+  const name = id;
+  for (const k of [...SHAPE_TOKENS, ...TYPE_MOTION_TOKENS, ...EXTRA_TOKENS]) if (!(k in t.base)) bad(`${name}: missing ${k}`);
   for (const mode of ['light', 'dark']) {
     const r = resolver(t, mode);
     for (const k of COLOR_TOKENS) if (r(k) === undefined) bad(`${name}.${mode}: missing ${k}`);
+    // The ring only touches the control's border when --focus-ring-offset is 0; with a gap it sits on the background,
+    // so focus-ring-color vs border is required only at offset 0 (WCAG 1.4.11 adjacent colors).
+    const gap = px(r('--focus-ring-offset')) > 0;
     for (const [list, min] of [[TEXT, 4.5], [UI, 3]]) for (const [f, b] of list) {
+      if (gap && f === 'focus-ring-color' && b === 'border') continue;
       const ratio = cr(r(`--${f}`), r(`--${b}`)); rows.push([`${name}.${mode}`, f, b, min, ratio]);
       if (ratio < min) bad(`${name}.${mode}: ${f} on ${b} ${ratio.toFixed(2)} < ${min}`);
     }
@@ -45,18 +46,18 @@ for (const { id, file, shipped } of sources) {
   const r = resolver(t, 'light');
   const style = r('--focus-ring-style'); const width = px(r('--focus-ring-width')); const target = px(r('--target-min'));
   const okStyle = !['none', 'hidden'].includes(style); const okWidth = width >= 2; const okTarget = target >= 44;
-  const rm = { ...t.base, ...t.reduced }; const okReduced = zero(rm['--tilt']) && zero(rm['--lift']);
-  checks.push([name, style, `${width}px`, `${target}px`, `tilt ${rm['--tilt']}, lift ${rm['--lift']}`]);
+  const rm = { ...t.base, ...t.reduced }; const notZero = REDUCED_ZERO.filter((k) => !zero(rm[k])); const okReduced = !notZero.length;
+  checks.push([name, style, `${width}px`, `${target}px`, okReduced ? `all 0 (${REDUCED_ZERO.join(', ')})` : `not 0: ${notZero.join(', ')}`]);
   if (!okStyle) bad(`${name}: --focus-ring-style is ${style}`);
   if (!okWidth) bad(`${name}: --focus-ring-width ${width}px < 2px`);
   if (!okTarget) bad(`${name}: --target-min ${target}px < 44px`);
-  if (!okReduced) bad(`${name}: --tilt/--lift not 0 under reduced motion (${rm['--tilt']}, ${rm['--lift']})`);
+  if (!okReduced) bad(`${name}: not 0 under reduced motion: ${notZero.map((k) => `${k}=${rm[k]}`).join(', ')}`);
 }
 const md = [
-  '# Contrast and theme contract', '', 'Generated by `npm run contrast` from every registered theme (src/themes/registry.json) and the stories-only test fixture. Text needs 4.5:1, UI (borders, focus ring) 3:1.', '',
+  '# Contrast and theme contract', '', 'Generated by `npm run contrast` from every registered theme (src/themes/registry.json). Text needs 4.5:1, UI (borders, focus ring) 3:1.', '',
   '| Theme | Focus ring style | Focus ring width | Target min | Reduced motion |', '|---|---|---|---|---|', ...checks.map((c) => `| ${c.join(' | ')} |`), '',
   '| Theme.mode | Foreground | Background | Min | Ratio |', '|---|---|---|---|---|', ...rows.map(([c, f, b, m, r]) => `| ${c} | ${f} | ${b} | ${m} | ${r.toFixed(2)} |`),
 ].join('\n');
 fs.writeFileSync(new URL('../docs/CONTRAST.md', import.meta.url), md + '\n');
-console.log(`${rows.length} pairs and ${checks.length * 4} contract assertions checked across ${sources.length} themes, ${fail} failures`);
+console.log(`${rows.length} pairs and ${checks.length * 4} contract assertions checked across ${registry().length} themes, ${fail} failures`);
 process.exit(fail ? 1 : 0);

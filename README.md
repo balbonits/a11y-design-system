@@ -8,11 +8,12 @@ A small, accessible React design system: tokens for light and dark themes, eight
 
 ## What's inside
 
-- **Themes are registered data.** `src/themes/registry.json` lists the themes, default first (Ember ships `neo`). Each theme is one token file, `src/themes/<id>.css`, with its own palette and every token in the theme contract (ARCH-REVIEW Addendum 5: `--radius-sm/md/lg/full`, `--border-width(-strong)`, `--shadow-raised/press`, `--focus-ring-color/width/offset/style`, `--control-height/padding-x/gap`, `--target-min`, `--divider-shape`, `--highlight(-contrast)`, `--tilt`, `--lift`, plus the semantic colors). **Adding a theme takes a token file and a registry entry, then `npm run tokens`.** No component, Storybook or CI code names a theme.
+- **Themes are registered data.** `src/themes/registry.json` lists the themes, default first (Ember ships `neo`, the default, and `kinetic`). Each theme is one token file, `src/themes/<id>.css`, with its own palette and every token in the theme contract (ARCH-REVIEW Addendums 5 and 7: `--radius-sm/md/lg/xl/full`, `--border-width(-strong)`, `--shadow-raised/press`, `--focus-ring-color/width/offset/style`, `--control-height/padding-x/gap`, `--target-min`, `--divider-shape`, `--highlight(-contrast)`, `--tilt`, `--lift`, `--scrim` (the dialog backdrop), the semantic colors, and the registered extras `--rule`, `--shadow-overlay`, `--weight-display-min/max`, `--weight-shift`, `--duration-reveal/ticker`, `--stagger`, `--blur-glass`, `--parallax-scale` and `--hue-shift`, with neutral 0 or none defaults when a theme doesn't use them). **Adding a theme takes a token file and a registry entry, then `npm run tokens`.** No component, Storybook or CI code names a theme.
 - Two axes: `data-theme` takes a registered id (absent = the default theme) and `data-mode="light|dark"` (absent = follows the system), on `<html>` or any `.em-scope` element. Every registered theme is checked in light and dark for AA contrast and axe in CI.
-- Tokens in three layers: shared primitives (type and space), the registered themes (generated into `src/tokens/themes.css`), and component tokens (`--button-*`, `--field-*` and so on, only `var()` of theme tokens). `src/tokens.css` imports all three, and `src/tokens.json` is generated. Reduced motion sets every duration, `--tilt` and `--lift` to 0.
+- Tokens in three layers: shared primitives (type and space), the registered themes (generated into `src/tokens/themes.css`), and component tokens (`--button-*`, `--field-*` and so on). Each component token is exactly `var()` of one contract name or a `calc()` of only contract names, never a literal, a fallback or another component token, and no theme sets them; `npm run tokens` fails otherwise. Hit areas (Button, Checkbox row, Switch row, Tabs, Table sort button, ThemeSwitcher options) read `--target-min` directly. `src/tokens.css` imports all three, and `src/tokens.json` is generated. Reduced motion sets every duration, `--tilt`, `--lift`, `--parallax-scale`, `--hue-shift`, `--stagger` and `--weight-shift` to 0.
 - `ThemeSwitcher`: native radio groups (Theme, Color mode) that persist to `jdilig:theme` and `jdilig:mode`. It reads the registry, takes an app's own themes through `themes`, and hides the Theme group when only one theme is registered. Put `PREPAINT_SCRIPT` (or `prepaintScript(themes)`) inline in `<head>` so there's no flash of the wrong theme. neo uses Archivo Black, Archivo and JetBrains Mono; load them in your app (Storybook uses `@fontsource/archivo-black`, `@fontsource/archivo` and `@fontsource/jetbrains-mono`).
-- Components: Button, Input, Select, Checkbox (and CheckboxGroup), Modal, Tabs, Table, Toast, ThemeSwitcher. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
+- Fonts are the app's to load: neo uses Archivo Black, Archivo and JetBrains Mono; kinetic uses Bricolage Grotesque (300, 700, 800), Instrument Sans and IBM Plex Mono. Storybook loads them from `@fontsource`.
+- Components: Button, Input, Select, Checkbox (and CheckboxGroup), Switch, Modal, Tabs, Table, Toast, ThemeSwitcher. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
 - Docs pages in a fixed order: usage, anatomy, variants, states, keyboard, accessibility notes, code.
 
 ## Accessibility checks
@@ -25,7 +26,7 @@ A small, accessible React design system: tokens for light and dark themes, eight
 Ember UI installs from a git tag and builds itself on install (the `prepare` script runs the library build). It isn't on npm.
 
 ```sh
-npm install github:balbonits/a11y-design-system#v0.3.0
+npm install github:balbonits/a11y-design-system#v0.3.1
 ```
 
 ```tsx

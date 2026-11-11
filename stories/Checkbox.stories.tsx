@@ -14,7 +14,7 @@ const meta: Meta<typeof Checkbox> = {
       description: {
         component: doc({
           use: ['A setting is on or off.', 'Someone picks any number of options from a short list (use CheckboxGroup).'],
-          avoid: ['Only one option can be picked. Use radio buttons or a Select.', 'The change applies instantly like a switch. Use a toggle button.'],
+          avoid: ['Only one option can be picked. Use radio buttons or a Select.', 'The change applies right away. Use a Switch.'],
           anatomy: ['Native checkbox (20px, inside a 44px tall row)', 'Label', 'Optional hint', 'Error message', 'CheckboxGroup: `<fieldset>` with a `<legend>`'],
           variants: 'Single checkbox, indeterminate ("some selected"), and a group.',
           states: 'Unchecked, checked, indeterminate (`aria-checked="mixed"`), hover, focus-visible, disabled, error.',
