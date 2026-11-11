@@ -90,7 +90,7 @@ tbody tr:last-child>*{border-bottom:0}
 .toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,180%);background:var(--text);color:var(--color-bg);padding:.85rem 1.4rem;border-radius:var(--radius-full);font-weight:700;transition:transform var(--duration-base) var(--ease-standard);max-width:calc(100vw - 2rem);z-index:9}
 .toast.show{transform:translate(-50%,0)}
 .toast:empty{padding:0}
-dialog{border:0;border-radius:var(--radius-xl);background:var(--surface);color:var(--text);max-width:min(460px,calc(100vw - 2rem));padding:1.8rem;box-shadow:var(--shadow-overlay)}
+dialog{border:var(--border-width) solid var(--dialog-border);border-radius:var(--radius-xl);background:var(--surface);color:var(--text);max-width:min(460px,calc(100vw - 2rem));padding:1.8rem;box-shadow:var(--shadow-overlay)}
 dialog::backdrop{background:var(--scrim)}
 /* tracker */
 .trhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;padding:2.5rem 0 1rem}

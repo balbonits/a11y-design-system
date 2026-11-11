@@ -151,7 +151,7 @@ Decisions (pushback, with reasons):
 - Transcript button: icon only below a 720px player, icon plus visible "Transcript" from 720px. The copy says "from 480px"; on our layout the button is only in the bar from 560px, and at 560 to 720 the row can't fit the text without wrapping, so the visible text starts at 720 (player width, container query). Its name is "Transcript" at every size.
 - Captions-unavailable hint: a third bar row (`.cchint`, `--text-muted`) only when there is no usable captions track.
 - Transcript header: heading on the left, Download on the right, search on its own row. Downloads are an inline group (`Download` label, Text, Captions file) when the transcript is at least 440px wide, and collapse into a `Download` disclosure (button `aria-expanded` and a panel) below that. That covers 320 and 375 and the side column at 1024 to 1440.
-- Caption settings dialog: `width: min(30rem, 100vw - 1.5rem)`, `max-height: 100dvh - 1.5rem`, scrolls inside. Chips wrap.
+- Caption settings dialog: `width: min(30rem, 100vw - 1.5rem)`, `max-height: 100dvh - 1.5rem`, scrolls inside. Chips wrap. Its outline is `--border-width` solid `--dialog-border` (never `--border`), over the `--scrim` backdrop.
 - Text spacing (1.4.12) and 200% zoom: nothing clips; chips and menu items wrap; the time label never truncates.
 
 ## H-3 Controls per mode
@@ -416,7 +416,7 @@ Track labels in the language picker ("English", "Français") come from the track
 7. ~~Caption colors aren't tokens.~~ Resolved (CA ARCH-REVIEW 9:35): `--caption-text`/`--caption-bg` from `--palette-caption-*`, unthemed (H-8).
 8. ~~Embed captions.~~ Resolved (CA): our VTT captions on every adapter; provider captions and the two fallback notes only for a source with no VTT of ours. AD placement under the frame (H-1 point 4) is approved by CA, with the assistive-tech condition on the AD row (H-3).
 9. Speech voicing uses the browser's speech engine (`speechSynthesis`); voices and timing vary by OS, so Read aloud is hidden where `canVoice()` is false.
-10. **Dusk light:** the dialog edge against the scrim is 1.22:1 (WCAG 1.4.11 needs 3:1), tracked as card DUSK-SCRIM-LIGHT (owner Chief of Creatives, CA a11y sign). Builders use the tokens as shipped and don't hand-patch. The fix lands as a dusk token change with a regenerated `docs/directions/v3/dusk/CONTRAST.md`, not in this PR. Dusk dark passes (5.80:1). Until DUSK-SCRIM-LIGHT lands, `node shared/contrast.mjs dusk` exits 1 on this row; that's expected.
+10. ~~Dusk light dialog edge on the scrim (1.22:1).~~ Resolved (card DUSK-SCRIM-LIGHT, CA ARCH-REVIEW Addendum 9): the caption settings dialog's outline reads the registered extra color token `--dialog-border` (default `var(--border)`; dusk light `var(--text)` `#3D1340`, 4.07:1 against the scrim composite `#8d8086`; dusk dark `var(--border)`, 5.80:1). Neo and kinetic resolve it to their own `--border`, so they look the same. `node shared/contrast.mjs dusk` exits 0. FSD registers `--dialog-border` in Ember (#30).
 
 ## Out of scope
 
