@@ -53,7 +53,9 @@ The package exports `ember-ui` (ESM and `.d.ts`), `ember-ui/styles.css` and `emb
 
 ## Progress
 
-See [PROGRESS.md](PROGRESS.md) for the dated build log and `docs/screenshots/` for milestone shots.
+See [PROGRESS.md](PROGRESS.md) (history) and [`progress/`](progress/README.md) (one fragment per PR) for the dated build log; `npm run devlog` renders both into `dist/devlog/DEVLOG.md`. Milestone shots are in `docs/screenshots/`.
+
+**Adding to the devlog:** never edit PROGRESS.md. Each PR adds exactly one `progress/YYYY-MM-DD-<slug>.md` (see [progress/README.md](progress/README.md)); CI (`npm run check:devlog`) fails a PR that edits PROGRESS.md or adds zero or more than one fragment, unless it is labelled `devlog-maintenance`.
 
 ## License
 
