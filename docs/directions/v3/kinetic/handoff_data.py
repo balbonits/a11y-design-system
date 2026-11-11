@@ -151,7 +151,7 @@ Contrast in [CONTRAST.md](CONTRAST.md): text 4.5:1, UI 3:1, 60 pairs, 0 fails. D
 3. Direction-local tokens (RULED, Chief Architect Addendum 7): approved as registered theme extras with neutral 0 or none defaults; motion extras are 0 under reduced motion; `--rule` is decorative only.
 4. Dialog backdrop (RULED, Chief Architect Addendum 7): `--scrim` joins the semantic set and every theme defines it; dialog text contrast never depends on it and it is never the only sign a modal is open. Kinetic: `#06123F99`.
 5. The `tick` and `drin` keyframes are local CSS; replace them with the R-3 primitives. Both stop under reduced motion.
-6. Drawer modality at 1024 and up: DASH-SPEC says "right side drawer" without saying modal or not. The prototype uses a modal dialog at every width (inert page, scrim, Esc), so focus can't get lost behind it. Proposal: keep it modal; Chief Architect to confirm.
+6. Drawer modality (RULED, Chief Architect 2026-11-10): the log drawer stays a modal `<dialog>` opened with `showModal()` at every width. The page is inert while it's open, Esc closes it, focus goes to its h2 on open, and focus returns to the row's "Open log" button on close.
 - **Who to ask:** Chief of Creatives for visuals, copy or token values; Chief Architect for accessibility and token rulings; UI Copywriter for strings; UX/UI Designer (me) for this file or the prototype.
 - **ETA (tokens):** kinetic registered within one working session after the Addendum 5 minor lands (assumption); FSD confirms or counters on receipt.
 '''

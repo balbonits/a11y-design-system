@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dusk">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Direction E, Soft Dusk: Ember UI v3 prototype</title>
+<title>Job tracker: Board (Ember UI v3, direction E dusk)</title>
 <script>try{var m=localStorage.getItem('jdilig:mode');if(m)document.documentElement.dataset.mode=m}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Nunito+Sans:opsz,wght@6..12,400..800&display=swap" rel="stylesheet">
@@ -24,10 +24,10 @@ h1{font-size:clamp(2.5rem,9vw,5rem)}h2{font-size:clamp(1.5rem,4.5vw,2.2rem)}h3{f
 .eyebrow{font-weight:700;font-size:.9rem;letter-spacing:.02em;color:var(--text-muted)}
 /* header: floating pill bar */
 header.top{position:sticky;top:0;z-index:5;padding:.6rem 0;background:linear-gradient(var(--color-bg) 70%,transparent)}
-.bar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;background:var(--surface);border-radius:28px;padding:.45rem .6rem .45rem 1.1rem;box-shadow:var(--shadow-overlay)}
+.bar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;background:var(--surface);border-radius:var(--radius-xl);padding:.45rem .6rem .45rem 1.1rem;box-shadow:var(--shadow-overlay)}
 .logo{font:400 1.3rem var(--font-display);text-decoration:none;color:var(--text);margin-right:auto;display:flex;align-items:center;gap:.55rem;min-height:44px}
 .sun{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--palette-apricot-300),var(--palette-coral-400) 55%,var(--palette-plum-600))}
-nav.views{display:flex;gap:.3rem;overflow-x:auto;width:100%;order:3;padding-bottom:.15rem}
+nav.views{display:flex;flex-wrap:wrap;gap:.3rem;width:100%;order:3;padding-bottom:.15rem}
 @media(min-width:820px){nav.views{width:auto;order:0}}
 nav.views a{flex:none;text-decoration:none;color:var(--text);font-weight:700;padding:.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;border-radius:var(--radius-full);transition:background var(--duration-base) var(--ease-standard)}
 nav.views a:hover{background:var(--surface-muted)}
@@ -54,7 +54,7 @@ main{position:relative;z-index:1}
 section[hidden]{display:none}
 main:focus{outline:none}
 .hero{padding:3rem 0 2rem;max-width:720px}
-.hero .lede{font-size:1.2rem;max-width:46ch;background:var(--color-bg);border-radius:20px}
+.hero .lede{font-size:1.2rem;max-width:46ch;background:var(--color-bg);border-radius:var(--radius-lg)}
 .row{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
 /* curved band dividers: sections blend, no hard edges */
 .band{position:relative;background:var(--surface-muted);margin:3.5rem 0;padding:1.5rem 0 2.5rem;border-image:linear-gradient(var(--surface-muted) 0 0) fill 0/0/0 100vmax;clip-path:inset(-56px -100vmax)}
@@ -63,7 +63,7 @@ main:focus{outline:none}
  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 56' preserveAspectRatio='none'%3E%3Cpath d='M0 56 C 360 0 1080 0 1440 56 Z'/%3E%3C/svg%3E") 0 0/100% 100%}
 .band::before{top:-55px}.band::after{bottom:-55px;transform:scaleY(-1)}
 .grid2{display:grid;gap:1.4rem}@media(min-width:820px){.grid2{grid-template-columns:1fr 1fr}}
-.panel{background:var(--surface);border-radius:var(--radius-lg);padding:1.6rem;box-shadow:var(--shadow-raised);min-width:0}
+.panel{background:var(--surface);border-radius:var(--radius-xl);padding:1.6rem;box-shadow:var(--shadow-raised);min-width:0}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity var(--duration-reveal) var(--ease-standard),transform var(--duration-reveal) var(--ease-standard)}
 .reveal.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
@@ -82,33 +82,28 @@ label{font-weight:700;display:block;margin-bottom:.3rem}
 .pill.warn::before{border-radius:2px}.pill.bad::before{border-radius:0;transform:rotate(45deg)}.pill.info::before{width:.3em;border-radius:4px}
 .panel .pill{background:var(--color-bg)}
 .ok{color:var(--success)}.warn{color:var(--warning)}.bad{color:var(--danger)}.info{color:var(--info)}
-.tscroll{overflow-x:auto;border-radius:24px;background:var(--surface)}
+.tscroll{overflow-x:auto;border-radius:var(--radius-lg);background:var(--surface)}
 table{border-collapse:collapse;width:100%;min-width:480px}
 th,td{text-align:left;padding:.85rem 1.1rem;border-bottom:1px solid var(--border-subtle)}
 thead th{font-size:.88rem;color:var(--text-muted)}
 tbody tr:last-child>*{border-bottom:0}
 .toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,180%);background:var(--text);color:var(--color-bg);padding:.85rem 1.4rem;border-radius:var(--radius-full);font-weight:700;transition:transform var(--duration-base) var(--ease-standard);max-width:calc(100vw - 2rem);z-index:9}
 .toast.show{transform:translate(-50%,0)}
-dialog{border:0;border-radius:var(--radius-lg);background:var(--surface);color:var(--text);max-width:min(460px,calc(100vw - 2rem));padding:1.8rem;box-shadow:var(--shadow-overlay)}
-dialog::backdrop{background:rgb(27 11 31 / .5)}
+.toast:empty{padding:0}
+dialog{border:0;border-radius:var(--radius-xl);background:var(--surface);color:var(--text);max-width:min(460px,calc(100vw - 2rem));padding:1.8rem;box-shadow:var(--shadow-overlay)}
+dialog::backdrop{background:var(--scrim)}
 /* tracker */
 .trhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;padding:2.5rem 0 1rem}
-.cue{font-weight:700;font-size:.9rem;color:var(--text-muted)}
-@media(min-width:1040px){.cue{display:none}}
-.lanes{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,84%);gap:1rem;overflow-x:auto;padding:.4rem .2rem 1.2rem;scroll-snap-type:x mandatory;border-radius:28px}
-@media(min-width:1040px){.lanes{grid-auto-flow:row;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible}}
-.lane{scroll-snap-align:start;background:var(--surface-muted);border-radius:28px;padding:1rem;min-width:0}
-.lane h2{font-size:1.25rem;display:flex;justify-content:space-between;align-items:center;gap:.4rem}
+.lane{background:var(--surface-muted);border-radius:var(--radius-xl);padding:1rem;min-width:0;margin-bottom:1rem}
 .count{font:700 .85rem var(--font-body);background:var(--surface);border-radius:var(--radius-full);min-width:2rem;text-align:center;padding:.1rem .5rem}
-.job{background:var(--surface);border-radius:24px;padding:1.1rem;margin-top:.8rem;box-shadow:var(--shadow-raised);transition:transform var(--duration-base) var(--ease-standard),box-shadow var(--duration-base) var(--ease-standard)}
+.job{background:var(--surface);border-radius:var(--radius-lg);padding:1.1rem;margin-top:.8rem;box-shadow:var(--shadow-raised);transition:transform var(--duration-base) var(--ease-standard),box-shadow var(--duration-base) var(--ease-standard)}
 .job:hover,.job:focus-within{transform:translateY(var(--lift));box-shadow:var(--shadow-overlay)}
-.job h3{font-size:1.15rem;margin:.2rem 0}
 .job .co{font-size:.9rem;color:var(--text-muted);font-weight:700}
-.job .remind{background:var(--accent-soft);border-radius:16px;padding:.45rem .8rem;font-size:.92rem;margin:.7rem 0}
+.job .remind{background:var(--accent-soft);border-radius:var(--radius-sm);padding:.45rem .8rem;font-size:.92rem;margin:.7rem 0}
 /* dashboard */
 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
 @media(min-width:820px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
-.stat{background:var(--surface);border-radius:32px 32px 32px 12px;padding:1.2rem 1.3rem;box-shadow:var(--shadow-raised);min-width:0}
+.stat{background:var(--surface);border-radius:var(--radius-xl) var(--radius-xl) var(--radius-xl) var(--radius-sm);padding:1.2rem 1.3rem;box-shadow:var(--shadow-raised);min-width:0}
 .stat b{display:block;font:400 2.6rem/1 var(--font-display);margin:.35rem 0 .5rem}
 .chart{width:100%;height:150px;display:block}
 .chart .line{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
@@ -116,7 +111,7 @@ dialog::backdrop{background:rgb(27 11 31 / .5)}
 .deploys{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
 .deploys li{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;background:var(--color-bg);border-radius:var(--radius-full);padding:.6rem 1.1rem}
 .sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
-.sw div{background:var(--surface);border-radius:24px;overflow:hidden;box-shadow:var(--shadow-raised)}
+.sw div{background:var(--surface);border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-raised)}
 .sw i{display:block;height:64px}
 .sw span{display:block;padding:.5rem .8rem;font-size:.8rem}
 footer{padding:2rem 0 4.5rem;margin-top:3rem}
@@ -124,13 +119,53 @@ footer .wrap{color:var(--text-muted);font-size:.92rem}
 footer a{display:inline-flex;align-items:center;min-height:44px}
 </style>
 <link rel="stylesheet" href="../shared/states.css">
+<style>
+/* tracker (v3 rework: board per TRACKER-SPEC + V3-STATE-COPY section 2) */
+html{scroll-padding-top:11rem}@media(min-width:820px){html{scroll-padding-top:6.5rem}}
+.pnote{background:var(--surface);border-radius:var(--radius-lg);padding:.8rem 1.1rem;margin:1.6rem 0 0;box-shadow:var(--shadow-raised)}.pnote p{margin:0}
+.pnote a{display:inline-flex;align-items:center;min-height:var(--target-min);margin-right:.9rem}
+.stabs{margin-bottom:1rem;border-radius:var(--radius-xl)}
+@media(min-width:1040px){.stabs{display:none}}
+.lanes{display:block}
+.lane[hidden]{display:none}
+@media(min-width:1040px){.lanes{display:grid;gap:1rem;grid-template-columns:repeat(5,minmax(0,1fr));align-items:start}.lanes.cl{grid-template-columns:repeat(4,minmax(0,1fr)) max-content}.lane[hidden]{display:block}}
+.lane h2{font-size:1.25rem;display:flex;justify-content:space-between;align-items:center;gap:.4rem;min-height:44px;margin:0}
+.lane h2:focus{outline:none}.lane h2:focus-visible{outline:var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);outline-offset:var(--focus-ring-offset)}
+.lane .ctog{display:none}
+@media(min-width:1040px){.lane.closed .ctog{display:inline-flex}.lane.closed .lname{display:none}.lanes.cl .lane.closed .lbody{display:none}}
+.ctog{font:inherit;min-height:44px;padding:.3rem .9rem;border:0;border-radius:var(--radius-full);background:var(--surface);color:var(--text);cursor:pointer;align-items:center;gap:.5rem}
+.ctog::after{content:"";width:.5em;height:.5em;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg)}
+.ctog[aria-expanded=true]::after{transform:rotate(45deg)}
+.lane .none{margin:.8rem 0 0;color:var(--text-muted)}
+.job h3{font-size:1.15rem;margin:.2rem 0;overflow-wrap:anywhere}
+.mv{display:grid;gap:.6rem;margin-top:.8rem}.mv[hidden]{display:none}
+.mv .field{margin:0}
+.mv .row{gap:.5rem}
+.job .btn{min-height:44px}
+.skc{background:var(--surface);border-radius:var(--radius-lg);padding:1.1rem;margin-top:.8rem;display:grid;gap:.5rem}
+.bempty{background:var(--surface);border-radius:var(--radius-xl);padding:1.6rem;box-shadow:var(--shadow-raised);max-width:46ch}
+.bempty p{margin:0 0 1rem}
+.sbanner{display:flex;flex-wrap:wrap;gap:.8rem 1rem;align-items:center;justify-content:space-between;background:var(--surface);border-radius:var(--radius-xl);padding:1rem 1.2rem;margin:0 0 1.2rem;box-shadow:inset 0 0 0 var(--border-width-strong) var(--danger)}
+.sbanner[hidden]{display:none}
+.sbanner p{margin:0;display:flex;gap:.55rem;align-items:flex-start;font-weight:700;max-width:52ch}
+.sbanner .badge{flex:none;display:inline-grid;place-items:center;width:1.35em;height:1.35em;border-radius:var(--radius-full);background:var(--danger);color:var(--danger-contrast);font-size:.85em}
+.ttoast{position:fixed;left:50%;bottom:1.2rem;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 2rem);background:var(--text);color:var(--color-bg);padding:.8rem .9rem .8rem 1.3rem;border-radius:var(--radius-lg);display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center;z-index:9;box-shadow:var(--shadow-overlay)}
+.ttoast[hidden]{display:none}
+.ttoast p{margin:0;display:grid}.ttoast #tt-m:empty{display:none}
+.ttoast .btn{background:var(--color-bg);color:var(--text);border-color:var(--color-bg)}
+.ttoast .btn:focus-visible{outline-color:var(--color-bg)}
+.ttoast .row{gap:.5rem}
+#roled{width:min(460px,calc(100vw - 2rem))}
+#roled .field{margin-bottom:1rem}
+dialog .row{margin-top:1rem}
+</style>
 </head>
-<body>
+<body data-home="tracker">
 <a class="skip" href="#main">Skip to content</a>
 <header class="top"><div class="wrap"><div class="bar">
- <a class="logo" href="#components"><span class="sun" aria-hidden="true"></span>Ember UI <span class="eyebrow">v3 · E dusk</span></a>
+ <a class="logo" href="#tracker"><span class="sun" aria-hidden="true"></span>Job tracker <span class="eyebrow">Ember UI · v3 E dusk</span></a>
  <nav class="views" aria-label="Prototype screens">
-  <a href="#components">Components</a><a href="#tracker">Job tracker</a><a href="#dashboard">Dev dashboard</a><a href="#tokens">Tokens</a>
+  <a href="#tracker">Board</a><a href="#components">Components (sampler)</a><a href="#dashboard">Dashboard (sampler)</a><a href="#tokens">Tokens</a>
  </nav>
  <button class="btn" id="mode" type="button"><span class="lbl">Dark mode</span></button>
 </div></div></header>
@@ -139,7 +174,7 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 
 <section id="v-components" aria-labelledby="h-comp">
  <div class="hero">
-  <p class="eyebrow">Direction E · Soft Dusk · Ember UI sampler</p>
+  <p class="eyebrow">Style sampler only, not for build · Direction E, Soft Dusk</p>
   <h1 id="h-comp">Calm screens for long evenings.</h1>
   <p class="lede muted">Ember UI's components in the dusk direction: plum type on apricot paper, soft pills, deep radii and sections that flow into each other. Every pair passes AA in light and dark.</p>
   <div class="row" style="margin-top:1.2rem"><button class="btn primary" type="button" data-toast="Saved">Save changes</button><button class="btn" type="button" id="openm">Open modal</button><button class="btn ghost" type="button">Learn more</button></div>
@@ -185,19 +220,23 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 </section>
 
 <section id="v-tracker" aria-labelledby="h-tr" hidden>
- <div class="trhead"><div><p class="eyebrow" style="margin:0">Job tracker · prototype with fictional demo data</p><h1 id="h-tr">Board</h1></div><button class="btn primary" type="button" data-toast="Role saved">Add role</button></div>
- <p class="cue" aria-hidden="true">Swipe for more stages →</p>
- <div class="lanes" tabindex="0" role="region" aria-label="Application stages, scrolls sideways">
-  <div class="lane"><h2>Saved <span class="count">1</span></h2><article class="job"><div class="co">Initech (fictional)</div><h3>React Developer</h3><div class="muted">Saved yesterday</div><div class="remind">Reminder: apply before the posting closes, Nov 16</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">React Developer at Initech</span></button></article></div>
-  <div class="lane"><h2>Applied <span class="count">1</span></h2><article class="job"><div class="co">Acme Corp (fictional)</div><h3>Front-end Engineer</h3><div class="muted">Applied 6 days ago</div><div class="remind">Reminder: follow up with the recruiter</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">Front-end Engineer at Acme Corp</span></button></article></div>
-  <div class="lane"><h2>Interviewing <span class="count">1</span></h2><article class="job"><div class="co">Globex Inc. (fictional)</div><h3>Senior UI Developer</h3><div class="muted">Started interviewing 3 days ago</div><div class="remind">Reminder: send a thank-you note</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">Senior UI Developer at Globex Inc.</span></button></article></div>
-  <div class="lane"><h2>Offer <span class="count">1</span></h2><article class="job"><div class="co">Hooli Labs (fictional)</div><h3>Accessibility Engineer</h3><div class="muted">Got an offer 2 days ago</div><div class="remind">Reminder: reply to the offer</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">Accessibility Engineer at Hooli Labs</span></button></article></div>
-  <div class="lane"><h2>Closed <span class="count">0</span></h2><p class="muted">No roles in Closed.</p></div>
+ <aside class="pnote" aria-label="About this prototype"><p>Prototype with fictional demo data, saved only in this browser.</p>
+  <p class="plinks"><a href="#tracker" data-prev="empty board">Empty board</a> <a href="#tracker" data-prev="loading">Loading</a> <a href="#tracker" data-prev="can't save">Can't save</a></p>
+  <p id="pnote-prev" hidden><span id="pnote-state"></span> <a href="#tracker" id="exitprev">Exit preview</a></p></aside>
+ <div class="trhead"><div><p class="eyebrow" style="margin:0">Job tracker</p><h1 id="h-tr">Board</h1></div><button class="btn primary" type="button" id="addrole">Add role</button></div>
+ <div id="sbanner" class="sbanner" hidden><p><span class="badge" aria-hidden="true">!</span>Can't save changes on this device right now. Export your data to keep a copy.</p><button class="btn" type="button" id="exportb">Export data</button></div>
+ <div id="board" aria-busy="false">
+  <div role="tablist" data-own aria-label="Stages" class="stabs" id="stabs"></div>
+  <div class="lanes" id="lanes"></div>
+  <div class="bempty" id="bempty" hidden><p>No roles yet. Add the first one you're interested in.</p><button class="btn primary" type="button" id="addrole2">Add role</button></div>
  </div>
+ <p class="sr" role="status" id="bstatus"></p>
+ <div class="ttoast" id="tt" hidden><p aria-hidden="true"><b id="tt-t"></b><span id="tt-m"></span></p><span class="row"><button class="btn" type="button" id="tt-undo">Undo</button><button class="btn" type="button" id="tt-x">Dismiss</button></span></div>
+ <p class="sr" role="status" id="tt-live"></p>
 </section>
 
 <section id="v-dashboard" aria-labelledby="h-db" hidden>
- <div class="trhead"><div><p class="eyebrow" style="margin:0">Dev dashboard · example data, not real metrics</p><h1 id="h-db">Overview</h1></div></div>
+ <div class="trhead"><div><p class="eyebrow" style="margin:0">Style sampler only, not for build · example data, not real metrics</p><h1 id="h-db">Overview</h1></div></div>
  <div class="stats">
   <div class="stat"><span class="eyebrow">Builds today</span><b>12</b><span class="pill ok">All green</span></div>
   <div class="stat"><span class="eyebrow">Open PRs</span><b>4</b><span class="pill info">2 need review</span></div>
@@ -224,11 +263,116 @@ footer a{display:inline-flex;align-items:center;min-height:44px}
 <footer><div class="wrap">Ember UI v3 direction E, a prototype by John Dilig. <a href="../">All v3 directions</a></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <dialog id="dlg" aria-labelledby="dh"><h2 id="dh">Delete this role?</h2><p>React Developer at Initech (fictional) and its reminders will be removed.</p><div class="row"><button class="btn" type="button" id="dno" autofocus>Cancel</button><button class="btn danger" type="button" id="dok">Delete role</button></div></dialog>
+<dialog id="roled" aria-labelledby="rh"><form id="rform" novalidate method="dialog">
+ <h2 id="rh">Add role</h2>
+ <div class="field"><label for="f-link">Job link</label><input id="f-link" type="url" inputmode="url" autocomplete="url" aria-describedby="f-link-h"><div class="hint" id="f-link-h">Optional. Paste the posting URL.</div><p class="err" id="f-link-e" hidden><span class="badge" aria-hidden="true">!</span>Enter a full link that starts with https://</p></div>
+ <div class="field"><label for="f-co">Company <span class="req">(required)</span></label><input id="f-co" type="text" autocomplete="organization" required><p class="err" id="f-co-e" hidden><span class="badge" aria-hidden="true">!</span>Enter the company name.</p></div>
+ <div class="field"><label for="f-ti">Title <span class="req">(required)</span></label><input id="f-ti" type="text" autocomplete="organization-title" required><p class="err" id="f-ti-e" hidden><span class="badge" aria-hidden="true">!</span>Enter the job title.</p></div>
+ <div class="field"><label for="f-st">Stage</label><select id="f-st"></select></div>
+ <label class="check"><input type="checkbox" id="f-rm"> Set a reminder</label>
+ <div class="field" id="f-rd-w" hidden><label for="f-rd">Reminder date</label><input id="f-rd" type="date"><p class="err" id="f-rd-e" hidden><span class="badge" aria-hidden="true">!</span>Pick a date for the reminder.</p></div>
+ <div class="row"><button class="btn" type="button" id="rcancel">Cancel</button><button class="btn primary" type="submit" id="rsave">Save role</button></div>
+</form></dialog>
+<dialog id="deld" aria-labelledby="delh" aria-describedby="delb"><h2 id="delh">Delete this role?</h2><p id="delb"></p><div class="row"><button class="btn" type="button" id="delno" autofocus>Cancel</button><button class="btn danger" type="button" id="delok">Delete role</button></div></dialog>
 <script src="../shared/proto.js"></script>
 <script>
 /* E only: scroll-driven hue shift and gentle parallax on the decorative glow (off when the tokens are 0). */
 (()=>{const {RM}=V3,R=document.documentElement;let q=0;
 addEventListener('scroll',()=>{if(RM.matches||q)return;q=requestAnimationFrame(()=>{q=0;const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);R.style.setProperty('--hp',(scrollY/max).toFixed(3));R.style.setProperty('--py',Math.round(scrollY))})},{passive:true});
+})();
+</script>
+<script>
+/* Job tracker board (fictional demo data, saved only in this browser). Strings are V3-STATE-COPY section 2. */
+(()=>{const {$,$$}=V3;
+const STAGES=['Saved','Applied','Interviewing','Offer','Closed'];
+const AGE={Saved:'Saved',Applied:'Applied',Interviewing:'Started interviewing',Offer:'Got an offer',Closed:'Closed'};
+const RTEXT={Saved:'apply before the posting closes',Applied:'follow up with the recruiter',Interviewing:'send a thank-you note',Offer:'reply to the offer',Closed:'follow up'};
+const KEY='jdilig:tracker:v1',DAY=864e5;
+const day0=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x.getTime()};
+const today=()=>day0(Date.now());
+const iso=t=>{const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+function seed(){const t=today(),r=(id,company,title,stage,ago,rem,rin)=>({id,company,title,stage,link:'',since:t-ago*DAY,rem:rem?{text:rem,date:iso(t+rin*DAY)}:null});
+ return [r('r1','Initech (fictional)','React Developer','Saved',1,RTEXT.Saved,6),r('r2','Acme Corp (fictional)','Front-end Engineer','Applied',6,RTEXT.Applied,1),r('r3','Vandelay Industries (fictional)','UI Engineer','Applied',0),r('r4','Globex Inc. (fictional)','Senior UI Developer','Interviewing',3,RTEXT.Interviewing,0),r('r5','Hooli Labs (fictional)','Accessibility Engineer','Offer',2,RTEXT.Offer,2),r('r6','Umbrella Co. (fictional)','Design Engineer','Closed',9)]}
+let blocked=false;try{localStorage.setItem(KEY+':t','1');localStorage.removeItem(KEY+':t')}catch(e){blocked=true}
+function load(){if(blocked)return seed();try{const s=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(s))return s}catch(e){}return seed()}
+let roles=load(),preview=null,stage='Saved',closedOpen=false,loading=false,firstLoad=true;
+const desk=matchMedia('(min-width:1040px)');
+function persist(){if(blocked||preview==="can't save"){showBanner(true);return false}try{localStorage.setItem(KEY,JSON.stringify(roles));return true}catch(e){blocked=true;showBanner(true);return false}}
+function showBanner(alert){const b=$('#sbanner');if(alert){b.hidden=true;b.removeAttribute('role');requestAnimationFrame(()=>{b.setAttribute('role','alert');b.hidden=false})}else{b.removeAttribute('role');b.hidden=!(blocked||preview==="can't save")}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function age(r){const n=Math.round((today()-day0(r.since))/DAY);return AGE[r.stage]+' '+(n<=0?'today':n===1?'yesterday':n+' days ago')}
+const fdate=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d).toLocaleDateString('en-US',{month:'short',day:'numeric'})};
+function list(){return preview==='empty board'?[]:roles}
+function card(r){const lbl=`${r.title} at ${r.company}`;return `<article class="job" data-id="${r.id}"><div class="co">${esc(r.company)}</div><h3>${esc(r.title)}</h3><div class="muted">${age(r)}</div>${r.rem?`<div class="remind">Reminder: ${esc(r.rem.text)}, ${fdate(r.rem.date)}</div>`:''}
+<button class="btn mvb" type="button" aria-expanded="false" aria-controls="mv-${r.id}" aria-label="Move or edit ${esc(lbl)}">Move or edit</button>
+<div class="mv" id="mv-${r.id}" hidden><div class="field"><label for="ms-${r.id}">Move to stage</label><select id="ms-${r.id}">${STAGES.map(s=>`<option${s===r.stage?' selected':''}>${s}</option>`).join('')}</select></div>
+<span class="row"><button class="btn primary" type="button" data-act="move">Move</button><button class="btn" type="button" data-act="edit">Edit</button><button class="btn" type="button" data-act="del">Delete</button></span></div></article>`}
+function render(){const L=list(),cnt=s=>L.filter(r=>r.stage===s).length;
+ $('#board').setAttribute('aria-busy',loading);
+ const empty=!loading&&L.length===0;$('#bempty').hidden=!empty;$('#stabs').hidden=empty;$('#lanes').hidden=empty;
+ $('#stabs').innerHTML=STAGES.map(s=>`<button role="tab" id="tab-${s}" aria-controls="lane-${s}" aria-selected="${s===stage}" tabindex="${s===stage?0:-1}">${s} (${loading?'…':cnt(s)})</button>`).join('');
+ $('#lanes').classList.toggle('cl',!closedOpen);
+ $('#lanes').innerHTML=STAGES.map(s=>{const rs=L.filter(r=>r.stage===s);const body=loading?'<div class="skc" aria-hidden="true"><span class="skel"></span><span class="skel"></span><span class="skel"></span></div>':(rs.length?rs.map(card).join(''):`<p class="none">No roles in ${s}.</p>`);
+  return `<div class="lane${s==='Closed'?' closed':''}" id="lane-${s}"><h2 id="lh-${s}" tabindex="-1"><span class="lname">${s} <span class="count">${loading?'…':rs.length}</span></span>${s==='Closed'?`<button class="ctog" type="button" aria-expanded="${closedOpen}" aria-controls="lb-Closed">Closed (${loading?'…':rs.length})</button>`:''}</h2><div class="lbody" id="lb-${s}">${body}</div></div>`}).join('');
+ roles_aria();}
+function roles_aria(){const d=desk.matches;STAGES.forEach(s=>{const l=$('#lane-'+s);if(!l)return;if(d){l.removeAttribute('role');l.removeAttribute('aria-labelledby');l.removeAttribute('tabindex');l.setAttribute('role','region');l.setAttribute('aria-labelledby','lh-'+s);l.hidden=false}else{l.setAttribute('role','tabpanel');l.setAttribute('aria-labelledby','tab-'+s);l.hidden=s!==stage}})}
+desk.addEventListener('change',roles_aria);
+function selTab(s,focus){stage=s;$$('#stabs [role=tab]').forEach(t=>{const on=t.id==='tab-'+s;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1});roles_aria();if(focus)$('#tab-'+s).focus()}
+$('#stabs').addEventListener('click',e=>{const t=e.target.closest('[role=tab]');if(t)selTab(t.id.slice(4),true)});
+$('#stabs').addEventListener('keydown',e=>{const i=STAGES.indexOf(stage),k={ArrowRight:i+1,ArrowLeft:i-1,Home:0,End:4}[e.key];if(k===undefined)return;e.preventDefault();selTab(STAGES[(k+5)%5],true)});
+/* toasts: one visual toast; announcements go through a separate polite status so the text is read once */
+let th;function toast(t,m,undo){const v=$('#tt');clearTimeout(th);$('#tt-t').textContent=t;$('#tt-m').textContent=m||'';$('#tt-undo').hidden=!undo;$('#tt-x').hidden=!undo;v.hidden=false;v._undo=undo||null;
+ const live=$('#tt-live');live.textContent='';setTimeout(()=>{live.textContent=t+(m?'. '+m:'')},30);if(!undo)th=setTimeout(()=>{v.hidden=true},4000)}
+function hideToast(){$('#tt').hidden=true}
+$('#tt-x').onclick=()=>{hideToast();$('#h-tr').setAttribute('tabindex','-1');$('#h-tr').focus()};
+$('#tt-undo').onclick=()=>{const u=$('#tt')._undo;hideToast();if(u)u()};
+const find=id=>roles.find(r=>r.id===id);
+function focusCard(id){const r=find(id);if(!r)return;if(!desk.matches)selTab(r.stage);if(r.stage==='Closed'&&!closedOpen){closedOpen=true;render();if(!desk.matches)selTab(r.stage)}const b=$(`.job[data-id="${id}"] .mvb`);b&&b.focus()}
+$('#lanes').addEventListener('click',e=>{const tg=e.target.closest('.ctog');if(tg){closedOpen=!closedOpen;$('#lanes').classList.toggle('cl',!closedOpen);tg.setAttribute('aria-expanded',closedOpen);return}
+ const job=e.target.closest('.job');if(!job)return;const id=job.dataset.id,r=find(id);
+ if(e.target.closest('.mvb')){const b=e.target.closest('.mvb'),p=$('#mv-'+id),o=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',o);p.hidden=!o;if(o)$('#ms-'+id).focus();return}
+ const act=e.target.closest('[data-act]');if(!act||!r)return;
+ if(act.dataset.act==='move'){const to=$('#ms-'+id).value;if(to===r.stage){const b=job.querySelector('.mvb');b.setAttribute('aria-expanded','false');$('#mv-'+id).hidden=true;b.focus();return}
+  r.stage=to;r.since=Date.now();persist();render();focusCard(id);toast('Moved to '+to,`${r.title} at ${r.company}.`)}
+ if(act.dataset.act==='edit')openRole(r,act);
+ if(act.dataset.act==='del')openDel(r)});
+$('#lanes').addEventListener('keydown',e=>{if(e.key!=='Escape')return;const p=e.target.closest('.mv');if(!p)return;const b=p.parentElement.querySelector('.mvb');b.setAttribute('aria-expanded','false');p.hidden=true;b.focus()});
+/* delete with Undo */
+let delR=null;const deld=$('#deld');
+function openDel(r){delR=r;$('#delb').textContent=`${r.title} at ${r.company} and its reminders will be removed.`;deld.showModal();$('#delno').focus()}
+$('#delno').onclick=()=>{deld.close();const b=$(`.job[data-id="${delR.id}"] .mvb`);b&&b.focus()};
+deld.addEventListener('cancel',e=>{e.preventDefault();$('#delno').click()});
+$('#delok').onclick=()=>{const r=delR,i=roles.indexOf(r);deld.close();roles.splice(i,1);persist();render();const h=$('#lh-'+r.stage);if(!desk.matches)selTab(r.stage);(h&&!$('#lanes').hidden?h:$('#h-tr')).focus();
+ toast('Role deleted','',()=>{roles.splice(i,0,r);persist();render();focusCard(r.id);toast('Role restored')})};
+/* add / edit */
+const rd=$('#roled'),F=id=>$('#'+id);let editR=null,opener=null;
+F('f-st').innerHTML=STAGES.map(s=>`<option>${s}</option>`).join('');
+F('f-rm').onchange=()=>{F('f-rd-w').hidden=!F('f-rm').checked;if(!F('f-rm').checked)setErr('f-rd',false)};
+function setErr(id,on){const i=F(id),e=F(id+'-e'),h=F(id+'-h');e.hidden=!on;i.setAttribute('aria-invalid',on?'true':'false');if(!on)i.removeAttribute('aria-invalid');i.setAttribute('aria-describedby',[h&&h.id,on&&e.id].filter(Boolean).join(' ')||'');if(!i.getAttribute('aria-describedby'))i.removeAttribute('aria-describedby')}
+function openRole(r,from){editR=r||null;opener=from;$('#rh').textContent=r?'Edit role':'Add role';$('#rsave').textContent=r?'Save changes':'Save role';
+ F('f-link').value=r?r.link:'';F('f-co').value=r?r.company:'';F('f-ti').value=r?r.title:'';F('f-st').value=r?r.stage:'Saved';F('f-rm').checked=!!(r&&r.rem);F('f-rd').value=r&&r.rem?r.rem.date:'';F('f-rd-w').hidden=!F('f-rm').checked;['f-link','f-co','f-ti','f-rd'].forEach(i=>setErr(i,false));
+ rd.showModal();F('f-link').focus()}
+$('#addrole').onclick=e=>openRole(null,e.currentTarget);$('#addrole2').onclick=e=>openRole(null,e.currentTarget);
+$('#rcancel').onclick=()=>{rd.close();opener&&opener.isConnected&&opener.focus()};
+rd.addEventListener('cancel',e=>{e.preventDefault();$('#rcancel').click()});
+function okLink(v){if(!v)return true;if(!/^https:\/\/\S+$/.test(v))return false;try{new URL(v);return true}catch(e){return false}}
+$('#rform').addEventListener('submit',e=>{e.preventDefault();const link=F('f-link').value.trim(),co=F('f-co').value.trim(),ti=F('f-ti').value.trim(),st=F('f-st').value,rm=F('f-rm').checked,dt=F('f-rd').value;
+ const bad=[['f-link',!okLink(link)],['f-co',!co],['f-ti',!ti],['f-rd',rm&&!dt]];bad.forEach(([i,b])=>setErr(i,b));const first=bad.find(b=>b[1]);if(first){F(first[0]).focus();return}
+ let r=editR;const rem=rm?{text:(r&&r.rem&&r.rem.text)||RTEXT[st],date:dt}:null;
+ if(r){if(r.stage!==st)r.since=Date.now();Object.assign(r,{link,company:co,title:ti,stage:st,rem})}else{r={id:'r'+Date.now().toString(36),company:co,title:ti,stage:st,link,since:Date.now(),rem};roles.push(r)}
+ const wasEdit=!!editR;rd.close();persist();if(preview==='empty board')exitPrev(true);render();focusCard(r.id);
+ wasEdit?toast('Role updated'):toast('Role saved',`${r.title} at ${r.company}.`)});
+/* export */
+$('#exportb').onclick=()=>{try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify({exported:new Date().toISOString(),roles},null,2)],{type:'application/json'}));a.download='job-tracker-export.json';document.body.append(a);a.click();a.remove();toast('Export downloaded')}catch(e){toast("Couldn't export. Try again.")}};
+/* preview states */
+function setPrev(){$('#pnote-prev').hidden=!preview;$('#pnote-state').textContent=preview?`Previewing the ${preview} state.`:''}
+function exitPrev(silent){preview=null;loading=false;setPrev();showBanner(false);if(!silent){roles=load();render();$('#h-tr').setAttribute('tabindex','-1');$('#h-tr').focus()}}
+$$('[data-prev]').forEach(a=>a.onclick=e=>{e.preventDefault();preview=a.dataset.prev;loading=preview==='loading';setPrev();showBanner(false);render();$('#bstatus').textContent=loading?'Loading roles':'';$('#exitprev').focus()});
+$('#exitprev').onclick=e=>{e.preventDefault();exitPrev()};
+/* first load: simulated read from storage */
+document.addEventListener('v3:view',e=>{if(e.detail!=='tracker'||!firstLoad)return;firstLoad=false;loading=true;render();$('#bstatus').textContent='Loading roles';setTimeout(()=>{if(preview==='loading')return;loading=false;render();$('#bstatus').textContent=''},500)});
+showBanner(false);render();
+if(!$('#v-tracker').hidden)document.dispatchEvent(new CustomEvent('v3:view',{detail:'tracker'}));
 })();
 </script>
 </body></html>
