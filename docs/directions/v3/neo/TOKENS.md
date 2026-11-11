@@ -45,7 +45,7 @@ New semantic tokens for the additive minor release after v0.3.0 (every theme mus
 | `--radius-lg` | `18px` |
 | `--radius-full` | `999px` |
 | `--border-width` | `2px` |
-| `--border-width-strong` | `2.5px` |
+| `--border-width-strong` | `3px` |
 | `--shadow-raised` | `4px 4px 0 var(--border)` |
 | `--shadow-press` | `1px 1px 0 var(--border)` |
 | `--divider-shape` | `none` |

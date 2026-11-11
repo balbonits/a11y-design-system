@@ -49,7 +49,7 @@
   --radius-xl: var(--radius-lg);
   --radius-full: 999px;
   --border-width: 2px;
-  --border-width-strong: 2.5px;
+  --border-width-strong: 3px;
   --shadow-raised: 4px 4px 0 var(--border);
   --shadow-press: 1px 1px 0 var(--border);
   --divider-shape: none;
