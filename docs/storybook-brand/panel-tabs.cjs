@@ -56,7 +56,7 @@ const stripFocus = (html) => html.replace(/\/\* PANEL-TABS-FOCUS start[\s\S]*?\/
     await ctx.close();
   }
 
-  // ---- FU-SB-PANEL-TABS-FOCUS (HANDOFF section 4b). Ring = 3px solid --eb-focus, offset -3px, on :focus-visible, every addon tab.
+  // ---- FU-SB-PANEL-TABS-FOCUS (HANDOFF section 4b). Ring = 3px solid --eb-focus, offset -6px (CA, 1.4.1: the selected underline stays visible), on :focus-visible, every addon tab.
   if (!STRIP) {
     const RING = [0xe0, 0x21, 0x7a], near = (d, i) => Math.abs(d[i] - RING[0]) + Math.abs(d[i + 1] - RING[1]) + Math.abs(d[i + 2] - RING[2]) < 60;
     const lum = (c) => { const f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; return .2126 * f(c[0]) + .7152 * f(c[1]) + .0722 * f(c[2]); };
