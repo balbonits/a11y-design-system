@@ -6,15 +6,15 @@ P={'ink':'#111111','ink-2':'#1c1c1c','ink-3':'#272727','ink-soft':'#3d3d3d','gra
  'green-700':'#17702a','green-300':'#5ed27a','amber-800':'#855400','amber-300':'#ffc24a',
  'red-700':'#c4122f','red-800':'#a00e26','red-300':'#ff7a8c','red-200':'#ff9aa8','pink-600':'#e0217a','sky-700':'#0b5cad','sky-300':'#7fb6ff'}
 L={'color-bg':'cream','surface':'paper','surface-muted':'cream-2','text':'ink','text-muted':'ink-soft','border':'ink','border-subtle':'gray',
- 'accent':'blue-600','accent-hover':'blue-700','accent-soft':'blue-100','accent-contrast':'paper','focus':'pink-600',
+ 'accent':'blue-600','accent-hover':'blue-700','accent-soft':'blue-100','accent-contrast':'paper','focus-ring-color':'pink-600','focus':'pink-600',
  'success':'green-700','warning':'amber-800','danger':'red-700','danger-hover':'red-800','danger-contrast':'paper','info':'sky-700',
  'highlight':'lime-400','highlight-contrast':'ink'}
 D={'color-bg':'ink','surface':'ink-2','surface-muted':'ink-3','text':'cream','text-muted':'sand','border':'cream','border-subtle':'gray-2',
- 'accent':'lime-400','accent-hover':'lime-300','accent-soft':'lime-900','accent-contrast':'ink','focus':'pink-600',
+ 'accent':'lime-400','accent-hover':'lime-300','accent-soft':'lime-900','accent-contrast':'ink','focus-ring-color':'pink-600','focus':'pink-600',
  'success':'green-300','warning':'amber-300','danger':'red-300','danger-hover':'red-200','danger-contrast':'ink','info':'sky-300',
  'highlight':'blue-600','highlight-contrast':'paper'}
 SHAPE={'--font-display':"'Archivo Black', 'Arial Black', sans-serif",'--font-body':"'Archivo', system-ui, sans-serif",'--font-mono':"'JetBrains Mono', ui-monospace, monospace",
- '--weight-display':'400','--radius-sm':'10px','--radius-md':'12px','--radius-lg':'18px','--radius-full':'999px','--border-width':'2px','--border-width-strong':'2.5px',
+ '--weight-display':'400','--radius-sm':'10px','--radius-md':'12px','--radius-lg':'18px','--radius-full':'999px','--radius':'var(--radius-md)','--border-width':'2px','--border-width-strong':'2.5px',
  '--shadow-raised':'4px 4px 0 var(--border)','--shadow-press':'1px 1px 0 var(--border)','--divider-shape':'none','--focus-ring-width':'3px','--focus-ring-offset':'3px',
  '--duration-fast':'120ms','--duration-base':'220ms','--duration-slow':'420ms','--duration-reveal':'520ms',
  '--ease-standard':'cubic-bezier(.2,.8,.2,1)','--ease-press':'cubic-bezier(.34,1.56,.64,1)','--duration-ticker':'28s','--parallax-scale':'0.08','--lift':'-3px','--tilt':'-1.5deg'}
@@ -58,7 +58,7 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | Token | Light primitive | Light | Dark primitive | Dark |
 |---|---|---|---|---|
 {rows}
-New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. Ember's existing `--radius` maps to `--radius-md`. All other names are Ember's existing ones.
+New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. `--focus-ring-color` is the ring color; `--focus` and `--radius` stay as deprecated aliases until v0.4 (pointing to `--focus-ring-color` and `--radius-md`), per Chief Architect's final ruling. All other names are Ember's existing ones.
 
 ## Shape, type and motion
 | Token | Value |

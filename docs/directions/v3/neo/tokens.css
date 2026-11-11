@@ -39,6 +39,7 @@
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-full: 999px;
+  --radius: var(--radius-md);
   --border-width: 2px;
   --border-width-strong: 2.5px;
   --shadow-raised: 4px 4px 0 var(--border);
@@ -69,6 +70,7 @@
   --accent-hover: var(--palette-blue-700);
   --accent-soft: var(--palette-blue-100);
   --accent-contrast: var(--palette-paper);
+  --focus-ring-color: var(--palette-pink-600);
   --focus: var(--palette-pink-600);
   --success: var(--palette-green-700);
   --warning: var(--palette-amber-800);
@@ -92,6 +94,7 @@
   --accent-hover: var(--palette-lime-300);
   --accent-soft: var(--palette-lime-900);
   --accent-contrast: var(--palette-ink);
+  --focus-ring-color: var(--palette-pink-600);
   --focus: var(--palette-pink-600);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
@@ -115,6 +118,7 @@
   --accent-hover: var(--palette-lime-300);
   --accent-soft: var(--palette-lime-900);
   --accent-contrast: var(--palette-ink);
+  --focus-ring-color: var(--palette-pink-600);
   --focus: var(--palette-pink-600);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);

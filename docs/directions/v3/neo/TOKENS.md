@@ -20,6 +20,7 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | `--accent-hover` | `blue-700` | `#1530d0` | `lime-300` | `#d7ff5a` |
 | `--accent-soft` | `blue-100` | `#e3e8ff` | `lime-900` | `#2c3310` |
 | `--accent-contrast` | `paper` | `#ffffff` | `ink` | `#111111` |
+| `--focus-ring-color` | `pink-600` | `#e0217a` | `pink-600` | `#e0217a` |
 | `--focus` | `pink-600` | `#e0217a` | `pink-600` | `#e0217a` |
 | `--success` | `green-700` | `#17702a` | `green-300` | `#5ed27a` |
 | `--warning` | `amber-800` | `#855400` | `amber-300` | `#ffc24a` |
@@ -30,7 +31,7 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | `--highlight` | `lime-400` | `#c6f432` | `blue-600` | `#1f3dff` |
 | `--highlight-contrast` | `ink` | `#111111` | `paper` | `#ffffff` |
 
-New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. Ember's existing `--radius` maps to `--radius-md`. All other names are Ember's existing ones.
+New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. `--focus-ring-color` is the ring color; `--focus` and `--radius` stay as deprecated aliases until v0.4 (pointing to `--focus-ring-color` and `--radius-md`), per Chief Architect's final ruling. All other names are Ember's existing ones.
 
 ## Shape, type and motion
 | Token | Value |
@@ -43,6 +44,7 @@ New semantic tokens for the additive minor release after v0.3.0 (every theme mus
 | `--radius-md` | `12px` |
 | `--radius-lg` | `18px` |
 | `--radius-full` | `999px` |
+| `--radius` | `var(--radius-md)` |
 | `--border-width` | `2px` |
 | `--border-width-strong` | `2.5px` |
 | `--shadow-raised` | `4px 4px 0 var(--border)` |
