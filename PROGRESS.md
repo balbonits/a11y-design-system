@@ -154,3 +154,7 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - (d), (e), (f) New e2e `scripts/hover.mjs` (`npm run test:hover`, in CI): neo's hovered bg and fg match `scripts/hover.baseline.json`, captured from the pre-change head 1b4b3a2, for every variant in light and dark at 320, 375 and 1280. Kinetic fills with the pair. Disabled and aria-disabled buttons don't change on hover. Under forced colors, the hovered colors are system colors. Shots are in `docs/screenshots/hover/`.
 - (g) HANDOFF:57 and :96 name the contract tokens, and README records them as optional contract tokens.
 - Dusk isn't in this branch's registry yet. The baseline test covers it automatically once #30 lands, and it needs a baseline entry from #30's pre-hover head.
+
+## 2026-11-11 1:57 AM PT: pressed-state contrast pairs (CA Decision 1)
+
+CA confirmed that press restores each variant's own fill and label (HANDOFF:57), on condition that the pressed state is gated. scripts/contrast.mjs has a new Pressed state section covering every theme and mode: the label on the pressed fill is 4.5:1 or more for primary, danger, secondary and ghost. Primary's and danger's pressed fill is 3:1 or more against --color-bg and --surface. Secondary and ghost take a --text border on press, so that border is gated instead, with a fallback to the fill when --border-width is 0. 48 rows, 0 failures (190 pairs total). The table is in docs/CONTRAST.md.
