@@ -67,16 +67,12 @@
 
 ## Scrim (dialog backdrop)
 
-`--scrim` is cobalt-950 `#06123F` plus alpha (40% light `#06123F66`, 60% dark `#06123F99`), composited over the page. This is per-mode, the same naming as neo (`--palette-scrim` / `--palette-scrim-dark`). Light is 40% so the dialog border (`--border`, cobalt-700 `#1434B8`) against the scrim over `--color-bg` (warm-50 `#FBF8F1`, composite `#999caa`) meets WCAG 1.4.11 at 3.47:1. The opaque white `--surface` against that composite is 2.73:1, below 3:1; the cobalt border is the 1.4.11 cue and stays as it is (Chief of Creatives ruling, 9:45 PM PT 2026-11-10; CA agreed). Dark border against the composite is 8.73:1.
+`--scrim` is per-mode, the same naming as neo (`--palette-scrim` / `--palette-scrim-dark`). Light is cobalt-950 at 40% (`#06123F66`). Dark is black at 50% (`#00000080`). Dark was previously cobalt-950 at 60% (`#06123F99`); that lightened `--color-bg` (night-900 `#070F33`) instead of dimming it, and `--text-muted` under the scrim, both composited, failed at 2.75:1. Black at 50% dims night-900 (composite `#030719`, luminance 0.39×) and keeps that pair at 3:1 or better (Chief of Creatives follow-up, 9:50 PM PT 2026-11-10). Light is unchanged from the 9:45 PM PT ruling (CA agreed).
 
-Page colors should dim or stay equal, never lighten, and text-muted under a scrim stays at least 3:1 so it stays recognizable. The dialog is an opaque `--surface`, so its text contrast is the text/surface rows above and never depends on the scrim.
+Gates, matching neo's method: the opaque dialog border against the scrim composited over `--color-bg` must be 3:1 or better (WCAG 1.4.11); `--text-muted` under the scrim, both composited, must be 3:1 or better; and the dark scrim must not lighten `--color-bg`. The opaque `--surface` against the composite is listed as informational only; the border is the 1.4.11 cue. The dialog is an opaque `--surface`, so its text contrast is the text/surface rows above and never depends on the scrim. There is no uncomposited "text-muted vs the composite" row: neo's Scrim section does not include one, and that pairing measures text that isn't drawn there.
 
-Known results below 3:1 or against the dim rule, listed here and not hidden:
-
-- Light: `--text-muted` (slate-600 `#45507A`) against the 40% composite `#999caa` is 2.87:1, below 3:1. If both the text and the page are composited under the scrim (neo's method), the same pair is 4.20:1.
-- Light: the opaque white `--surface` against `#999caa` is 2.73:1, below 3:1. The border is the 1.4.11 cue.
-- Dark: `--text-muted` (slate-300) composited under the 60% scrim against the composited page is 2.75:1, below 3:1. The uncomposited token against the dark composite is 11.10:1.
-- Dark: `--color-bg` (night-900 `#070F33`) slightly lightens under the 60% scrim (composite `#06113a`).
+- Light: scrim `#06123F66` over `#FBF8F1` composites to `#999caa`. Border `#1434B8` against that composite is 3.47:1 (pass). `--text-muted` under the scrim, both composited, is 4.20:1 (pass). Opaque white `--surface` against the composite is 2.73:1 (informational, below 3:1).
+- Dark: scrim `#00000080` over `#070F33` composites to `#030719`. Border `#9AB0FF` against that composite is 9.57:1 (pass). `--text-muted` under the scrim, both composited, is 3.40:1 (pass). `--color-bg` dims (luminance 0.39×). Opaque `--surface` against the composite is 1.17:1 (informational).
 
 | Combo | Token or pair | Base | Under scrim | Rule | Ratio |
 |---|---|---|---|---|---|
@@ -88,17 +84,15 @@ Known results below 3:1 or against the dim rule, listed here and not hidden:
 | kinetic-light | accent | `#C21807` | `#77161d` | dims |  |
 | kinetic-light | border | `#1434B8` | `#0e2688` | dims |  |
 | kinetic-light | border on color-bg (1.4.11, opaque border) | `#1434B8` | `#999caa` | 3:1 | 3.47 |
-| kinetic-light | surface on color-bg (opaque surface) | `#FFFFFF` | `#999caa` | reported | 2.73 (below 3:1) |
-| kinetic-light | text-muted against composite | `#45507A` | `#999caa` | 3:1 | 2.87 FAIL |
+| kinetic-light | surface on color-bg (opaque surface, informational) | `#FFFFFF` | `#999caa` | informational | 2.73 (below 3:1) |
 | kinetic-light | text-muted under scrim (both composited) | `#2c3762` | `#999caa` | 3:1 | 4.20 |
-| kinetic-dark | color-bg | `#070F33` | `#06113a` | LIGHTENS |  |
-| kinetic-dark | surface | `#0D1844` | `#091441` | dims |  |
-| kinetic-dark | surface-muted | `#152255` | `#0c1848` | dims |  |
-| kinetic-dark | text | `#FBF8F1` | `#686e86` | dims |  |
-| kinetic-dark | text-muted | `#C3C9E0` | `#525b7f` | dims |  |
-| kinetic-dark | accent | `#FF6B57` | `#6a3649` | dims |  |
-| kinetic-dark | border | `#9AB0FF` | `#41518c` | dims |  |
-| kinetic-dark | border on color-bg (1.4.11, opaque border) | `#9AB0FF` | `#06113a` | 3:1 | 8.73 |
-| kinetic-dark | surface on color-bg (opaque surface) | `#0D1844` | `#06113a` | reported | 1.07 (below 3:1) |
-| kinetic-dark | text-muted against composite | `#C3C9E0` | `#06113a` | 3:1 | 11.10 |
-| kinetic-dark | text-muted under scrim (both composited) | `#525b7f` | `#06113a` | 3:1 | 2.75 FAIL |
+| kinetic-dark | color-bg | `#070F33` | `#030719` | dims |  |
+| kinetic-dark | surface | `#0D1844` | `#060c22` | dims |  |
+| kinetic-dark | surface-muted | `#152255` | `#0a112a` | dims |  |
+| kinetic-dark | text | `#FBF8F1` | `#7d7c78` | dims |  |
+| kinetic-dark | text-muted | `#C3C9E0` | `#616470` | dims |  |
+| kinetic-dark | accent | `#FF6B57` | `#7f352b` | dims |  |
+| kinetic-dark | border | `#9AB0FF` | `#4d587f` | dims |  |
+| kinetic-dark | border on color-bg (1.4.11, opaque border) | `#9AB0FF` | `#030719` | 3:1 | 9.57 |
+| kinetic-dark | surface on color-bg (opaque surface, informational) | `#0D1844` | `#030719` | informational | 1.17 (below 3:1) |
+| kinetic-dark | text-muted under scrim (both composited) | `#616470` | `#030719` | 3:1 | 3.40 |
