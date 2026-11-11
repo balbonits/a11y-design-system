@@ -9,6 +9,7 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 ## Semantic colors (R-2 names)
 | Token | Light primitive | Light | Dark primitive | Dark |
 |---|---|---|---|---|
+| `--scrim` | `scrim` | <span style="display:inline-block;width:1em;height:1em;background:#1B0B1F80;border:1px solid #777;vertical-align:middle"></span> `#1B0B1F80` | `scrim` | <span style="display:inline-block;width:1em;height:1em;background:#1B0B1F80;border:1px solid #777;vertical-align:middle"></span> `#1B0B1F80` |
 | `--color-bg` | `apricot-50` | <span style="display:inline-block;width:1em;height:1em;background:#FFF6EE;border:1px solid #777;vertical-align:middle"></span> `#FFF6EE` | `aub-950` | <span style="display:inline-block;width:1em;height:1em;background:#1B0B1F;border:1px solid #777;vertical-align:middle"></span> `#1B0B1F` |
 | `--surface` | `white` | <span style="display:inline-block;width:1em;height:1em;background:#FFFFFF;border:1px solid #777;vertical-align:middle"></span> `#FFFFFF` | `aub-900` | <span style="display:inline-block;width:1em;height:1em;background:#24102A;border:1px solid #777;vertical-align:middle"></span> `#24102A` |
 | `--surface-muted` | `apricot-100` | <span style="display:inline-block;width:1em;height:1em;background:#FCE8D9;border:1px solid #777;vertical-align:middle"></span> `#FCE8D9` | `aub-800` | <span style="display:inline-block;width:1em;height:1em;background:#311837;border:1px solid #777;vertical-align:middle"></span> `#311837` |
@@ -35,6 +36,7 @@ Color names are Ember's, plus `--highlight` and `--highlight-contrast` (a featur
 ## Primitives
 | Token | Value |
 |---|---|
+| `--palette-scrim` | <span style="display:inline-block;width:1em;height:1em;background:#1B0B1F80;border:1px solid #777;vertical-align:middle"></span> `#1B0B1F80` |
 | `--palette-apricot-50` | <span style="display:inline-block;width:1em;height:1em;background:#FFF6EE;border:1px solid #777;vertical-align:middle"></span> `#FFF6EE` |
 | `--palette-apricot-100` | <span style="display:inline-block;width:1em;height:1em;background:#FCE8D9;border:1px solid #777;vertical-align:middle"></span> `#FCE8D9` |
 | `--palette-apricot-200` | <span style="display:inline-block;width:1em;height:1em;background:#F8D6BE;border:1px solid #777;vertical-align:middle"></span> `#F8D6BE` |
@@ -81,7 +83,8 @@ Shape names follow ARCH-REVIEW Addendum 5 (`--radius-sm/md/lg/full`, `--border-w
 | `--font-body` | `'Nunito Sans', system-ui, sans-serif` |
 | `--font-mono` | `'Nunito Sans', system-ui, sans-serif` |
 | `--weight-display` | `400` |
-| `--radius-lg` | `32px` |
+| `--radius-lg` | `24px` |
+| `--radius-xl` | `28px` |
 | `--radius-md` | `999px` |
 | `--radius-sm` | `18px` |
 | `--radius-full` | `999px` |
