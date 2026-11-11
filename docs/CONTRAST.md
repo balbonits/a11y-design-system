@@ -158,3 +158,18 @@ The focus ring color against component surfaces it sits on, read through src/tok
 | neo.dark | focus-ring-color | tabs-track (--surface-muted) | 3 | 3.32 |
 | kinetic.light | focus-ring-color | tabs-track (--surface-muted) | 3 | 8.20 |
 | kinetic.dark | focus-ring-color | tabs-track (--surface-muted) | 3 | 9.82 |
+
+## Optional hover pair (ARCH-REVIEW Addendum 10)
+
+For each theme that defines `--hover-fill` and `--hover-label` (optional contract tokens, a pair, not @property-registered): label on fill 4.5:1, fill against `--color-bg` and `--surface` 3:1 (primary, ghost and danger have no visible border), and the focus ring against the fill 3:1 only when the ring can overlap it (offset 0 or less). Such a theme keeps `--focus-ring-offset` at 2px or more (video-player HANDOFF:68-69). Themes without the pair keep each variant's own hover.
+
+| Theme.mode | Foreground | Background | Min | Ratio |
+|---|---|---|---|---|
+| kinetic.light | hover-label | hover-fill | 4.5 | 14.95 |
+| kinetic.light | hover-fill | color-bg | 3 | 14.95 |
+| kinetic.light | hover-fill | surface | 3 | 15.86 |
+| kinetic.light | focus-ring-color | hover-fill | 3 (recorded, not gated: offset 3px) | 1.67 |
+| kinetic.dark | hover-label | hover-fill | 4.5 | 17.60 |
+| kinetic.dark | hover-fill | color-bg | 3 | 17.60 |
+| kinetic.dark | hover-fill | surface | 3 | 16.08 |
+| kinetic.dark | focus-ring-color | hover-fill | 3 (recorded, not gated: offset 3px) | 1.45 |

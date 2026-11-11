@@ -46,18 +46,22 @@
 .em-btn--sm.em-btn--icon { width: 36px; }
 .em-btn--lg.em-btn--icon { width: 48px; }
 .em-btn--primary { background: var(--button-bg); color: var(--button-fg); box-shadow: var(--button-shadow); }
-.em-btn--primary:hover:not(:disabled) { background: var(--button-bg-hover); transform: translateY(var(--button-lift)); }
+/* Hover: each variant's own fill and label, unless the theme defines the optional Addendum 10 pair --hover-fill and
+   --hover-label (kinetic's inversion). They're not @property-registered, so the fallback is what neo and any theme
+   without them get. Disabled and aria-disabled buttons never take a hover state. */
+.em-btn--primary:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--button-bg-hover)); color: var(--hover-label, var(--button-fg)); transform: translateY(var(--button-lift)); }
 .em-btn--secondary { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: var(--button-shadow); }
-.em-btn--secondary:hover:not(:disabled) { background: var(--surface-muted); }
+.em-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--surface-muted)); color: var(--hover-label, var(--text)); }
 .em-btn--ghost { background: transparent; color: var(--text); }
-.em-btn--ghost:hover:not(:disabled) { background: var(--surface-muted); }
+.em-btn--ghost:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--surface-muted)); color: var(--hover-label, var(--text)); }
 .em-btn--danger { background: var(--danger); color: var(--danger-contrast); box-shadow: var(--button-shadow); }
-.em-btn--danger:hover:not(:disabled) { background: var(--danger-hover); }
-/* Pressed: the shadow drops AND the button moves into it AND the fill darkens, so shadow is never the only cue. */
-.em-btn:active:not(:disabled) { transform: translateY(var(--button-press-offset)); box-shadow: var(--button-shadow-press); }
-.em-btn--primary:active:not(:disabled) { background: var(--button-bg-hover); }
-.em-btn--secondary:active:not(:disabled), .em-btn--ghost:active:not(:disabled) { background: var(--surface-muted); border-color: var(--text); }
-.em-btn--danger:active:not(:disabled) { background: var(--danger-hover); }
+.em-btn--danger:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--danger-hover)); color: var(--hover-label, var(--danger-contrast)); }
+/* Pressed: the shadow drops AND the button moves into it AND the fill darkens, so shadow is never the only cue. Press
+   restores each variant's own fill and label over a hover fill (HANDOFF:57, "danger's red returns on press"). */
+.em-btn:active:not(:disabled):not([aria-disabled="true"]) { transform: translateY(var(--button-press-offset)); box-shadow: var(--button-shadow-press); }
+.em-btn--primary:active:not(:disabled):not([aria-disabled="true"]) { background: var(--button-bg-hover); color: var(--button-fg); }
+.em-btn--secondary:active:not(:disabled):not([aria-disabled="true"]), .em-btn--ghost:active:not(:disabled):not([aria-disabled="true"]) { background: var(--surface-muted); color: var(--text); border-color: var(--text); }
+.em-btn--danger:active:not(:disabled):not([aria-disabled="true"]) { background: var(--danger-hover); color: var(--danger-contrast); }
 .em-btn:disabled { cursor: not-allowed; opacity: 0.55; }
 .em-btn[aria-busy="true"] { cursor: progress; }
 .em-spinner {

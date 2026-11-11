@@ -144,3 +144,13 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - New e2e `scripts/press-offset.mjs` (`npm run test:press`, plus a CI step and a negative control): presses each Button variant with a real pointer in every theme, light and dark, at 320 and 1280px, with and without reduced motion. 64 runs, 0 failing; the negative control (press pinned to 0) fails 32 runs as it should.
 - Focus ring on component surfaces: `npm run contrast` has its own section, read through `src/tokens/components.css`, with `--focus-ring-color` vs `--tabs-track` for every theme and mode (kinetic light 8.20, neo dark 3.32 lowest). The inline scrim block is unchanged.
 - Not in this push: the kinetic hover inversion (HANDOFF "set only in kinetic" conflicts with R-2a, where themes can't set component tokens). It's with CTE for a ruling.
+
+## 2026-11-11 1:13 AM PT: kinetic inverted hover, optional contract pair (ARCH-REVIEW Addendum 10)
+
+- Kinetic defines `--hover-fill: var(--text)` and `--hover-label: var(--color-bg)` in each color block (video-player HANDOFF:47, 57). `ember.css` reads them as `var(--hover-fill, <variant hover>)` and `var(--hover-label, <variant label>)` on every Button variant. Kinetic has no lift and no tilt (both are 0). Press restores each variant's own fill and label (HANDOFF:57, "danger's red returns on press").
+- (a) Not `@property`-registered (the one stated exception to Addendum 7), so neo falls back to its own hover.
+- (b) `OPTIONAL_CONTRACT` in `scripts/theme-contract.mjs` lists only these two. `npm run tokens` fails a theme that defines one without the other, or sets any name outside the contract (negative-tested both ways).
+- (c) `npm run contrast` has a section for themes with the pair: label on fill 4.5:1 (kinetic 14.95 light, 17.60 dark), fill against `--color-bg` and `--surface` 3:1, ring against fill gated only when the offset is 0 or less (kinetic 3px, recorded 1.67), and such a theme's `--focus-ring-offset` must be 2px or more (HANDOFF:68-69).
+- (d), (e), (f) New e2e `scripts/hover.mjs` (`npm run test:hover`, in CI): neo's hovered bg and fg match `scripts/hover.baseline.json`, captured from the pre-change head 1b4b3a2, for every variant in light and dark at 320, 375 and 1280. Kinetic fills with the pair. Disabled and aria-disabled buttons don't change on hover. Under forced colors, the hovered colors are system colors. Shots are in `docs/screenshots/hover/`.
+- (g) HANDOFF:57 and :96 name the contract tokens, and README records them as optional contract tokens.
+- Dusk isn't in this branch's registry yet. The baseline test covers it automatically once #30 lands, and it needs a baseline entry from #30's pre-hover head.

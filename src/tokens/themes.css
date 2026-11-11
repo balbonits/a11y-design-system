@@ -248,6 +248,10 @@
   --surface: var(--palette-white);
   --surface-muted: var(--palette-warm-100);
   --text: var(--palette-cobalt-900);
+  /* ARCH-REVIEW Addendum 10 (video-player HANDOFF:47, 57): optional contract pair, the inverted hover. Fill --text,
+     label --color-bg, on every Button variant. Not @property-registered, so other themes fall back. */
+  --hover-fill: var(--text);
+  --hover-label: var(--color-bg);
   --text-muted: var(--palette-slate-600);
   --border: var(--palette-cobalt-700);
   --border-subtle: var(--palette-slate-300);
@@ -272,6 +276,8 @@
   --surface: var(--palette-night-800);
   --surface-muted: var(--palette-night-700);
   --text: var(--palette-warm-50);
+  --hover-fill: var(--text);
+  --hover-label: var(--color-bg);
   --text-muted: var(--palette-slate-300);
   --border: var(--palette-cobalt-300);
   --border-subtle: var(--palette-slate-600);
@@ -296,6 +302,8 @@
   --surface: var(--palette-night-800);
   --surface-muted: var(--palette-night-700);
   --text: var(--palette-warm-50);
+  --hover-fill: var(--text);
+  --hover-label: var(--color-bg);
   --text-muted: var(--palette-slate-300);
   --border: var(--palette-cobalt-300);
   --border-subtle: var(--palette-slate-600);

@@ -48,6 +48,10 @@ jobs:
         run: npm run test:press -- http://127.0.0.1:6007 --negative-control
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Hover gate (Addendum 10; neo unchanged from baseline, kinetic inversion, disabled/aria-disabled, forced colors)
+        run: npm run test:hover -- http://127.0.0.1:6007
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
   transcribe:
     runs-on: ubuntu-latest
     steps:

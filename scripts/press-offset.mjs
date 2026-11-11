@@ -1,5 +1,5 @@
 // Press-offset e2e (ARCH-REVIEW Addendum 8, video-player HANDOFF:57, 94, 98-117). For every registered theme, light
-// and dark, at 320 and 1280px, with and without prefers-reduced-motion: press each Button variant (primary,
+// and dark, at 320, 375 and 1280px, with and without prefers-reduced-motion: press each Button variant (primary,
 // secondary, ghost, danger) with a real pointer and check it moves down by exactly the theme's --press-offset
 // (0 under reduced motion), with no layout shift (its layout box doesn't change).
 // Usage: node scripts/press-offset.mjs [baseUrl]   (default http://127.0.0.1:6007, a served storybook-static)
@@ -21,7 +21,7 @@ for (const { id } of registry()) {
   const t = parseTheme(fs.readFileSync(new URL(`../src/themes/${id}.css`, import.meta.url), 'utf8'), id);
   for (const reduced of [false, true]) {
     const expected = reduced ? px(t.reduced['--press-offset'] ?? t.base['--press-offset']) : px(t.base['--press-offset']);
-    for (const mode of ['light', 'dark']) for (const width of [320, 1280]) {
+    for (const mode of ['light', 'dark']) for (const width of [320, 375, 1280]) {
       const ctx = await browser.newContext({ viewport: { width, height: 700 }, reducedMotion: reduced ? 'reduce' : 'no-preference' });
       const page = await ctx.newPage();
       for (const v of VARIANTS) {
@@ -48,6 +48,6 @@ for (const { id } of registry()) {
   }
 }
 await browser.close();
-console.log(`press-offset: ${runs} runs (${VARIANTS.length} variants x ${registry().length} themes x light/dark x 320/1280px x motion/reduced), ${failing} failing${negative ? ' (negative control)' : ''}`);
+console.log(`press-offset: ${runs} runs (${VARIANTS.length} variants x ${registry().length} themes x light/dark x 320/375/1280px x motion/reduced), ${failing} failing${negative ? ' (negative control)' : ''}`);
 if (negative) { if (!failing) { console.log('FAIL negative control: pinning the press to 0 was not caught'); process.exit(1); } process.exit(0); }
 process.exit(failing ? 1 : 0);

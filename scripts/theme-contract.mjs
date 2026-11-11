@@ -26,6 +26,11 @@ export const EXTRA_TOKENS = [
   '--rule', '--shadow-overlay', '--weight-display-min', '--weight-display-max', '--weight-shift',
   '--duration-reveal', '--duration-ticker', '--stagger', '--blur-glass', '--parallax-scale', '--hue-shift',
 ];
+/** ARCH-REVIEW Addendum 10: OPTIONAL contract tokens. A theme defines both or neither (one alone fails `npm run tokens`).
+ *  Not registered with @property (the one stated exception to Addendum 7): a registered property always resolves, so
+ *  ember.css's var(--hover-fill, <variant hover>) fallback would never fire. Only these two; any other name a theme sets
+ *  that isn't in CONTRACT() fails R-2a. */
+export const OPTIONAL_CONTRACT = ['--hover-fill', '--hover-label'];
 /** Motion tokens that must resolve to 0 under prefers-reduced-motion (Addendum 5 tilt/lift, Addendum 7 motion extras,
  *  Addendum 8 --press-offset). */
 export const REDUCED_ZERO = ['--tilt', '--lift', '--press-offset', '--parallax-scale', '--hue-shift', '--stagger', '--weight-shift', '--duration-reveal'];
@@ -78,6 +83,26 @@ export function resolver(t, mode) {
 
 /** Parses a flat CSS file into { name: value } (comments stripped). */
 export const declsOf = (css) => Object.fromEntries([...css.replace(/\/\*[\s\S]*?\*\//g, '').matchAll(/(--[\w-]+):\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]));
+
+/** R-2a theme-name rules (Addendum 10 b). Returns a list of problems (empty = pass):
+ *  - a theme block (base, light, dark, reduced motion, OS dark) sets only CONTRACT() or OPTIONAL_CONTRACT names, and its
+ *    :root palette only --palette-* names;
+ *  - each theme defines both OPTIONAL_CONTRACT tokens or neither, in every mode. */
+export function themeNameProblems(themes) {
+  const allowed = new Set([...CONTRACT(), ...OPTIONAL_CONTRACT]); const out = [];
+  for (const [id, t] of Object.entries(themes)) {
+    for (const k of Object.keys(t.palette)) if (!k.startsWith('--palette-')) out.push(`theme ${id}: :root sets ${k}, which is not a --palette-* name`);
+    for (const b of ['base', 'light', 'dark', 'reduced', 'osDark']) for (const k of Object.keys(t[b])) if (!allowed.has(k)) out.push(`theme ${id} (${b}) sets ${k}, which is not a contract or optional contract name`);
+    for (const mode of ['light', 'dark']) {
+      const scope = { ...t.base, ...(mode === 'dark' ? t.dark : t.light) };
+      const has = OPTIONAL_CONTRACT.filter((k) => k in scope);
+      if (has.length && has.length !== OPTIONAL_CONTRACT.length) out.push(`theme ${id}.${mode}: defines ${has.join(', ')} without ${OPTIONAL_CONTRACT.filter((k) => !has.includes(k)).join(', ')} (optional tokens come as a pair)`);
+    }
+    const anyMode = (k) => k in t.base || k in t.light || k in t.dark;
+    if (OPTIONAL_CONTRACT.some(anyMode) && !['light', 'dark'].every((m) => OPTIONAL_CONTRACT.every((k) => k in t.base || k in t[m]))) out.push(`theme ${id}: optional tokens must be defined in both light and dark`);
+  }
+  return out;
+}
 
 /** R-2a component-layer rules. Returns a list of problems (empty = pass):
  *  - each component token is exactly var(--<contract name>) or a calc() of only contract names;
