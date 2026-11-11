@@ -1,0 +1,138 @@
+/* Theme "neo" (Neo-Brutal Playful). Source: Chief of Creatives, docs/directions/v3/neo/tokens.css (CA-signed at d8e1f93).
+   A theme file holds its own palette (the :root block is scoped to the theme by npm run tokens) and every
+   semantic token in ARCH-REVIEW Addendum 5. Register it in registry.json; no component code changes. */
+:root {
+  --palette-ink: #111111;
+  --palette-ink-2: #1c1c1c;
+  --palette-ink-3: #272727;
+  --palette-ink-soft: #3d3d3d;
+  --palette-gray: #6b6b6b;
+  --palette-gray-2: #8c8c8c;
+  --palette-cream: #fdf8e9;
+  --palette-cream-2: #f3ecd2;
+  --palette-paper: #ffffff;
+  --palette-sand: #cfc8b0;
+  --palette-blue-700: #1530d0;
+  --palette-blue-600: #1f3dff;
+  --palette-blue-100: #e3e8ff;
+  --palette-blue-300: #8fa2ff;
+  --palette-blue-ink: #0b1a66;
+  --palette-lime-400: #c6f432;
+  --palette-lime-300: #d7ff5a;
+  --palette-lime-900: #2c3310;
+  --palette-green-700: #17702a;
+  --palette-green-300: #5ed27a;
+  --palette-amber-800: #855400;
+  --palette-amber-300: #ffc24a;
+  --palette-red-700: #c4122f;
+  --palette-red-800: #a00e26;
+  --palette-red-300: #ff7a8c;
+  --palette-red-200: #ff9aa8;
+  --palette-pink-600: #e0217a;
+  --palette-sky-700: #0b5cad;
+  --palette-sky-300: #7fb6ff;
+}
+[data-theme="neo"] {
+  --font-display: 'Archivo Black', 'Arial Black', sans-serif;
+  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --weight-display: 400;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+  --border-width: 2px;
+  --border-width-strong: 2.5px;
+  --shadow-raised: 4px 4px 0 var(--border);
+  --shadow-press: 1px 1px 0 var(--border);
+  --divider-shape: none;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+  --focus-ring-style: solid;
+  --control-height: 44px;
+  --control-padding-x: 1.15rem;
+  --control-gap: .5rem;
+  --target-min: 44px;
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
+  --duration-reveal: 520ms;
+  --ease-standard: cubic-bezier(.2,.8,.2,1);
+  --ease-press: cubic-bezier(.34,1.56,.64,1);
+  --duration-ticker: 28s;
+  --parallax-scale: 0.08;
+  --lift: -3px;
+  --tilt: -1.5deg;
+}
+[data-theme="neo"], [data-theme="neo"][data-mode="light"] {
+  --color-bg: var(--palette-cream);
+  --surface: var(--palette-paper);
+  --surface-muted: var(--palette-cream-2);
+  --text: var(--palette-ink);
+  --text-muted: var(--palette-ink-soft);
+  --border: var(--palette-ink);
+  --border-subtle: var(--palette-gray);
+  --accent: var(--palette-blue-600);
+  --accent-hover: var(--palette-blue-700);
+  --accent-soft: var(--palette-blue-100);
+  --accent-contrast: var(--palette-paper);
+  --focus-ring-color: var(--palette-pink-600);
+  --success: var(--palette-green-700);
+  --warning: var(--palette-amber-800);
+  --danger: var(--palette-red-700);
+  --danger-hover: var(--palette-red-800);
+  --danger-contrast: var(--palette-paper);
+  --info: var(--palette-sky-700);
+  --highlight: var(--palette-lime-400);
+  --highlight-contrast: var(--palette-ink);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { [data-theme="neo"]:not([data-mode]) {
+  --color-bg: var(--palette-ink);
+  --surface: var(--palette-ink-2);
+  --surface-muted: var(--palette-ink-3);
+  --text: var(--palette-cream);
+  --text-muted: var(--palette-sand);
+  --border: var(--palette-cream);
+  --border-subtle: var(--palette-gray-2);
+  --accent: var(--palette-lime-400);
+  --accent-hover: var(--palette-lime-300);
+  --accent-soft: var(--palette-lime-900);
+  --accent-contrast: var(--palette-ink);
+  --focus-ring-color: var(--palette-pink-600);
+  --success: var(--palette-green-300);
+  --warning: var(--palette-amber-300);
+  --danger: var(--palette-red-300);
+  --danger-hover: var(--palette-red-200);
+  --danger-contrast: var(--palette-ink);
+  --info: var(--palette-sky-300);
+  --highlight: var(--palette-blue-600);
+  --highlight-contrast: var(--palette-paper);
+  color-scheme: dark;
+} }
+[data-theme="neo"][data-mode="dark"] {
+  --color-bg: var(--palette-ink);
+  --surface: var(--palette-ink-2);
+  --surface-muted: var(--palette-ink-3);
+  --text: var(--palette-cream);
+  --text-muted: var(--palette-sand);
+  --border: var(--palette-cream);
+  --border-subtle: var(--palette-gray-2);
+  --accent: var(--palette-lime-400);
+  --accent-hover: var(--palette-lime-300);
+  --accent-soft: var(--palette-lime-900);
+  --accent-contrast: var(--palette-ink);
+  --focus-ring-color: var(--palette-pink-600);
+  --success: var(--palette-green-300);
+  --warning: var(--palette-amber-300);
+  --danger: var(--palette-red-300);
+  --danger-hover: var(--palette-red-200);
+  --danger-contrast: var(--palette-ink);
+  --info: var(--palette-sky-300);
+  --highlight: var(--palette-blue-600);
+  --highlight-contrast: var(--palette-paper);
+  color-scheme: dark;
+}
+@media (prefers-reduced-motion: reduce) { [data-theme="neo"] {
+  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg;
+} }

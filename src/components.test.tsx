@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher } from './index';
+import { Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher, THEMES, THEME_REGISTRY, DEFAULT_THEME, PREPAINT_SCRIPT, prepaintScript } from './index';
 
 function ModalDemo() {
   const [open, setOpen] = useState(false);
@@ -186,38 +186,61 @@ describe('Toast', () => {
 
 describe('ThemeSwitcher (R-2)', () => {
   const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k), m }; };
+  // A second, test-only theme (not in Ember's registry) so the Theme group renders.
+  const themes = [THEME_REGISTRY[0], { id: 'test-fixture', label: 'Test fixture' }];
+  const def = THEME_REGISTRY[0];
   afterEach(() => { document.documentElement.removeAttribute('data-theme'); document.documentElement.removeAttribute('data-mode'); });
 
+  it('reads themes from the registry: the default is the first entry and no theme is hardcoded', () => {
+    expect(THEMES).toEqual(THEME_REGISTRY.map((t) => t.id));
+    expect(DEFAULT_THEME).toBe(THEMES[0]);
+    expect(prepaintScript(themes)).toContain("['test-fixture']");
+    expect(PREPAINT_SCRIPT).toContain(JSON.stringify(THEMES.slice(1)).replace(/"/g, "'"));
+  });
+
+  it('hides the Theme group when only one theme is registered', () => {
+    render(<ThemeSwitcher storage={mem()} themes={[def]} />);
+    expect(screen.queryByRole('group', { name: 'Theme' })).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Color mode' })).toBeInTheDocument();
+  });
+
   it('has two labelled radio groups and starts from storage', () => {
-    const s = mem(); s.setItem('jdilig:theme', 'bold'); s.setItem('jdilig:mode', 'dark');
-    render(<ThemeSwitcher storage={s} />);
+    const s = mem(); s.setItem('jdilig:theme', 'test-fixture'); s.setItem('jdilig:mode', 'dark');
+    render(<ThemeSwitcher storage={s} themes={themes} />);
     expect(screen.getByRole('group', { name: 'Theme' })).toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Color mode' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Bold' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Test fixture' })).toBeChecked();
     expect(screen.getByRole('radio', { name: 'Dark' })).toBeChecked();
-    expect(document.documentElement.dataset.theme).toBe('bold');
+    expect(document.documentElement.dataset.theme).toBe('test-fixture');
     expect(document.documentElement.dataset.mode).toBe('dark');
   });
 
-  it('works by keyboard, persists, announces, and removes keys for Editorial and Auto', async () => {
+  it('ignores an unregistered stored theme', () => {
+    const s = mem(); s.setItem('jdilig:theme', 'not-a-theme');
+    render(<ThemeSwitcher storage={s} themes={themes} />);
+    expect(screen.getByRole('radio', { name: def.label })).toBeChecked();
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+  });
+
+  it('works by keyboard, persists, announces, and removes keys for the default theme and Auto', async () => {
     const s = mem(); const onChange = vi.fn(); const u = userEvent.setup();
-    render(<ThemeSwitcher storage={s} onChange={onChange} />);
+    render(<ThemeSwitcher storage={s} onChange={onChange} themes={themes} />);
     await u.tab();
-    expect(screen.getByRole('radio', { name: 'Editorial' })).toHaveFocus();
+    expect(screen.getByRole('radio', { name: def.label })).toHaveFocus();
     await u.keyboard('{ArrowRight}');
-    expect(screen.getByRole('radio', { name: 'Bold' })).toBeChecked();
-    expect(s.m.get('jdilig:theme')).toBe('bold');
-    expect(document.documentElement.dataset.theme).toBe('bold');
-    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Bold, automatic \((dark|light)\) mode$/);
+    expect(screen.getByRole('radio', { name: 'Test fixture' })).toBeChecked();
+    expect(s.m.get('jdilig:theme')).toBe('test-fixture');
+    expect(document.documentElement.dataset.theme).toBe('test-fixture');
+    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Test fixture, automatic \((dark|light)\) mode$/);
     await u.click(screen.getByRole('radio', { name: 'Light' }));
     expect(s.m.get('jdilig:mode')).toBe('light');
-    expect(screen.getByRole('status')).toHaveTextContent('Theme Bold, light mode');
-    await u.click(screen.getByRole('radio', { name: 'Editorial' }));
+    expect(screen.getByRole('status')).toHaveTextContent('Theme Test fixture, light mode');
+    await u.click(screen.getByRole('radio', { name: def.label }));
     await u.click(screen.getByRole('radio', { name: 'Auto' }));
     expect(s.m.has('jdilig:theme')).toBe(false);
     expect(s.m.has('jdilig:mode')).toBe(false);
     expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
     expect(document.documentElement.hasAttribute('data-mode')).toBe(false);
-    expect(onChange).toHaveBeenLastCalledWith('editorial', 'auto');
+    expect(onChange).toHaveBeenLastCalledWith(def.id, 'auto');
   });
 });

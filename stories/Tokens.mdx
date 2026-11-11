@@ -1,52 +1,50 @@
 import { Meta } from '@storybook/blocks';
-import { ContrastTable, Swatches } from './TokenSheet';
+import { ContrastTables, ShapeTable, Swatches } from './TokenSheet';
 
 <Meta title="Tokens" />
 
 # Tokens
 
-Tokens come in three layers, one source file each, in `src/tokens/`. `npm run tokens` exports them to `src/tokens.json`.
+Tokens come in three layers. `npm run tokens` builds them and exports `src/tokens.json`.
 
-1. **Primitives** (`primitives.css`): the raw palette, which is the only place raw colors live, plus the type, space and radius ramps.
-2. **Semantic** (`semantic.css`): one set per theme and mode. The theme comes from `html[data-theme="editorial|bold|tactile"]` (editorial when absent), and the mode from `html[data-mode="light|dark"]`, which follows `prefers-color-scheme` when absent.
-3. **Components** (`components.css`): `--button-*`, `--field-*`, `--card-*`, `--modal-*` and the rest. These reference semantic tokens only, and component CSS reads only these and the semantic tokens. CI fails on any raw color there (`npm run lint:colors`).
+1. **Shared primitives** (`src/tokens/primitives.css`): the type and space ramps every theme uses.
+2. **Themes** (`src/themes/<id>.css`, listed in `src/themes/registry.json`): each theme file holds its own palette, the semantic colors for light and dark, and every shape, type and motion token in the theme contract. `html[data-theme]` takes a registered id, and the first entry in the registry is the default when it's absent. `html[data-mode="light|dark"]` picks the mode, and follows `prefers-color-scheme` when absent.
+3. **Components** (`src/tokens/components.css`): `--button-*`, `--field-*`, `--card-*` and the rest, each one only `var()` of a theme token. Themes never set them.
 
-Use the toolbar's Theme and Mode menus to switch this whole Storybook. The swatches and contrast tables below always show all 6 combos.
+**Adding a theme takes a token file and a registry entry, nothing else.** No component, Storybook toolbar or CI script names a theme: they all read the registry. CI (`npm run lint:colors`) fails on raw colors and on any literal border-radius, border width, box-shadow or outline in component CSS, and on any retired token name.
+
+Use the toolbar's Theme and Mode menus to switch this whole Storybook. The swatches and contrast tables below show every registered theme in light and dark.
 
 ## Color (semantic)
 
-<Swatches names={['--color-bg', '--surface', '--surface-muted', '--text', '--text-muted', '--border', '--accent', '--accent-soft', '--focus', '--success', '--warning', '--danger', '--info']} />
+<Swatches names={['--color-bg', '--surface', '--surface-muted', '--text', '--text-muted', '--border', '--accent', '--accent-soft', '--focus-ring-color', '--highlight', '--success', '--warning', '--danger', '--info']} />
 
 ## Contrast
 
-Measured live from the tokens. Text pairs need 4.5:1 (WCAG 1.4.3). Borders and the focus ring need 3:1 (WCAG 1.4.11).
+Measured live from the tokens. Text pairs need 4.5:1 (WCAG 1.4.3). Borders and the focus ring need 3:1 (WCAG 1.4.11), and the focus ring is checked against the theme's border color as well as the backgrounds.
 
-<ContrastTable theme="editorial" mode="light" />
-<ContrastTable theme="editorial" mode="dark" />
-<ContrastTable theme="bold" mode="light" />
-<ContrastTable theme="bold" mode="dark" />
-<ContrastTable theme="tactile" mode="light" />
-<ContrastTable theme="tactile" mode="dark" />
+<ContrastTables />
 
-CI checks a longer list, 174 pairs across the 6 combos, with `npm run contrast` (`scripts/contrast.mjs`). The full table is in `docs/CONTRAST.md`.
+CI checks the longer list for every registered theme with `npm run contrast` (`scripts/contrast.mjs`), plus the theme contract: every token defined, a focus ring at least 2px wide whose style is never `none`, and `--tilt` and `--lift` at 0 under reduced motion. The full table is in `docs/CONTRAST.md`.
+
+## Shape (the theme contract)
+
+Every theme defines every one of these, using `0` or `none` when it doesn't use one. `--control-height` is the visual height; `--target-min` (44px) is the minimum hit area, kept with an invisible inset when a control looks smaller.
+
+<ShapeTable names={['--radius-sm', '--radius-md', '--radius-lg', '--radius-full', '--border-width', '--border-width-strong', '--shadow-raised', '--shadow-press', '--focus-ring-width', '--focus-ring-offset', '--focus-ring-style', '--control-height', '--control-padding-x', '--control-gap', '--target-min', '--divider-shape', '--tilt', '--lift']} />
 
 ## Type
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--font-sans` | Geist | UI and body |
-| `--font-serif` | Instrument Serif | Display accents |
-| `--font-mono` | JetBrains Mono | Code and numbers |
-| `--font-grotesque` | Bricolage Grotesque | Tactile display and body |
-| `--font-display`, `--font-body` | Per theme | Editorial: Instrument Serif and Geist. Bold: Geist. Tactile: Bricolage Grotesque |
-| `--text-2xs` to `--text-7xl` | 11, 12, 14, 16, 18, 20, 24, 30, 36, 48, 64, 80px | Type scale |
+<ShapeTable names={['--font-display', '--font-body', '--font-mono', '--weight-display']} />
 
-<div className="ember" style={{ display: 'grid', gap: 4, padding: 16, background: 'var(--color-bg)', color: 'var(--text)', borderRadius: 'var(--radius-field)' }}>
+The type scale is shared: `--text-2xs` to `--text-7xl` are 11, 12, 14, 16, 18, 20, 24, 30, 36, 48, 64 and 80px.
+
+<div className="ember" style={{ display: 'grid', gap: 4, padding: 16, background: 'var(--color-bg)', color: 'var(--text)', borderRadius: 'var(--radius-sm)' }}>
   <span style={{ fontSize: 'var(--text-xs)' }}>12px · Sphinx of black quartz, judge my vow</span>
   <span style={{ fontSize: 'var(--text-base)' }}>16px · Sphinx of black quartz, judge my vow</span>
   <span style={{ fontSize: 'var(--text-2xl)' }}>24px · Sphinx of black quartz, judge my vow</span>
-  <span style={{ fontSize: 'var(--text-5xl)', fontFamily: 'var(--font-serif)' }}>48px · Instrument Serif</span>
-  <span style={{ fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)' }}>14px · JetBrains Mono 0123456789</span>
+  <span style={{ fontSize: 'var(--text-5xl)', fontFamily: 'var(--font-display)', fontWeight: 'var(--weight-display)' }}>48px · Display</span>
+  <span style={{ fontSize: 'var(--text-sm)', fontFamily: 'var(--font-mono)' }}>14px · Mono 0123456789</span>
 </div>
 
 ## Space
@@ -62,25 +60,8 @@ A 4px base: `--space-1` 4px, `-2` 8px, `-3` 12px, `-4` 16px, `-5` 20px, `-6` 24p
   ))}
 </div>
 
-## Shape and depth (per theme)
+## Motion
 
-| Token | Editorial | Bold | Tactile |
-| --- | --- | --- | --- |
-| `--radius-surface` | 28px | 22px | 20px |
-| `--radius-control` | 9999px (pill) | 12px | 14px |
-| `--radius-field` | 14px | 12px | 12px |
-| `--border-width` | 1px | 1px | 2px |
-| `--shadow-2` | Soft drop shadow | Hairline plus deep glow | Hard 4px offset |
+<ShapeTable names={['--duration-fast', '--duration-base', '--duration-slow', '--ease-standard', '--ease-press']} />
 
-`--radius` (2px) and `--radius-full` stay in the primitives for small details.
-
-## Motion (per theme)
-
-| Token | Editorial | Bold | Tactile |
-| --- | --- | --- | --- |
-| `--duration-fast` | 120ms | 100ms | 90ms |
-| `--duration-base` | 220ms | 180ms | 200ms |
-| `--duration-slow` | 420ms | 360ms | 380ms |
-| `--duration-reveal` | 720ms | 640ms | 600ms |
-
-Under `prefers-reduced-motion: reduce`, every duration is 0ms, `--lift` is 0px and `--parallax-scale` is 0, and keyframe animations (dialog and toast entry, spinner) are turned off.
+Under `prefers-reduced-motion: reduce`, every duration is 0ms and `--lift` and `--tilt` are 0, and keyframe animations (dialog and toast entry, spinner) are turned off.

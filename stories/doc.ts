@@ -46,4 +46,4 @@ export function doc(d: {
   ].join('\n');
 }
 
-export const FOCUS_NOTE: [string, string] = ['2.4.7 Focus Visible / 2.4.13 Focus Appearance', '2px `--focus` outline with 2px offset, at least 3:1 against the background in both themes.'];
+export const FOCUS_NOTE: [string, string] = ['2.4.7 Focus Visible / 2.4.13 Focus Appearance', 'An outline built from `--focus-ring-width` (at least 2px), `--focus-ring-style` and `--focus-ring-color`, offset by `--focus-ring-offset`, at least 3:1 against the background and the border in every theme and mode.'];

@@ -1,7 +1,8 @@
-import { THEMES, type Theme } from '../src';
+import { THEME_REGISTRY, type Theme } from '../src';
 import { useEffect, useRef, useState } from 'react';
+import tokens from '../src/tokens.json';
 
-const NAME: Record<Theme, string> = { editorial: 'Editorial', bold: 'Bold', tactile: 'Tactile' };
+const label = (id: Theme) => THEME_REGISTRY.find((t) => t.id === id)?.label ?? id;
 
 const PAIRS: Array<[string, string, 'text' | 'ui']> = [
   ['--text', '--color-bg', 'text'],
@@ -18,9 +19,11 @@ const PAIRS: Array<[string, string, 'text' | 'ui']> = [
   ['--warning', '--surface', 'text'],
   ['--info', '--surface', 'text'],
   ['--text', '--accent-soft', 'text'],
+  ['--highlight-contrast', '--highlight', 'text'],
   ['--border', '--surface', 'ui'],
-  ['--focus', '--color-bg', 'ui'],
-  ['--focus', '--surface', 'ui'],
+  ['--focus-ring-color', '--color-bg', 'ui'],
+  ['--focus-ring-color', '--surface', 'ui'],
+  ['--focus-ring-color', '--border', 'ui'],
 ];
 
 function rgb(color: string): [number, number, number] {
@@ -41,7 +44,7 @@ export function ratio(a: string, b: string) {
 
 /** Reads the live token values and computes every documented pair's contrast ratio. */
 export function ContrastTable({ theme, mode }: { theme: Theme; mode: 'light' | 'dark' }) {
-  const name = `${NAME[theme]} ${mode}`;
+  const name = `${label(theme)} ${mode}`;
   const ref = useRef<HTMLDivElement>(null);
   const [rows, setRows] = useState<Array<{ fg: string; bg: string; kind: string; r: number; fgc: string; bgc: string }>>([]);
   useEffect(() => {
@@ -96,9 +99,9 @@ export function ContrastTable({ theme, mode }: { theme: Theme; mode: 'light' | '
 export function Swatches({ names }: { names: string[] }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
-      {THEMES.flatMap((th) => (['light', 'dark'] as const).map((t) => (
+      {THEME_REGISTRY.map((x) => x.id).flatMap((th) => (['light', 'dark'] as const).map((t) => (
         <div key={th + t} data-theme={th} data-mode={t} className="em-scope ember sb-unstyled" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'inherit', gap: 8, background: 'var(--color-bg)', padding: 12 }}>
-          <strong style={{ gridColumn: '1 / -1', color: 'var(--text)' }}>{NAME[th]} {t}</strong>
+          <strong style={{ gridColumn: '1 / -1', color: 'var(--text)' }}>{label(th)} {t}</strong>
           {names.map((n) => (
             <div key={n} style={{ border: '1px solid var(--border-subtle)', background: 'var(--surface)', color: 'var(--text)' }}>
               <div style={{ height: 40, background: `var(${n})` }} />
@@ -107,6 +110,29 @@ export function Swatches({ names }: { names: string[] }) {
           ))}
         </div>
       )))}
+    </div>
+  );
+}
+
+/** One live contrast table per registered theme and mode. */
+export function ContrastTables() {
+  return <>{THEME_REGISTRY.flatMap((t) => (['light', 'dark'] as const).map((m) => <ContrastTable key={t.id + m} theme={t.id} mode={m} />))}</>;
+}
+
+type ThemeJson = { shape: Record<string, string> };
+/** The shape, type and motion tokens of every registered theme, read from src/tokens.json. */
+export function ShapeTable({ names }: { names: string[] }) {
+  const themes = tokens.themes as Record<string, ThemeJson>;
+  return (
+    <div role="region" tabIndex={0} aria-label="Theme token values" className="sb-scroll">
+      <table className="em-table">
+        <thead><tr><th scope="col">Token</th>{THEME_REGISTRY.map((t) => <th key={t.id} scope="col">{t.label}</th>)}</tr></thead>
+        <tbody>
+          {names.map((n) => (
+            <tr key={n}><td><code>{n}</code></td>{THEME_REGISTRY.map((t) => <td key={t.id}><code>{themes[t.id]?.shape[n]}</code></td>)}</tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

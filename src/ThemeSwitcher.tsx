@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { applyTheme, MODES, readTheme, saveTheme, THEMES, type Mode, type Theme, type ThemeStorage } from './theme';
+import { applyTheme, MODES, readTheme, saveTheme, THEME_REGISTRY, type Mode, type Theme, type ThemeEntry, type ThemeStorage } from './theme';
 import { cx } from './cx';
 
 export type ThemeSwitcherProps = {
@@ -7,17 +7,19 @@ export type ThemeSwitcherProps = {
   onChange?: (theme: Theme, mode: Mode) => void;
   /** Storage override (tests). Defaults to localStorage. */
   storage?: ThemeStorage;
+  /** Registered themes, default first. Defaults to Ember's registry. With one theme, only the mode group shows. */
+  themes?: readonly ThemeEntry[];
   className?: string;
 };
 
-const LABEL: Record<Theme | Mode, string> = { editorial: 'Editorial', bold: 'Bold', tactile: 'Tactile', auto: 'Auto', light: 'Light', dark: 'Dark' };
+const MODE_LABEL: Record<Mode, string> = { auto: 'Auto', light: 'Light', dark: 'Dark' };
 const systemDark = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-color-scheme: dark)').matches;
 
 /** Two native radio groups (theme, color mode). Arrow keys move within a group, each change is
  *  announced politely, the choice persists to jdilig:theme / jdilig:mode, and Auto follows the OS. */
-export function ThemeSwitcher({ onChange, storage, className }: ThemeSwitcherProps) {
+export function ThemeSwitcher({ onChange, storage, themes = THEME_REGISTRY, className }: ThemeSwitcherProps) {
   const id = useId();
-  const [state, setState] = useState(() => readTheme(storage));
+  const [state, setState] = useState(() => readTheme(storage, themes));
   const [dark, setDark] = useState(systemDark);
   const [message, setMessage] = useState('');
   const first = useRef(true);
@@ -31,22 +33,23 @@ export function ThemeSwitcher({ onChange, storage, className }: ThemeSwitcherPro
   }, []);
 
   useEffect(() => {
-    applyTheme(state.theme, state.mode);
+    applyTheme(state.theme, state.mode, undefined, themes);
     if (first.current) { first.current = false; return; }
-    const mode = state.mode === 'auto' ? `automatic (${dark ? 'dark' : 'light'})` : LABEL[state.mode].toLowerCase();
-    setMessage(`Theme ${LABEL[state.theme]}, ${mode} mode`);
-  }, [state, dark]);
+    const mode = state.mode === 'auto' ? `automatic (${dark ? 'dark' : 'light'})` : MODE_LABEL[state.mode].toLowerCase();
+    setMessage(`Theme ${label(state.theme)}, ${mode} mode`);
+  }, [state, dark]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const set = (next: { theme: Theme; mode: Mode }) => {
     const swap = () => setState(next);
     const reduce = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
     const doc = typeof document !== 'undefined' ? (document as Document & { startViewTransition?: (cb: () => void) => unknown }) : undefined;
     if (!reduce && doc?.startViewTransition) doc.startViewTransition(swap); else swap();
-    saveTheme(next.theme, next.mode, storage);
+    saveTheme(next.theme, next.mode, storage, themes);
     onChange?.(next.theme, next.mode);
   };
 
-  const group = <T extends Theme | Mode>(key: 'theme' | 'mode', legend: string, options: readonly T[]) => (
+  const label = (o: string) => themes.find((t) => t.id === o)?.label ?? MODE_LABEL[o as Mode] ?? o;
+  const group = (key: 'theme' | 'mode', legend: string, options: readonly string[]) => (
     <fieldset className="em-switch-group">
       <legend className="em-legend">{legend}</legend>
       <div className="em-switch-options">
@@ -59,7 +62,7 @@ export function ThemeSwitcher({ onChange, storage, className }: ThemeSwitcherPro
               checked={state[key] === o}
               onChange={() => set({ ...state, [key]: o })}
             />
-            <span>{LABEL[o]}</span>
+            <span>{label(o)}</span>
           </label>
         ))}
       </div>
@@ -68,7 +71,7 @@ export function ThemeSwitcher({ onChange, storage, className }: ThemeSwitcherPro
 
   return (
     <div className={cx('em-switch', className)}>
-      {group('theme', 'Theme', THEMES)}
+      {themes.length > 1 && group('theme', 'Theme', themes.map((t) => t.id))}
       {group('mode', 'Color mode', MODES)}
       <p className="em-sr-only" role="status" aria-live="polite">{message}</p>
     </div>
