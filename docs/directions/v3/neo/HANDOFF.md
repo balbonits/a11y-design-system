@@ -53,6 +53,7 @@ Every state has a non-color cue. Shadow or press is never the only one.
 | Loading | Buttons get `aria-busy="true"`, a spinner and a verb label ("Saving…"). Lists show skeleton bars inside `role="status"` with an accessible name. With reduced motion the spinner stops and turns dotted; the label still says what's happening. |
 | Empty | Dashed `--border-subtle` box on `--surface-muted`, a bold one-line reason, and one action ("Go to Board", per the UX glossary). |
 | Selected (tabs, nav) | Inverted fill (`--text` on `--color-bg`) or highlight fill plus border, along with `aria-selected` or `aria-current`. |
+| Ghost button | Transparent fill, solid `--border-subtle` outline, no shadow (solid, so it never reads as a focus ring). |
 | Status pills | Always text ("Passing", "Review", "Failing", "Info") with a currentColor outline; color is extra. |
 
 All of these are in the "States" panel of the `#components` view. Dialog: Cancel and a confirm button, Esc closes, focus returns to the opener. Toast: `role="status"`, hidden until shown.
