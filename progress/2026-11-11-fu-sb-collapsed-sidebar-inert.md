@@ -1,6 +1,6 @@
 ---
 date: 2026-11-11
-pr:
+pr: 65
 card: FU-SB-COLLAPSED-SIDEBAR-INERT
 title: Collapsed Storybook sidebar no longer takes keyboard focus (600-1023px)
 ---
