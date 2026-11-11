@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en" data-theme="kinetic">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direction D, Kinetic Swiss: Ember UI v3 prototype</title>
+<script>try{var m=localStorage.getItem('jdilig:mode');if(m)document.documentElement.dataset.mode=m}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+html{background:var(--color-bg);color:var(--text);font:400 1.0625rem/1.6 var(--font-body);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;min-height:100vh;overflow-x:hidden}
+a{color:var(--text);text-decoration-thickness:2px;text-underline-offset:.2em}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--surface);color:var(--text);padding:.6rem 1rem;border:var(--border-width) solid var(--border);z-index:9}
+.skip:focus{left:8px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 1.25rem}
+@media(min-width:900px){.wrap{padding:0 2.5rem}}
+.mono{font-family:var(--font-mono);font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.muted{color:var(--text-muted)}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;line-height:.95;letter-spacing:-.035em;font-weight:var(--weight-display)}
+/* 12-col asymmetric grid: label rail 3 cols, content 9 (offset 4 on wide) */
+.g{display:grid;gap:1rem 1.5rem;grid-template-columns:minmax(0,1fr)}.g>*{min-width:0}
+@media(min-width:900px){.g{grid-template-columns:repeat(12,minmax(0,1fr))}.g>.rail{grid-column:1/4}.g>.body{grid-column:4/13}.g>.body.off{grid-column:5/13}.g>.full{grid-column:1/-1}}
+.rule{border-top:var(--rule) solid var(--border)}
+/* header */
+header.top{position:sticky;top:0;z-index:5;background:var(--color-bg);border-bottom:var(--rule) solid var(--border)}
+.bar{display:flex;align-items:center;gap:.4rem 1.2rem;min-height:64px;flex-wrap:wrap;padding-block:.4rem}
+.logo{font:800 1.35rem var(--font-display);letter-spacing:-.04em;text-decoration:none;margin-right:auto;display:flex;align-items:baseline;gap:.6rem}
+.logo .mono{font-weight:400;letter-spacing:.06em}
+nav.views{display:flex;gap:1.2rem;overflow-x:auto;width:100%;order:3}
+@media(min-width:900px){nav.views{width:auto;order:0}}
+nav.views a{flex:none;text-decoration:none;font-weight:600;min-height:44px;display:inline-flex;align-items:center;border-bottom:3px solid transparent}
+nav.views a[aria-current="page"]{border-bottom-color:var(--accent)}
+nav.views a:hover{border-bottom-color:var(--border)}
+/* buttons: flat, square, no shadow */
+.btn{font:600 1rem var(--font-body);min-height:48px;padding:.6rem 1.3rem;border-radius:var(--radius-control);border:var(--border-width) solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;transition:background var(--duration-fast) var(--ease-press),color var(--duration-fast) var(--ease-press)}
+.btn:hover{background:var(--text);color:var(--color-bg)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:var(--danger-contrast)}
+.btn.danger:hover{background:var(--danger-hover)}
+.btn.text{border-color:transparent;padding-inline:.2rem;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.25em}
+.btn.text:hover{background:none;color:var(--accent)}
+.btn .arr{transition:transform var(--duration-base) var(--ease-standard)}.btn:hover .arr{transform:translateX(4px)}
+#mode{min-height:44px;padding:.4rem .9rem;font-size:.92rem}
+/* ticker: the one solid band */
+.ticker{background:var(--highlight);color:var(--highlight-contrast);display:flex;align-items:center;overflow:hidden;--focus:var(--highlight-contrast)}
+.ticker .clip{overflow:hidden;flex:1;display:flex;min-width:0}
+.ticker .track{display:flex;flex:none;white-space:nowrap;font:600 1.05rem var(--font-display);letter-spacing:-.01em;padding:.75rem 0;animation:tick var(--duration-ticker) linear infinite}
+.ticker .track span{padding-right:3rem}
+.ticker[data-paused] .track{animation-play-state:paused}
+.ticker button{flex:none;margin:.35rem .6rem;min-height:44px;padding:0 1rem;border:2px solid var(--highlight-contrast);border-radius:var(--radius-control);background:transparent;color:var(--highlight-contrast);font:600 .85rem var(--font-body);cursor:pointer}
+@keyframes tick{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.ticker .track{animation:none}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* line-by-line reveal */
+.kin{font-size:clamp(3rem,13.5vw,10.5rem);font-weight:calc(var(--weight-display-max) - (var(--weight-display-max) - var(--weight-display-min)) * var(--sp,0) * var(--weight-shift));font-variation-settings:'opsz' 96;line-height:.9}
+.kin .ln{display:block;overflow:hidden;padding-bottom:.06em}
+.kin .ln>span{display:inline-block;transform:translateY(105%);transition:transform var(--duration-reveal) var(--ease-standard);transition-delay:calc(var(--i) * var(--stagger))}
+.kin.in .ln>span{transform:none}
+.kin .ln:nth-child(2)>span{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.kin .ln>span{transform:none}}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity var(--duration-reveal) var(--ease-standard),transform var(--duration-reveal) var(--ease-standard)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+main section{padding:0 0 4rem}
+section[hidden]{display:none}
+.hero{padding:2.5rem 0 3rem}
+.hero .lede{font-size:1.2rem;max-width:44ch;margin:1.6rem 0}
+.blk{padding:2.2rem 0}
+.blk .rail h2{font-size:1.6rem;letter-spacing:-.02em}
+.blk .rail .mono{display:block;margin-bottom:.5rem}
+.row{display:flex;flex-wrap:wrap;gap:.9rem 1.2rem;align-items:center}
+/* form: underline fields, no boxes */
+label{font-weight:600;display:block;margin-bottom:.2rem}
+.field{margin-bottom:1.4rem}
+.field input,.field select{width:100%;font:inherit;font-size:1.1rem;min-height:48px;padding:.4rem 0;border:0;border-bottom:var(--border-width) solid var(--border);border-radius:var(--radius-field);background:transparent;color:var(--text)}
+.field select{background:var(--color-bg)}
+.hint{font-size:.92rem;color:var(--text-muted);margin-top:.35rem}
+.check{display:flex;gap:.7rem;align-items:center;min-height:44px}
+.check input{width:24px;height:24px;accent-color:var(--accent)}
+.two{display:grid;gap:2rem}@media(min-width:700px){.two{grid-template-columns:1fr 1fr}}
+/* tabs: text + red underline */
+[role=tablist]{display:flex;gap:1.4rem;flex-wrap:wrap;border-bottom:var(--rule) solid var(--border-subtle)}
+[role=tab]{font:600 1rem var(--font-body);min-height:44px;padding:.3rem 0;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;background:none;color:var(--text-muted);cursor:pointer}
+[role=tab][aria-selected=true]{color:var(--text);border-bottom-color:var(--accent)}
+[role=tabpanel]{padding-top:1rem;max-width:56ch}
+.st{display:inline-flex;align-items:center;gap:.45rem;font:600 .82rem var(--font-mono);letter-spacing:.05em;text-transform:uppercase}
+.st::before{content:"";width:.7em;height:.7em;background:currentColor}
+.st.warn::before{border-radius:50%}.st.bad::before{transform:rotate(45deg)}.st.info::before{width:.35em}
+.ok{color:var(--success)}.warn{color:var(--warning)}.bad{color:var(--danger)}.info{color:var(--info)}
+/* table: rules only */
+.tscroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:480px}
+th,td{text-align:left;padding:.85rem 1rem .85rem 0;border-bottom:var(--rule) solid var(--border-subtle)}
+thead th{font:600 .78rem var(--font-mono);letter-spacing:.06em;text-transform:uppercase;border-bottom:var(--border-width) solid var(--border)}
+tbody th{font-weight:600}
+/* toast + dialog */
+.toast{position:fixed;left:1rem;bottom:1rem;transform:translateY(160%);background:var(--text);color:var(--color-bg);padding:.9rem 1.2rem;font-weight:600;transition:transform var(--duration-base) var(--ease-standard);max-width:calc(100vw - 2rem);z-index:9}
+.toast.show{transform:none}
+dialog{border:0;border-top:6px solid var(--accent);border-radius:0;background:var(--surface);color:var(--text);max-width:min(480px,calc(100vw - 2rem));padding:1.8rem}
+dialog h2{font-size:2rem;margin-bottom:.6rem}
+dialog::backdrop{background:rgb(6 18 63 / .6)}
+/* tracker */
+.stages{display:grid;gap:0}
+@media(min-width:1000px){.stages{grid-template-columns:repeat(5,minmax(0,1fr))}.stage+.stage{border-left:var(--rule) solid var(--border-subtle);padding-left:1.1rem}.stage{padding-right:1.1rem}}
+.stage{padding-block:1.2rem;border-top:var(--border-width) solid var(--border)}
+.stage h2{font-size:1.5rem;display:flex;justify-content:space-between;align-items:baseline;gap:.5rem}
+.stage h2 .n{font:400 .8rem var(--font-mono)}
+.job{padding:1rem 0;border-bottom:var(--rule) solid var(--border-subtle)}
+.job h3{font-size:1.35rem;letter-spacing:-.02em;margin:.25rem 0 .35rem;line-height:1.05}
+.job .remind{border-left:3px solid var(--accent);padding-left:.6rem;margin:.6rem 0;font-size:.95rem}
+.trhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;padding:2.5rem 0 1.5rem}
+.trhead h1{font-size:clamp(2.8rem,11vw,7rem)}
+/* dashboard */
+.nums{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:900px){.nums{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.num{padding:1.2rem 1rem 1.4rem 0;border-top:var(--border-width) solid var(--border)}
+.num+.num{padding-left:1rem;border-left:var(--rule) solid var(--border-subtle)}
+@media(max-width:899px){.num:nth-child(3){padding-left:0;border-left:0}}
+.num b{display:block;font:800 clamp(3.5rem,12vw,6.5rem)/.9 var(--font-display);letter-spacing:-.05em;margin:.4rem 0}
+.spark{width:100%;height:150px;display:block}
+.spark path{fill:none;stroke:var(--text);stroke-width:2.5}
+.spark .last{fill:var(--accent)}
+.spark line{stroke:var(--border-subtle);stroke-width:1}
+.deploys{list-style:none;padding:0;margin:0}
+.deploys li{display:grid;grid-template-columns:auto 1fr auto;gap:.8rem;align-items:baseline;padding:.9rem 0;border-bottom:var(--rule) solid var(--border-subtle)}
+/* swatches */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1.2rem 1rem}
+.sw i{display:block;height:72px;border:var(--rule) solid var(--border-subtle)}
+.sw span{display:block;padding-top:.4rem;font:400 .78rem var(--font-mono)}
+footer{border-top:var(--rule) solid var(--border);padding:1.6rem 0 4.5rem}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap bar">
+ <a class="logo" href="#components">Ember UI <span class="mono muted">v3 / D kinetic</span></a>
+ <nav class="views" aria-label="Prototype screens">
+  <a href="#components">Components</a><a href="#tracker">Job tracker</a><a href="#dashboard">Dev dashboard</a><a href="#tokens">Tokens</a>
+ </nav>
+ <button class="btn" id="mode" type="button" aria-pressed="false"><span class="lbl">Dark mode</span></button>
+</div></header>
+<div class="ticker" id="ticker" role="region" aria-label="Release notes ticker">
+ <div class="clip"><div class="track" aria-hidden="true"><span>Accessible by default / Keyboard first / AA contrast in light and dark / Reduced motion respected / Mobile first /</span><span>Accessible by default / Keyboard first / AA contrast in light and dark / Reduced motion respected / Mobile first /</span></div>
+ <span class="sr">Accessible by default. Keyboard first. AA contrast in light and dark. Reduced motion respected. Mobile first.</span></div>
+ <button type="button" id="tickbtn" aria-pressed="false">Pause ticker</button>
+</div>
+<main id="main" class="wrap" tabindex="-1">
+
+<section id="v-components" aria-labelledby="h-comp">
+ <div class="hero g">
+  <p class="rail mono muted" style="margin:0;padding-top:.6rem">Direction D<br>Kinetic Swiss<br>Ember UI sampler</p>
+  <div class="body">
+   <h1 id="h-comp" class="kin"><span class="ln"><span style="--i:0">Type</span></span> <span class="ln"><span style="--i:1">that moves.</span></span> <span class="ln"><span style="--i:2">UI that</span></span> <span class="ln"><span style="--i:3">doesn't.</span></span></h1>
+   <p class="lede">Ember UI's components set on a 12-column grid: cobalt type on warm white, one signal red for action, and rules instead of boxes. Scroll and the headline's weight follows you.</p>
+   <div class="row"><button class="btn primary" type="button" data-toast="Saved">Save changes <span class="arr" aria-hidden="true">&rarr;</span></button><button class="btn" type="button" id="openm">Open modal</button><button class="btn" type="button">Cancel</button><button class="btn text" type="button">Learn more</button></div>
+  </div>
+ </div>
+ <div class="blk g rule reveal">
+  <div class="rail"><span class="mono muted">01</span><h2>Form</h2></div>
+  <div class="body off two">
+   <div><div class="field"><label for="e">Email</label><input id="e" type="email" autocomplete="email" aria-describedby="eh"><div class="hint" id="eh">We'll only use this to reply to you.</div></div>
+   <div class="field"><label for="s">Role</label><select id="s"><option>Front-end engineer</option><option>UI developer</option><option>Design engineer</option></select></div></div>
+   <div><label class="check"><input type="checkbox" checked> Email me about updates</label><label class="check"><input type="checkbox"> Weekly summary by email</label>
+   <p class="row" style="margin-top:1.2rem"><span class="st ok">Passing</span><span class="st warn">Review</span><span class="st bad">Failing</span><span class="st info">Info</span></p></div>
+  </div>
+ </div>
+ <div class="blk g rule reveal">
+  <div class="rail"><span class="mono muted">02</span><h2>Tabs</h2></div>
+  <div class="body off">
+   <div role="tablist" aria-label="Example tabs">
+    <button role="tab" id="t1" aria-selected="true" aria-controls="p1">Usage</button><button role="tab" id="t2" aria-selected="false" aria-controls="p2" tabindex="-1">Keyboard</button><button role="tab" id="t3" aria-selected="false" aria-controls="p3" tabindex="-1">WCAG</button>
+   </div>
+   <div role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0"><p>Import a component, pass it a label and it's ready.</p></div>
+   <div role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" hidden><p>Arrow keys move between tabs; Home and End jump to the ends.</p></div>
+   <div role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" hidden><p>Meets 2.1.1 Keyboard, 2.4.7 Focus visible and 4.1.2 Name, role, value.</p></div>
+  </div>
+ </div>
+ <div class="blk g rule reveal">
+  <div class="rail"><span class="mono muted">03</span><h2>Table</h2></div>
+  <div class="body off"><div class="tscroll" tabindex="0" role="region" aria-label="Components table, scrolls sideways"><table><caption class="sr">Ember UI components</caption><thead><tr><th scope="col">Component</th><th scope="col">Keyboard</th><th scope="col">Status</th></tr></thead>
+  <tbody><tr><th scope="row">Button</th><td>Enter, Space</td><td><span class="st ok">Stable</span></td></tr><tr><th scope="row">Modal</th><td>Esc closes, focus trapped</td><td><span class="st ok">Stable</span></td></tr><tr><th scope="row">Toast</th><td>Announced politely</td><td><span class="st warn">Beta</span></td></tr></tbody></table></div></div>
+ </div>
+</section>
+
+<section id="v-tracker" aria-labelledby="h-tr" hidden>
+ <div class="trhead"><div><p class="mono muted" style="margin:0 0 .6rem">Job tracker / prototype with fictional demo data</p><h1 id="h-tr" class="kin" style="font-size:clamp(2.8rem,11vw,7rem)">Board</h1></div><button class="btn primary" type="button" data-toast="Role saved">Add role <span class="arr" aria-hidden="true">+</span></button></div>
+ <div class="stages">
+  <div class="stage"><h2>Saved <span class="n">01 / 1</span></h2><article class="job"><div class="mono muted">Initech (fictional)</div><h3>React Developer</h3><div class="muted">Saved yesterday</div><div class="remind">Apply before the posting closes, Nov 16</div><button class="btn text" type="button">Move or edit <span class="sr">React Developer</span></button></article></div>
+  <div class="stage"><h2>Applied <span class="n">02 / 1</span></h2><article class="job"><div class="mono muted">Acme Corp (fictional)</div><h3>Front-end Engineer</h3><div class="muted">Applied 6 days ago</div><div class="remind">Follow up with the recruiter</div><button class="btn text" type="button">Move or edit <span class="sr">Front-end Engineer</span></button></article></div>
+  <div class="stage"><h2>Interviewing <span class="n">03 / 1</span></h2><article class="job"><div class="mono muted">Globex Inc. (fictional)</div><h3>Senior UI Developer</h3><div class="muted">Interviewing for 3 days</div><div class="remind">Send a thank-you note</div><button class="btn text" type="button">Move or edit <span class="sr">Senior UI Developer</span></button></article></div>
+  <div class="stage"><h2>Offer <span class="n">04 / 1</span></h2><article class="job"><div class="mono muted">Hooli Labs (fictional)</div><h3>Accessibility Engineer</h3><div class="muted">Offer received 2 days ago</div><div class="remind">Reply to the offer</div><button class="btn text" type="button">Move or edit <span class="sr">Accessibility Engineer</span></button></article></div>
+  <div class="stage"><h2>Closed <span class="n">05 / 0</span></h2><p class="muted">Nothing here yet.</p></div>
+ </div>
+</section>
+
+<section id="v-dashboard" aria-labelledby="h-db" hidden>
+ <div class="trhead"><div><p class="mono muted" style="margin:0 0 .6rem">Dev dashboard / example data, not real metrics</p><h1 id="h-db" class="kin" style="font-size:clamp(2.8rem,11vw,7rem)">Overview</h1></div></div>
+ <div class="nums">
+  <div class="num"><span class="mono muted">Builds today</span><b>12</b><span class="st ok">All green</span></div>
+  <div class="num"><span class="mono muted">Open PRs</span><b>4</b><span class="st info">2 need review</span></div>
+  <div class="num"><span class="mono muted">a11y issues</span><b>0</b><span class="st ok">Serious or critical</span></div>
+  <div class="num"><span class="mono muted">Flaky tests</span><b>1</b><span class="st warn">Watch</span></div>
+ </div>
+ <div class="blk g rule reveal" style="margin-top:2rem">
+  <div class="rail"><span class="mono muted">Trend</span><h2>Build time</h2><p class="muted">Example, last 7 days. Down 38%.</p></div>
+  <div class="body off"><svg class="spark" viewBox="0 0 600 150" preserveAspectRatio="none" role="img" aria-label="Example line chart: build time trending down over 7 days"><line x1="0" y1="149" x2="600" y2="149"/><line x1="0" y1="75" x2="600" y2="75"/><path d="M5 30 L100 48 L200 40 L300 78 L400 70 L500 104 L592 112" vector-effect="non-scaling-stroke"/><rect class="last" x="584" y="104" width="16" height="16"/></svg></div>
+ </div>
+ <div class="blk g rule reveal">
+  <div class="rail"><span class="mono muted">Log</span><h2>Recent deploys</h2></div>
+  <div class="body off"><ul class="deploys">
+   <li><span class="st ok">Live</span><span><b>ember-ui</b> v0.2.2</span><span class="mono muted">example</span></li>
+   <li><span class="st ok">Live</span><span><b>job-tracker</b></span><span class="mono muted">example</span></li>
+   <li><span class="st warn">Pending</span><span><b>dev-dashboard</b></span><span class="mono muted">example</span></li>
+  </ul></div>
+ </div>
+</section>
+
+<section id="v-tokens" aria-labelledby="h-tok" hidden>
+ <div class="trhead"><div><p class="mono muted" style="margin:0 0 .6rem">Semantic colors, current mode</p><h1 id="h-tok" class="kin" style="font-size:clamp(2.8rem,11vw,7rem)">Tokens</h1></div></div>
+ <p class="muted" style="max-width:60ch">The full sheet is in <a href="TOKENS.md">TOKENS.md</a> and the contrast results are in <a href="CONTRAST.md">CONTRAST.md</a>.</p>
+ <div class="sw" id="sw" style="margin-top:1.5rem"></div>
+</section>
+</main>
+<footer><div class="wrap mono muted">Ember UI v3 direction D, a prototype by John Dilig. <a href="../">All v3 directions</a></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog id="dlg" aria-labelledby="dh"><h2 id="dh">Delete this role?</h2><p>React Developer at Initech (fictional) and its reminders will be removed.</p><div class="row"><button class="btn" type="button" id="dno" autofocus>Cancel</button><button class="btn danger" type="button" id="dok">Delete role</button></div></dialog>
+<script src="../shared/proto.js"></script>
+<script>
+/* D only: line reveal on headlines and scroll-linked display weight (off when --weight-shift is 0). */
+(()=>{const {$$,RM}=V3,R=document.documentElement;
+const show=()=>requestAnimationFrame(()=>$$('section:not([hidden]) .kin').forEach(k=>k.classList.add('in')));
+document.addEventListener('v3:view',()=>{$$('.kin').forEach(k=>k.classList.remove('in'));show()});show();
+let q=0;addEventListener('scroll',()=>{if(RM.matches||q)return;q=requestAnimationFrame(()=>{q=0;R.style.setProperty('--sp',Math.min(1,scrollY/600).toFixed(3))})},{passive:true});
+})();
+</script>
+</body></html>
