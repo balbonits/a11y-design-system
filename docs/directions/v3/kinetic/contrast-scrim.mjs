@@ -1,7 +1,8 @@
-// Appends the kinetic Scrim section to CONTRAST.md.
-// Run after ../shared/contrast.mjs, from docs/directions/v3:
-//   node shared/contrast.mjs kinetic && node kinetic/contrast-scrim.mjs
-// Re-running is safe: it replaces any existing ## Scrim section.
+// Writes the kinetic Scrim section into contrast-notes.md, which shared/contrast.mjs appends to CONTRAST.md,
+// so a plain `node shared/contrast.mjs kinetic` regeneration keeps it (VQA, 2026-11-10).
+// Run from docs/directions/v3:
+//   node kinetic/contrast-scrim.mjs && node shared/contrast.mjs kinetic
+// Re-running is safe: it replaces any existing ## Scrim section in contrast-notes.md.
 //
 // Gates (exit 1 if any fail):
 //   - opaque dialog border against the scrim composited over --color-bg, 3:1 (WCAG 1.4.11)
@@ -15,7 +16,7 @@ import { fileURLToPath } from 'node:url';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const J = JSON.parse(fs.readFileSync(path.join(dir, 'tokens.json')));
-const contrastPath = path.join(dir, 'CONTRAST.md');
+const contrastPath = path.join(dir, 'contrast-notes.md');
 
 const lum = h => {
   const hex = h.slice(1, 7);
