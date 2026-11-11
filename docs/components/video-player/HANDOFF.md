@@ -53,39 +53,56 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 
 | Theme | Primary | Secondary | Ghost | Danger | Press (all variants) |
 |---|---|---|---|---|---|
-| neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | Offset 3px into `--shadow-press` (1px), no tilt |
-| kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0). Label contrast: 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see the note under the table | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | Offset 1px, `--shadow-press` is none |
-| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0) | Hover `--surface-muted`, the same lift and shadow | Hover `--surface-muted`, the same lift and shadow | Hover `--danger-hover`, the same lift and shadow | Offset 0 (settles flat), no shadow |
+| neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | `--press-offset` 3px into `--shadow-press` (1px), no tilt |
+| kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0). Label 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see below | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | `--press-offset` 1px, `--shadow-press` is none |
+| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0). Hover cue gap: see below | Hover `--surface-muted`, the same lift and shadow | Hover `--surface-muted`, the same lift and shadow | Hover `--danger-hover`, the same lift and shadow | `--press-offset` 0 (settles flat), no shadow |
 
-**Kinetic inverted hover and contrast** (from `docs/directions/v3/kinetic/tokens.json`; same formula as `contrast.mjs`):
+**Kinetic inverted hover and contrast.** The numbers below come from `docs/directions/v3/kinetic/tokens.json`. The label pair is already one of `shared/contrast.mjs`'s TEXT pairs, `['color-bg','text']`, at 4.5:1, so it's reported in `kinetic/CONTRAST.md` (lines 29 and 59). FSD's token PR carries the same pair into `scripts/contrast.mjs`.
 
-| Mode | `--color-bg` label on `--text` fill (4.5:1) | `--focus-ring-color` on what the ring sits on, `--color-bg` / `--surface` (3:1) | `--focus-ring-color` against the `--text` fill itself |
+| Mode | `--color-bg` label on `--text` fill (4.5:1) | Focus ring on the band it sits on, `--color-bg` / `--surface` (3:1) | Focus ring against the `--text` fill |
 |---|---|---|---|
-| Light | 14.95:1 pass | 8.95:1 / 9.49:1 pass | 1.67:1 |
-| Dark | 17.60:1 pass | 12.14:1 / 11.10:1 pass | 1.45:1 |
+| Light | 14.95:1 pass | 8.95:1 / 9.49:1 pass | 1.67:1, not adjacent |
+| Dark | 17.60:1 pass | 12.14:1 / 11.10:1 pass | 1.45:1, not adjacent |
 
-The ring doesn't reach 3:1 against the `--text` fill, but it never touches the fill. Kinetic's `--focus-ring-offset` is 3px, so a 3px band of the page or bar color (`--color-bg` or `--surface`) always sits between the ring and the fill. The ring's own contrast is against that band, and it passes in both modes. Two rules keep it that way:
-- In kinetic, `--focus-ring-offset` must stay at 2px or more on Buttons.
-- A hovered and focused kinetic Button never gets an inset ring (`outline-offset` less than or equal to 0).
+The ring-against-fill pair applies only where the ring offset is 0, and that never happens on a kinetic Button. Kinetic's `--focus-ring-offset` is 3px, so a 3px band of `--color-bg` or `--surface` always sits between the ring and the fill. That's why `contrast.mjs` doesn't add the pair: it would report a combination that's never drawn.
+- **Rules that keep it that way:** in kinetic, `--focus-ring-offset` stays at 2px or more on Buttons, and a hovered, focused kinetic Button never gets an inset ring (`outline-offset` at or below 0).
+- **If an offset-0 ring is ever needed**, it has to use `--color-bg` on the inverted fill (14.95:1 and 17.60:1), and that pair then goes into `contrast.mjs`.
 
-If CA wants the ring to also reach 3:1 against the fill, the only token-clean fix is an inverted ring color on hover (`--color-bg`, which is 14.95:1 / 17.60:1 against `--text`). I'm not proposing that here.
+**Dusk hover cue: gap.** `--shadow-overlay` can't be the only hover cue, and none of dusk's hover fills reaches 3:1 against its resting fill (from `dusk/tokens.json`):
 
-**New component tokens** go in `src/tokens/components.css`, each a `var()` of a theme token, as `lint:colors` requires:
+| Mode | Secondary and ghost: `--surface-muted` vs `--surface` / `--color-bg` | Primary: `--accent-hover` vs `--accent` | Danger: `--danger-hover` vs `--danger` |
+|---|---|---|---|
+| Light | 1.19:1 / 1.11:1 | 1.30:1 | 1.33:1 |
+| Dark | 1.11:1 / 1.18:1 | 1.17:1 | 1.27:1 |
+
+The border doesn't change on hover either. That leaves no dusk hover cue at 3:1 or above, so I'm flagging it as a gap for Chief of Creatives and CA to rule on; it isn't specced here. The candidate I see is a border change on hover from `--border-width` to `--border-width-strong` (1px to 2px after #44) in `--accent`. `--accent` is a passing TEXT pair on `--surface` and `--color-bg` in `dusk/CONTRAST.md`, so the new border is a 3:1+ edge. It would need a component token (`--button-hover-border-width: var(--border-width-strong)`) and an inset `box-shadow` or `outline`, not a border-width change, so there's no layout shift.
+
+**Neo secondary hover** is `--surface-muted`, per Button. Chief of Creatives' ruling stands, and the prototype's `--accent-soft` isn't spec.
+
+**Component tokens** go in `src/tokens/components.css`, each a `var()` of a theme token, as `lint:colors` requires:
 - `--button-tilt: var(--tilt)`
 - `--button-lift: var(--lift)` already exists and now applies to every variant.
 - `--button-hover-shadow: var(--shadow-overlay)` for dusk. It's none in kinetic, and neo keeps `--shadow-raised` on hover.
-- `--button-press-offset: var(--press-offset)` for the press depth (option (a) below, **pending CA**).
+- `--button-press-offset: var(--press-offset)`
 - Kinetic's inversion as `--button-hover-bg: var(--text)` and `--button-hover-fg: var(--color-bg)`, set only in kinetic.
 
-**Pending CA: press-offset source.** Written here as option (a), which Chief of Creatives recommended to CA on 2026-11-10: a new per-theme semantic `--press-offset` in each theme's token file, 3px in neo, 1px in kinetic and 0 in dusk, with `--button-press-offset: var(--press-offset)`. Each theme's reduced-motion block sets `--press-offset: 0px`. Reasoning: (b) would tie press depth to border width, so border changes like #41 and #44 would quietly change it. Until CA rules, the open question is this: `--button-press-offset` has no Addendum 5 source. Press depth is 3px in neo, 1px in kinetic and 0 in dusk, and no theme token holds those values. A raw value in components.css breaks `lint:colors`. I see two options:
-- **(a) Written into this spec, pending CA:** a new per-theme token `--press-offset` (3px, 1px, 0) next to `--lift` in each theme, so `--button-press-offset: var(--press-offset)`. It's honest and lint-clean, but it adds a name to Addendum 5.
-- **(b)** Use one depth everywhere, `var(--border-width)` (2px, 2px, and 1px after #44). That adds no new name, but it loses neo's deep press and dusk's flat press.
+**`--press-offset`** (Chief Architect, ARCH-REVIEW Addendum 8, 2026-11-10 10:34 PM PT): a locked per-theme semantic length, defined in each theme's token file next to `--lift`.
+
+| Theme | Value |
+|---|---|
+| neo | 3px |
+| kinetic | 1px |
+| dusk | 0 |
+| Registered default | 1px |
+| Reduced motion | 0 |
+
+Lint rejects negative and unitless values. It stays separate from `--border-width` on purpose, so border changes like #41 and #44 don't change the press depth.
 
 **Rules for every theme:**
-- **Reduced motion:** each theme's reduce block already zeroes `--tilt` and `--lift`. Under reduce, `--press-offset` goes to 0px in each theme's reduce block, and `--button-hover-shadow`'s movement must zero too, and durations go to 0ms. The color changes stay.
-- **No layout shift:** transforms only, never margin, padding, top or size changes.
-- **Hit area:** the 44px `--target-min` hit area is the untransformed box. A -1.5deg tilt on a 44px-tall button moves its corners under 1px, so the hit area still covers 44px.
-- **Focus ring:** the ring follows the transform. Parents of Buttons don't clip (no `overflow: hidden` on the bar or popovers within ring offset + width + 3px of lift), so a tilted or lifted ring is never cut off.
+- **Reduced motion:** each theme's reduce block zeroes neo's `--tilt`, every `--lift` and `--press-offset`, and durations go to 0ms. Fill, label and border changes stay, so state is still visible without motion.
+- **No layout shift:** transforms and shadows only, never margin, padding, top, border-width or size changes.
+- **Hit area:** the 44px `--target-min` hit area moves with the button. Translate and a -1.5deg rotation don't shrink it, so it's 44px or more in both directions while tilted, lifted or pressed. The hover lift never moves the box out from under the pointer, because `--lift` is at most 3px.
+- **Focus ring:** the ring follows the transform. A Button's parents mustn't clip within ring offset + ring width + 3px of lift, plus about 2px of tilt overhang on a wide button: no `overflow: hidden` that close on the bar, popovers or cards. A tilted or lifted ring is never cut off.
 
 ## H-1 Layout, mobile-first
 
