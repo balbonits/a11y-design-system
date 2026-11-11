@@ -342,7 +342,7 @@ let delR=null;const deld=$('#deld');
 function openDel(r){delR=r;$('#delb').textContent=`${r.title} at ${r.company} and its reminders will be removed.`;deld.showModal();$('#delno').focus()}
 $('#delno').onclick=()=>{deld.close();const b=$(`.job[data-id="${delR.id}"] .mvb`);b&&b.focus()};
 deld.addEventListener('cancel',e=>{e.preventDefault();$('#delno').click()});
-$('#delok').onclick=()=>{const r=delR,i=roles.indexOf(r);deld.close();roles.splice(i,1);persist();render();const h=$('#lh-'+r.stage);if(!desk.matches)selTab(r.stage);(h&&!$('#lanes').hidden?h:$('#h-tr')).focus();
+$('#delok').onclick=()=>{const r=delR,i=roles.indexOf(r),sib=[...document.querySelectorAll(`#lane-${r.stage} .job`)],k=sib.findIndex(j=>j.dataset.id===String(r.id)),nx=sib[k+1]||sib[k-1],nid=nx&&nx.dataset.id;deld.close();roles.splice(i,1);persist();render();const h=$('#lh-'+r.stage);if(!desk.matches)selTab(r.stage);const nb=nid&&$(`.job[data-id="${nid}"] .mvb`);(nb||(h&&!$('#lanes').hidden?h:$('#h-tr'))).focus();
  toast('Role deleted','',()=>{roles.splice(i,0,r);persist();render();focusCard(r.id);toast('Role restored')})};
 /* add / edit */
 const rd=$('#roled'),F=id=>$('#'+id);let editR=null,opener=null;
