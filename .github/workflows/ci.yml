@@ -17,6 +17,8 @@ jobs:
       - run: npm run lint
       - run: npm run lint:colors
       - run: npm run contrast
+      - name: Brand contrast (STORYBOOK-BRAND HANDOFF 7.4)
+        run: node docs/storybook-brand/contrast.mjs
       - run: npm test
       - run: npm run build
       - run: npm run check:core-bundle

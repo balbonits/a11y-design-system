@@ -204,3 +204,7 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 
 ## 2026-11-11 5:55 AM PT: STORYBOOK-BRAND forward-merge of main 5e16a66 (#33 R-4 core)
 - Normal merge commit, no rebase. Only PROGRESS.md conflicted (1 hunk); both sides kept, STORYBOOK-BRAND entries last.
+
+## 2026-11-11 6:00 AM PT: STORYBOOK-BRAND brand contrast in CI (CTE, HANDOFF 7.4)
+- CI runs `node docs/storybook-brand/contrast.mjs` right after `npm run contrast`; new script `npm run contrast:brand`. HANDOFF 7.4 now says it is in CI.
+- Planted negative (scratch copy): neo light `--text-muted` set to #9a9a9a gives 9 FAILs, exit 1 (e.g. muted text on #ffffff 2.81 < 4.5); clean tokens 66 pairs, 0 failures. Plant reverted.
