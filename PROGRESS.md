@@ -197,6 +197,26 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 ## 2026-11-11 4:15 AM PT: #33 forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
 - Normal merge commit, no rebase. Only PROGRESS.md conflicted (this branch's R-4 entries against #51's toast-modal entries); both sides kept, R-4 first. package.json and ci.yml auto-merged: test:toast-modal, test:press, test:hover, test:vp and check:core-bundle are all there.
 
+## 2026-11-11 3:00 AM PT: STORYBOOK-BRAND build, with FU-SB-TOOLBAR-44 and FU-SB-PANEL-TABS-44 (HANDOFF revision 4)
+- `.storybook/manager.ts` and `.storybook/manager-head.html` are now byte-identical to `docs/storybook-brand/mock/` (the change is exactly `mock/*.diff`). Main's two files were byte-identical to `docs/storybook-brand/pr45/`, so there was no #45 drift to resolve. No change to `main.ts`, `preview.tsx`, `scripts/a11y-manager.mjs` or `src/`.
+- Manager theme: values come from `src/tokens.json` `themes.neo` through `MAP`, the Ember UI wordmark and blob replace the Storybook logo (`brandImage: null`), the eight `--eb-*` vars are set on load, and the manager re-themes live when the OS color scheme changes.
+- Below 600px: 44x44 hit areas on every toolbar, bottom-bar, drawer-header and addon-panel control (`::before` overlay with `overflow: visible`), 48px bars, addon content at `top: 48px`, the toolbar scroll affordance, and the PANEL-TABS-44 rules (tablist 48px with `margin-block` only, tab overlay `inset: -5px 0`). Reduced motion zeroes the manager's transitions.
+- Gates: `docs/storybook-brand/contrast.mjs` 66 pairs, 0 failures (48 vs #45: 13 up, 35 same, 0 down); `overrides.cjs` all override checks pass; `panel-tabs.cjs` 88 pass, 0 fail, with `--strip` 14 fail as the negative control; #45's manager axe 8 runs, 0 failing.
+
+## 2026-11-11 4:05 AM PT: FU-SB-PANEL-TABS-FOCUS (HANDOFF 4b) in the real manager
+- Merged main b055b5d (#57) and re-copied `docs/storybook-brand/mock/manager-head.html` into `.storybook/` (byte-identical; it adds the `PANEL-TABS-FOCUS` block: 3px `--eb-focus` ring at offset -6px on `.tabbutton:focus-visible`, all widths). `manager.ts` is unchanged and still identical to the mock.
+- Real build (`npm run build`), served on 127.0.0.1:6061: `panel-tabs.cjs` 166 pass, 0 fail (exit 0); `--strip-focus` 54 pass, 24 fail (exit 1); `--strip` 74 pass, 14 fail (exit 1), all matching HANDOFF 4b. `overrides.cjs`: all override checks pass. Brand `contrast.mjs`: 66 pairs, 0 failures (13 up, 35 same, 0 down vs #45). Manager axe: 8 runs, 0 failing.
+
+## 2026-11-11 4:55 AM PT: STORYBOOK-BRAND forward-merge of main 2d59d7b (#58 docs nits, #51 FU-EMBER-TOAST-MODAL)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted; both sides kept, STORYBOOK-BRAND entries last. `.storybook/manager.ts` and `manager-head.html` are still byte-identical to `docs/storybook-brand/mock/` after the merge.
+
+## 2026-11-11 5:55 AM PT: STORYBOOK-BRAND forward-merge of main 5e16a66 (#33 R-4 core)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (1 hunk); both sides kept, STORYBOOK-BRAND entries last.
+
+## 2026-11-11 6:00 AM PT: STORYBOOK-BRAND brand contrast in CI (CTE, HANDOFF 7.4)
+- CI runs `node docs/storybook-brand/contrast.mjs` right after `npm run contrast`; new script `npm run contrast:brand`. HANDOFF 7.4 now says it is in CI.
+- Planted negative (scratch copy): neo light `--text-muted` set to #9a9a9a gives 9 FAILs, exit 1 (e.g. muted text on #ffffff 2.81 < 4.5); clean tokens 66 pairs, 0 failures. Plant reverted.
+
 ## 2026-11-11 4:20 AM PT: SCRIM-GATE forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
 - Normal merge commit, no rebase. Only PROGRESS.md conflicted (SCRIM-GATE entries against #51's toast-modal entries); both sides kept, SCRIM-GATE first. scripts/contrast.mjs, scripts/lib/scrim.mjs, package.json and ci.yml merged without conflict; #27's hover-pair and pressed-state sections and the scrim lib are unchanged, and test:toast-modal, test:press, test:hover and test:vp are all in package.json and CI.
 
