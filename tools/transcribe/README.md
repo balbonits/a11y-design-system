@@ -134,3 +134,20 @@ ffmpeg -ss 00:01:45 -i https://download.blender.org/durian/movies/Sintel.2010.10
 
 Fallback (not needed, since Sintel shipped): a 20-40 s clip with our own TTS
 narration, run through the same `transcribe.py`.
+
+## For the player card (Chief Architect rulings, 2026-11-10)
+
+- `captions.vtt` and `ad.vtt` are the single source. The player and the
+  transcript panel both read them. `cues.json` is a derived convenience
+  output and the player must not read it.
+- The transcript panel interleaves the `ad.vtt` cues as bracketed, labelled
+  description lines, so it is a descriptive transcript.
+- `ad.vtt` is a `kind="descriptions"` track. Browsers don't voice it, so the
+  player shows the active description cue in a visible `aria-live="polite"`
+  region, behind a Descriptions on/off toggle that is off by default and
+  remembered. Voicing it with `speechSynthesis` is an optional extra.
+  Extended (pausing) descriptions aren't needed: the descriptions fit the
+  dialogue gaps.
+- `reference/sintel_fr.srt` may be offered as a reference track only:
+  `srclang="fr"`, label "Français (Blender)", never the default, credited
+  CC BY 3.0. The English `captions.vtt` stays the default captions track.
