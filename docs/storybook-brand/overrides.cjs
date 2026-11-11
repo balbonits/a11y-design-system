@@ -30,6 +30,7 @@ let fail = 0; const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg
     }
     await p.context().close();
   }
+  const dec = await (await b.newContext()).newPage(); // decodes 1px screenshots for the scroll-affordance pixel checks
   for (const w of [320, 599, 600, 1280]) {
     const p = await (await b.newContext({ viewport: { width: w, height: 640 } })).newPage();
     await p.goto(base + '?path=/story/components-button--primary'); await p.waitForSelector('#storybook-preview-iframe'); await p.waitForTimeout(1500);
@@ -59,6 +60,36 @@ let fail = 0; const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg
           prev = c.hit;
         }
       }
+      // overflow: visible must change no pixels: with every ::before removed, each control's own content still fits its box.
+      const spill = await p.evaluate(() => { const st = document.createElement('style'); st.textContent = '*::before { content: none !important; }'; document.head.append(st);
+        const r = [...document.querySelectorAll('.sb-bar button[title], .sb-bar a[title], .sidebar-header button[title]')].filter(x => x.getBoundingClientRect().width && x.scrollWidth > x.clientWidth + 0.5 || x.scrollHeight > x.clientHeight + 0.5).map(x => x.title); st.remove(); return r; });
+      ok(spill.length === 0, `${w}: control content fits its own box without the overlay (so overflow: visible changes no pixels)${spill.length ? ': ' + spill.join(', ') : ''}`);
+      // elementFromPoint probes (Creatives): for every bar control, scroll its hit area fully into view, then the centre, the four edge midpoints and the
+      // four corners (each 1px inside the 44x44 box) must all resolve to that control, and a point 1px outside its left and right edges must not.
+      const probes = await p.evaluate(() => [...document.querySelectorAll('.sb-bar')].filter(x => x.getBoundingClientRect().height).flatMap(bar =>
+        [...bar.querySelectorAll('button[title], a[title]')].filter(x => x.getBoundingClientRect().width).map(x => {
+          const s = getComputedStyle(x, '::before'), t = parseFloat(s.top) || 0, l = parseFloat(s.left) || 0;
+          let r = x.getBoundingClientRect(), br = bar.getBoundingClientRect();
+          bar.scrollLeft += (r.left + l) - br.left - (br.width - (r.width - 2 * l)) / 2; r = x.getBoundingClientRect();
+          const h = [r.left + l, r.top + t, r.right - l, r.bottom - t], cx = (h[0] + h[2]) / 2, cy = (h[1] + h[3]) / 2;
+          const at = (px, py) => { const e = document.elementFromPoint(px, py); return !!e && e.closest('button, a') === x; };
+          const ins = [[cx, cy], [h[0] + 1, cy], [h[2] - 1, cy], [cx, h[1] + 1], [cx, h[3] - 1], [h[0] + 1, h[1] + 1], [h[2] - 1, h[1] + 1], [h[0] + 1, h[3] - 1], [h[2] - 1, h[3] - 1]];
+          const bad = ins.filter(([px, py]) => !at(px, py)).length, out = [[h[0] - 1, cy], [h[2] + 1, cy]].filter(([px]) => px > 0 && px < innerWidth).filter(([px, py]) => at(px, py)).length;
+          return { t: x.title, bad, out, n: ins.length }; })));
+      for (const q of probes) ok(q.bad === 0 && q.out === 0, `${w}: elementFromPoint "${q.t}": ${q.n - q.bad}/${q.n} points inside the 44x44 box hit it, ${q.out ? 'a point outside hits it' : 'points 1px outside do not'}`);
+      // Scroll affordance on the top toolbar: read real pixels 2px below the bar's top edge (padding, no controls) and 1px in from each edge.
+      // The 3px --eb-border rule shows only on an edge with off-screen tools; elsewhere the pixel is the --eb-surface bar colour.
+      const tb = await p.$('main > .sb-bar');
+      const vars = await p.evaluate(() => { const g = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim().toLowerCase(); return { border: g('--eb-border'), surface: g('--eb-surface') }; });
+      const px = async (x, y) => { const png = (await p.screenshot({ clip: { x, y, width: 1, height: 1 } })).toString('base64');
+        return dec.evaluate(async src => { const i = new Image(); i.src = src; await i.decode(); const c = document.createElement('canvas'); c.width = c.height = 1; const g = c.getContext('2d'); g.drawImage(i, 0, 0);
+          return '#' + [...g.getImageData(0, 0, 1, 1).data.slice(0, 3)].map(v => v.toString(16).padStart(2, '0')).join(''); }, 'data:image/png;base64,' + png); };
+      for (const [pos, wantL, wantR] of [['start', 'surface', 'border'], ['middle', 'border', 'border'], ['end', 'border', 'surface']]) {
+        const bb = await tb.evaluate((bar, pos) => { bar.scrollLeft = pos === 'start' ? 0 : pos === 'end' ? bar.scrollWidth : (bar.scrollWidth - bar.clientWidth) / 2; const r = bar.getBoundingClientRect(); return { l: r.left, r: r.right, t: r.top }; }, pos);
+        await p.waitForTimeout(100);
+        const L = await px(Math.round(bb.l) + 1, Math.round(bb.t) + 2), R = await px(Math.round(bb.r) - 2, Math.round(bb.t) + 2);
+        ok(L === vars[wantL] && R === vars[wantR], `${w}: toolbar scrolled to ${pos}: left edge ${L} (want ${wantL} ${vars[wantL]}), right edge ${R} (want ${wantR} ${vars[wantR]})`);
+      }
       // The drawer header and the addon panel (opened from the bottom bar); the drawer is scrolled to the top first.
       const panel = async (open, ctrls) => {
         await p.click(open); await p.waitForTimeout(900);
@@ -67,15 +98,20 @@ let fail = 0; const ok = (c, msg) => { console.log((c ? 'PASS ' : 'FAIL ') + msg
           x.focus({ focusVisible: true }); const fv = x.matches(':focus-visible'), o = getComputedStyle(x), ring = parseFloat(o.outlineWidth) + parseFloat(o.outlineOffset);
           const r = x.getBoundingClientRect(), c = x.closest(box).getBoundingClientRect(), b4 = getComputedStyle(x, '::before'), t = parseFloat(b4.top) || 0, l = parseFloat(b4.left) || 0;
           const hit = [r.left + l, r.top + t, r.right - l, r.bottom - t];
-          return { sel, fv, outline: o.outlineStyle, color: o.outlineColor, w: r.width, h: r.height, hw: hit[2] - hit[0], hh: hit[3] - hit[1], inside: hit[0] >= c.left - .5 && hit[2] <= c.right + .5 && hit[1] >= c.top - .5 && hit[3] <= c.bottom + .5, ringIn: r.top - ring >= c.top - .5 && r.bottom + ring <= c.bottom + .5 && r.left - ring >= c.left - .5 && r.right + ring <= c.right + .5, hits: hit }; }), ctrls);
+          const at = (px, py) => { const e = document.elementFromPoint(px, py); return !!e && e.closest('button, a') === x; }, cx = (hit[0] + hit[2]) / 2, cy = (hit[1] + hit[3]) / 2;
+          const bad = [[cx, cy], [hit[0] + 1, cy], [hit[2] - 1, cy], [cx, hit[1] + 1], [cx, hit[3] - 1], [hit[0] + 1, hit[1] + 1], [hit[2] - 1, hit[1] + 1], [hit[0] + 1, hit[3] - 1], [hit[2] - 1, hit[3] - 1]].filter(([px, py]) => !at(px, py)).length;
+          return { sel, fv, outline: o.outlineStyle, color: o.outlineColor, w: r.width, h: r.height, hw: hit[2] - hit[0], hh: hit[3] - hit[1], inside: hit[0] >= c.left - .5 && hit[2] <= c.right + .5 && hit[1] >= c.top - .5 && hit[3] <= c.bottom + .5, ringIn: r.top - ring >= c.top - .5 && r.bottom + ring <= c.bottom + .5 && r.left - ring >= c.left - .5 && r.right + ring <= c.right + .5, hits: hit, bad }; }), ctrls);
       };
       const rep = list => { let prev = null; for (const c of list) { if (c.missing) { ok(false, `${w}: ${c.sel} not found`); continue; }
         const overlap = prev && c.hits[0] < prev[2] - .5 && Math.abs(c.hits[1] - prev[1]) < 1;
         ok(c.hw >= 44 && c.hh >= 44 && c.inside && !overlap, `${w}: ${c.sel} visual ${Math.round(c.w)}x${Math.round(c.h)}, hit ${Math.round(c.hw)}x${Math.round(c.hh)}, ${c.inside ? 'not clipped' : 'CLIPPED'}, ${overlap ? 'OVERLAPS previous' : 'no overlap'}`);
+        ok(c.bad === 0, `${w}: elementFromPoint ${c.sel}: ${9 - c.bad}/9 points inside the 44x44 box hit it`);
         ok(c.fv && c.outline === 'solid' && rgbHex(c.color) === r.focus.toLowerCase() && c.ringIn, `${w}: ${c.sel} focus ring (${c.fv ? ':focus-visible' : 'NOT focus-visible'}) ${c.outline} ${rgbHex(c.color)}, ${c.ringIn ? 'not clipped' : 'CLIPPED'}`); prev = c.hits; } };
       rep(await panel('button[title="Open navigation menu"]', [['button[title="About Storybook"]', '.sidebar-header'], ['button[title="Close menu"]', '.sidebar-header']]));
       await p.goto(base + '?path=/story/components-button--primary'); await p.waitForSelector('#storybook-preview-iframe'); await p.waitForTimeout(1500);
       rep(await panel('button[title="Open addon panel"]', [['button[title="Close addon panel"]', '.sb-bar']]));
+      const gap = await p.evaluate(() => { const bar = document.querySelector('button[title="Close addon panel"]').closest('.sb-bar'), c = bar.nextElementSibling; return { bar: bar.getBoundingClientRect().bottom, top: c.getBoundingClientRect().top, bottom: c.getBoundingClientRect().bottom, pane: bar.parentElement.getBoundingClientRect().bottom }; });
+      ok(gap.top >= gap.bar - .5 && Math.abs(gap.bottom - gap.pane) < .5, `${w}: addon content starts at the 48px bar's bottom (${Math.round(gap.top)} vs ${Math.round(gap.bar)}) and still ends at the panel bottom`);
     } else {
       for (const bar of r.bars) ok(bar.h === 40 && bar.c.every(c => !c.has && c.h === 28), `${w}: bar unchanged (height ${bar.h}, ${bar.c.length} controls at 28px tall, no hit overlay)`);
     }

@@ -1,6 +1,6 @@
---- pr45/manager-head.html	2026-11-11 00:52:01.589348018 -0800
-+++ mock/manager-head.html	2026-11-11 01:11:24.865274211 -0800
-@@ -1,9 +1,55 @@
+--- pr45/manager-head.html	2026-11-11 01:21:21.731790829 -0800
++++ mock/manager-head.html	2026-11-11 01:28:10.955074549 -0800
+@@ -1,9 +1,73 @@
  <title>Ember UI · Storybook</title>
  <style>
    /* SB-MANAGER-AA: Storybook paints the selected sidebar item's label white on colorSecondary. In dark, colorSecondary is
@@ -40,10 +40,16 @@
 +    .sb-bar:has(button[title="Close addon panel"]) { box-sizing: border-box; height: 48px; }
 +    main > .sb-bar,
 +    .sb-bar:has(button[title="Close addon panel"]) { padding-block: 4px; }
++    /* The addon panel's content is position: absolute; top: 40px under its bar, so the 48px bar needs the content moved down to match, or the content
++       covers the bar's bottom 8px (and the bottom of the Close hit area). Its height is 100% minus 40px in 8.6.19, so it becomes 100% minus 48px. */
++    .sb-bar:has(button[title="Close addon panel"]) + div { top: 48px !important; height: calc(100% - 48px) !important; }
 +    main > .sb-bar :is(button, a)[title],
 +    .sb-bar button[title="Open addon panel"],
 +    .sb-bar button[title="Close addon panel"],
-+    .sidebar-header button:is([title="About Storybook"], [title="Close menu"]) { margin-inline: 8px; }
++    .sidebar-header button:is([title="About Storybook"], [title="Close menu"]) { margin-inline: 8px; overflow: visible !important; }
++    /* overflow: visible is required. Storybook 8.6.19's IconButton is overflow: hidden, which clips the ::before to the 28px box, so without it the
++       hit area is only drawn, not tappable (elementFromPoint finds the bar 1px inside the 44px edge). The controls' own content fits in 28px
++       (scrollWidth equals clientWidth with the ::before removed), so this changes no pixels; overrides.cjs checks both. */
 +    main > .sb-bar :is(button, a)[title]::before,
 +    .sb-bar button[title="Open addon panel"]::before,
 +    .sb-bar button[title="Close addon panel"]::before,
@@ -52,6 +58,18 @@
 +    .sb-bar button[title="Open navigation menu"]::before { content: ""; position: absolute; inset: -2px 0; }
 +    .sb-bar :is(button, a)[title]:focus-visible,
 +    .sidebar-header button:is([title="About Storybook"], [title="Close menu"]):focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: 2px; }
++    /* Scroll affordance (Creatives, 2026-11-11): the top toolbar already scrolls sideways below 600px and the 44px hit areas make it longer, so each edge
++       that has off-screen tools shows a 3px --eb-border rule plus a --eb-surface-muted shade fading over 16px. The shade layers stay fixed to the bar
++       ("scroll"); two --eb-surface covers ride with the content ("local") and hide the shade at whichever end the bar is scrolled to. It's all one
++       background on the bar, drawn under the controls, so no control, label or focus ring is covered and taps aren't intercepted. Neo tokens only. */
++    main > .sb-bar {
++      background:
++        linear-gradient(to right, var(--eb-surface) 16px, transparent 24px) left center / 24px 100% no-repeat local,
++        linear-gradient(to left, var(--eb-surface) 16px, transparent 24px) right center / 24px 100% no-repeat local,
++        linear-gradient(to right, var(--eb-border) 3px, var(--eb-surface-muted) 3px, transparent 16px) left center / 16px 100% no-repeat scroll,
++        linear-gradient(to left, var(--eb-border) 3px, var(--eb-surface-muted) 3px, transparent 16px) right center / 16px 100% no-repeat scroll,
++        var(--eb-surface) !important;
++    }
 +    /* The 40px-tall menu button sits 4px inside the 48px bar, so its ring uses offset 0 (3px ring, 1px to spare) to stay inside the bar. */
 +    .sb-bar button[title="Open navigation menu"]:focus-visible { outline-offset: 0; }
 +  }

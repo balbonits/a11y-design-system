@@ -56,6 +56,8 @@ const CSS_VARS = {
   '--eb-focus': '--focus-ring-color',
   '--eb-selected-text': '--accent-contrast',
   '--eb-boolean-label': '--text-muted',
+  '--eb-surface': '--surface',
+  '--eb-surface-muted': '--surface-muted',
 } as const;
 
 const build = (mode: Mode) => {

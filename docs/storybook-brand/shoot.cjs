@@ -30,7 +30,8 @@ for(const w of [320,599])for(const cs of ['light','dark']){
  await p.goto(base+'?path=/story/components-button--primary',{waitUntil:'networkidle'});await p.waitForTimeout(1200);
  await p.evaluate(()=>document.querySelector('.sb-bar button[title="Zoom in"]').focus({focusVisible:true}));
  await p.mouse.move(w-2,320);await p.evaluate(HIT);
- await p.evaluate(ANN,[['.sb-bar button[title="Zoom in"]','1 focus ring 3px, offset 2',G,'below'],['.sb-bar:has(button[title="Open navigation menu"])','2 both bars 48px; dashed = 44px hit',P]]);
+ await p.evaluate(ANN,[['.sb-bar button[title="Zoom in"]','1 focus ring 3px, offset 2',G,'below'],['.sb-bar:has(button[title="Open navigation menu"])','2 bars 48px; dashed = 44px hit, pitch 50+',P]]);
+ await p.evaluate(()=>{const r=document.querySelector('main > .sb-bar').getBoundingClientRect();const d=document.createElement('div');Object.assign(d.style,{position:'fixed',left:(r.right-16)+'px',top:r.top+'px',width:'16px',height:r.height+'px',outline:'2px dashed #7a2bd6',outlineOffset:'-2px',zIndex:2147483647,pointerEvents:'none'});const t=document.createElement('span');t.textContent='3 more tools: edge rule + shade';Object.assign(t.style,{position:'absolute',right:'0',top:'100%',transform:'translateY(2px)',background:'#7a2bd6',color:'#fff',font:'700 11px/1.3 monospace',padding:'1px 4px',whiteSpace:'nowrap'});d.appendChild(t);document.body.appendChild(d)});
  await p.evaluate(()=>document.querySelector('.sb-bar button[title="Zoom in"]').focus({focusVisible:true}));await p.waitForTimeout(150);
  const f=path.join(dir,`sb-toolbar-hit-${w}-${cs}.png`);await p.screenshot({path:f});console.log(f);await p.close();}
 // The drawer header (About Storybook, Close menu) and the addon panel's Close button, light only (same CSS in dark).
