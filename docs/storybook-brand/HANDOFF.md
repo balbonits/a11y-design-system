@@ -273,7 +273,7 @@ The annotation boxes (green for targets and hit areas, purple for color callouts
    - **Kept:** the title, and #45's selector `#storybook-explorer-tree [data-selected="true"]` (plus its `svg`).
    - **Changed:** that rule's color moves out of the dark-only media query to `var(--eb-selected-text)` in both modes, with `!important`. Light resolves to `#ffffff`, so it's unchanged.
    - **Added:** `.ember-brand`, `.ember-brand__blob`, the `a:has(> .ember-brand)` 44px target and focus ring, the boolean-control label rule (`label:has(> input[role="switch"]…) > span[aria-hidden="true"]`, unselected span only, `color: var(--eb-boolean-label) !important`), the `@media (max-width: 599px)` block (section 4a: the hit areas with `overflow: visible`, the 48px bars, the addon content offset, the toolbar scroll affordance and the focus ring), and the reduced-motion block.
-4. Keep `theme-map.json` and `MAP`/`CSS_VARS` identical, because `contrast.mjs` fails on drift. If the builder adds it to CI, the command is `node docs/storybook-brand/contrast.mjs`.
+4. Keep `theme-map.json` and `MAP`/`CSS_VARS` identical, because `contrast.mjs` fails on drift. It runs in CI (`.github/workflows/ci.yml`, step "Brand contrast", right after `npm run contrast`) as `node docs/storybook-brand/contrast.mjs`; locally `npm run contrast:brand`. Any FAIL exits 1 and fails the build.
 5. Check the real build:
    - `npm run test:a11y`, including #45's manager axe: 8 runs, 0 failing.
    - The brand shows the blob plus "Ember UI" in Archivo Black.

@@ -160,6 +160,20 @@ John asked for switchable themes with the components shown in each. Chief Archit
 
 CA confirmed that press restores each variant's own fill and label (HANDOFF:57), on condition that the pressed state is gated. scripts/contrast.mjs has a new Pressed state section covering every theme and mode: the label on the pressed fill is 4.5:1 or more for primary, danger, secondary and ghost. Primary's and danger's pressed fill is 3:1 or more against --color-bg and --surface. Secondary and ghost take a --text border on press, so that border is gated instead, with a fallback to the fill when --border-width is 0. 48 rows, 0 failures (190 pairs total). The table is in docs/CONTRAST.md.
 
+## 2026-11-10 9:02 PM PT: Architecture review, R-4 VideoPlayer core (draft)
+
+- The player ships as a separate entry, `ember-ui/video`, so the core bundle doesn't grow. A new CI step, `npm run check:core-bundle`, fails if `dist/index.js` or anything it imports mentions hls.js, YouTube, Vimeo or the player code. It was proven both ways: 0 references now, and exit 1 when a reference is planted.
+- One internal player interface (play, pause, seek, rate, volume, mute, time and track events) with adapters behind it. Native `<video>` is the default and never autoplays. HLS uses native playback where the browser has it and lazy-loads hls.js (an optional peer) only where it doesn't. YouTube uses youtube-nocookie.com through the IFrame API, loaded only for a YouTube source. Vimeo loads `@vimeo/player` only for a Vimeo source. Each lazy adapter is its own chunk.
+- One WebVTT cue model, parsed once. The caption renderer, the transcript (current cue, click-to-seek, search, `.txt` and `.vtt` download) and the audio-description track will all read it. Tests cover parsing, round-trip, search, the committed Sintel captions and AD files, source detection and both HLS paths: 24/24 vitest.
+- Not in this PR: the visible controls, caption renderer and transcript panel wait for the design handoff. Installing hls.js and @vimeo/player waits on John's OK. The per-path CSP comes with the demo page.
+- 2026-11-10 9:45 PM PT: R-4 core reshaped to the CTE/Creatives buffering spec: waiting/resumed pair, getBuffered() {fraction, ranges|null}, throttled bufferedchange, canReportBuffering/canReportBufferedRanges; VideoAdapterUnavailable (vimeo, hls); AD setTrack; CSP plan per path. Tests 40/40, core bundle 0 video refs.
+- 2026-11-10 10:16 PM PT: prefs gain pauseWhileReading (default false) and a typed captionStyle (size/color/background/font, per-field fallback, partial patches) per UX/UI; toVtt escapes & < > (BED). Tests 43/43.
+- 2026-11-10 10:38 PM PT: CA a11y PASS on acd2f93. CSP 5c doc edits per CA: Vimeo is an optional lazy peer served from 'self' after John's install OK; post-deploy curl -I verification step; YouTube img-src i.ytimg.com note.
+
+## 2026-11-11 3:20 AM PT: #33 CTE ruling (A), Option 1 plus scoped Option 3; main b055b5d merged
+- VP_GATES stays `fixme`; FSD flips it in the player PR. The 33 #47 tests are listed in the PR body by group.
+- New `src/video/entry.test.ts`: `ember-ui/video` imports by package name through `exports` and lands on build:lib's `dist/video.js`. Plant: with `dist/video.js` moved away, the suite fails. The other three core items already had direct vitest tests (PR body table).
+- Normal merge of main b055b5d (no rebase); only PROGRESS.md conflicted, resolved by keeping both sides.
 ## 2026-11-11: FU-EMBER-TOAST-MODAL, toasts inside a modal
 - Problem: a modal `<dialog>` makes everything outside it inert, so a toast fired while a modal was open was hidden from screen readers, unreachable by keyboard and could time out unseen (WCAG 4.1.3 and 2.2.1). Chief Architect ruled that popover or the top layer does not fix this.
 - Fix: `ToastProvider` watches for open modal dialogs. While one is open, toasts render into a `role="status"`/`role="alert"` outlet inside the topmost modal (nested modals: the last opened wins), and they move back to the page toaster when it closes. Ember `Modal` carries the outlet (`data-em-modal`, `.em-toast-outlet`); for any other modal dialog the provider adds one. The outlet's live regions mount empty and toasts arrive 100ms later so they are announced. Each toast keeps its remaining time across moves, and the timer pauses while the toast can't be reached (page inert or tab hidden).
@@ -171,3 +185,26 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 
 ## 2026-11-11 2:15 AM PT: #51 forward-merge of main f9f016d
 - Merged main f9f016d (#47 test:vp, #45, #52, #27 kinetic, pressed-state contrast) with a merge commit, no rebase. Conflicts were only in `package.json` scripts, `.github/workflows/ci.yml` and this file; both sides kept (test:toast-modal next to test:press, test:hover and test:vp, and all their CI steps).
+
+## 2026-11-11 4:15 AM PT: #33 forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (this branch's R-4 entries against #51's toast-modal entries); both sides kept, R-4 first. package.json and ci.yml auto-merged: test:toast-modal, test:press, test:hover, test:vp and check:core-bundle are all there.
+
+## 2026-11-11 3:00 AM PT: STORYBOOK-BRAND build, with FU-SB-TOOLBAR-44 and FU-SB-PANEL-TABS-44 (HANDOFF revision 4)
+- `.storybook/manager.ts` and `.storybook/manager-head.html` are now byte-identical to `docs/storybook-brand/mock/` (the change is exactly `mock/*.diff`). Main's two files were byte-identical to `docs/storybook-brand/pr45/`, so there was no #45 drift to resolve. No change to `main.ts`, `preview.tsx`, `scripts/a11y-manager.mjs` or `src/`.
+- Manager theme: values come from `src/tokens.json` `themes.neo` through `MAP`, the Ember UI wordmark and blob replace the Storybook logo (`brandImage: null`), the eight `--eb-*` vars are set on load, and the manager re-themes live when the OS color scheme changes.
+- Below 600px: 44x44 hit areas on every toolbar, bottom-bar, drawer-header and addon-panel control (`::before` overlay with `overflow: visible`), 48px bars, addon content at `top: 48px`, the toolbar scroll affordance, and the PANEL-TABS-44 rules (tablist 48px with `margin-block` only, tab overlay `inset: -5px 0`). Reduced motion zeroes the manager's transitions.
+- Gates: `docs/storybook-brand/contrast.mjs` 66 pairs, 0 failures (48 vs #45: 13 up, 35 same, 0 down); `overrides.cjs` all override checks pass; `panel-tabs.cjs` 88 pass, 0 fail, with `--strip` 14 fail as the negative control; #45's manager axe 8 runs, 0 failing.
+
+## 2026-11-11 4:05 AM PT: FU-SB-PANEL-TABS-FOCUS (HANDOFF 4b) in the real manager
+- Merged main b055b5d (#57) and re-copied `docs/storybook-brand/mock/manager-head.html` into `.storybook/` (byte-identical; it adds the `PANEL-TABS-FOCUS` block: 3px `--eb-focus` ring at offset -6px on `.tabbutton:focus-visible`, all widths). `manager.ts` is unchanged and still identical to the mock.
+- Real build (`npm run build`), served on 127.0.0.1:6061: `panel-tabs.cjs` 166 pass, 0 fail (exit 0); `--strip-focus` 54 pass, 24 fail (exit 1); `--strip` 74 pass, 14 fail (exit 1), all matching HANDOFF 4b. `overrides.cjs`: all override checks pass. Brand `contrast.mjs`: 66 pairs, 0 failures (13 up, 35 same, 0 down vs #45). Manager axe: 8 runs, 0 failing.
+
+## 2026-11-11 4:55 AM PT: STORYBOOK-BRAND forward-merge of main 2d59d7b (#58 docs nits, #51 FU-EMBER-TOAST-MODAL)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted; both sides kept, STORYBOOK-BRAND entries last. `.storybook/manager.ts` and `manager-head.html` are still byte-identical to `docs/storybook-brand/mock/` after the merge.
+
+## 2026-11-11 5:55 AM PT: STORYBOOK-BRAND forward-merge of main 5e16a66 (#33 R-4 core)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (1 hunk); both sides kept, STORYBOOK-BRAND entries last.
+
+## 2026-11-11 6:00 AM PT: STORYBOOK-BRAND brand contrast in CI (CTE, HANDOFF 7.4)
+- CI runs `node docs/storybook-brand/contrast.mjs` right after `npm run contrast`; new script `npm run contrast:brand`. HANDOFF 7.4 now says it is in CI.
+- Planted negative (scratch copy): neo light `--text-muted` set to #9a9a9a gives 9 FAILs, exit 1 (e.g. muted text on #ffffff 2.81 < 4.5); clean tokens 66 pairs, 0 failures. Plant reverted.
