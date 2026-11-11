@@ -164,10 +164,12 @@ The Sintel excerpt comes from BED's assets card (PR #38), served as `/media/sint
 | native MP4/WebM, VTT | none beyond `'self'` (`media-src 'self'`, `connect-src 'self'` for the VTT fetch) |
 | HLS native (Safari, iOS) | `media-src` plus the stream host |
 | HLS via hls.js | `media-src 'self' blob:`, and `connect-src` plus the stream host |
-| YouTube | `script-src https://www.youtube.com`, `frame-src https://www.youtube.com https://www.youtube-nocookie.com` (the embed host is youtube-nocookie) |
-| Vimeo | `frame-src https://player.vimeo.com`; `@vimeo/player` is bundled (no third-party script), and it posts messages to the iframe only |
+| YouTube | `script-src https://www.youtube.com`, `frame-src https://www.youtube.com https://www.youtube-nocookie.com` (the embed host is youtube-nocookie). If a poster or thumbnail ever comes from the provider, that page also adds `img-src https://i.ytimg.com` |
+| Vimeo | `frame-src https://player.vimeo.com`. `@vimeo/player` is an optional peer, lazy-imported, and served from `'self'` as a chunk only once John OKs the install, so there's still no third-party script. It posts messages to the iframe only |
 
 The Storybook and site defaults stay strict. A page opts in only to the rows for the sources it mounts.
+
+**Verification (R-4, CA).** After each deploy, run `curl -I` on every page that mounts the player and on one page that doesn't, and paste both `Content-Security-Policy` headers into PROGRESS.md. That proves the per-path rows apply only where the player mounts and the site-wide default stayed strict.
 
 ## 6. Keyboard (UI layer, not the core)
 
