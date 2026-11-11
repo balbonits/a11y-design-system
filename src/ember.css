@@ -54,7 +54,7 @@
 .em-btn--danger { background: var(--danger); color: var(--danger-contrast); box-shadow: var(--button-shadow); }
 .em-btn--danger:hover:not(:disabled) { background: var(--danger-hover); }
 /* Pressed: the shadow drops AND the button moves into it AND the fill darkens, so shadow is never the only cue. */
-.em-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--button-shadow-press); }
+.em-btn:active:not(:disabled) { transform: translateY(var(--button-press-offset)); box-shadow: var(--button-shadow-press); }
 .em-btn--primary:active:not(:disabled) { background: var(--button-bg-hover); }
 .em-btn--secondary:active:not(:disabled), .em-btn--ghost:active:not(:disabled) { background: var(--surface-muted); border-color: var(--text); }
 .em-btn--danger:active:not(:disabled) { background: var(--danger-hover); }

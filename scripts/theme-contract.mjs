@@ -14,7 +14,7 @@ export const SHAPE_TOKENS = [
   '--shadow-raised', '--shadow-press',
   '--focus-ring-width', '--focus-ring-offset', '--focus-ring-style',
   '--control-height', '--control-padding-x', '--control-gap', '--target-min',
-  '--divider-shape', '--tilt', '--lift',
+  '--divider-shape', '--tilt', '--lift', '--press-offset',
 ];
 export const TYPE_MOTION_TOKENS = [
   '--font-display', '--font-body', '--font-mono', '--weight-display',
@@ -26,8 +26,9 @@ export const EXTRA_TOKENS = [
   '--rule', '--shadow-overlay', '--weight-display-min', '--weight-display-max', '--weight-shift',
   '--duration-reveal', '--duration-ticker', '--stagger', '--blur-glass', '--parallax-scale', '--hue-shift',
 ];
-/** Motion tokens that must resolve to 0 under prefers-reduced-motion (Addendum 5 tilt/lift, Addendum 7 motion extras). */
-export const REDUCED_ZERO = ['--tilt', '--lift', '--parallax-scale', '--hue-shift', '--stagger', '--weight-shift', '--duration-reveal'];
+/** Motion tokens that must resolve to 0 under prefers-reduced-motion (Addendum 5 tilt/lift, Addendum 7 motion extras,
+ *  Addendum 8 --press-offset). */
+export const REDUCED_ZERO = ['--tilt', '--lift', '--press-offset', '--parallax-scale', '--hue-shift', '--stagger', '--weight-shift', '--duration-reveal'];
 /** Every name a component token may read (R-2a: one level deep, only Addendum 5/7 names). */
 export const CONTRACT = () => [...COLOR_TOKENS, ...SHAPE_TOKENS, ...TYPE_MOTION_TOKENS, ...EXTRA_TOKENS];
 /** Names retired by Addendum 5. Zero uses allowed anywhere in src/, stories/ or scripts/ output. */

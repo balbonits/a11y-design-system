@@ -70,6 +70,8 @@
   --parallax-scale: 0.08;
   --lift: -3px;
   --tilt: -1.5deg;
+  /* Addendum 8 (video-player HANDOFF:98-107): how far a pressed button moves, every variant. Locked per theme. */
+  --press-offset: 3px;
   /* Addendum 7 registered extras, neutral defaults for neo. */
   --rule: 0px;
   --shadow-overlay: none;
@@ -153,7 +155,7 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { :is([data-theme="neo"], :root:not([data-theme])) {
-  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --stagger: 0ms; --hue-shift: 0;
+  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --press-offset: 0px; --stagger: 0ms; --hue-shift: 0;
 } }
 
 /* ---- Kinetic (kinetic) ---- */
@@ -235,6 +237,8 @@
   --duration-ticker: 36s;
   --parallax-scale: 0;
   --lift: 0px;
+  /* Addendum 8 (video-player HANDOFF:57, 98-107): kinetic press is 1px with --shadow-press none. Locked per theme. */
+  --press-offset: 1px;
   --weight-shift: 1;
   --hue-shift: 0;
 }
@@ -311,5 +315,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="kinetic"] {
-  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0; --parallax-scale: 0; --hue-shift: 0;
+  --tilt: 0deg; --lift: 0px; --press-offset: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0; --parallax-scale: 0; --hue-shift: 0;
 } }

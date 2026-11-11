@@ -76,6 +76,8 @@
   --duration-ticker: 36s;
   --parallax-scale: 0;
   --lift: 0px;
+  /* Addendum 8 (video-player HANDOFF:57, 98-107): kinetic press is 1px with --shadow-press none. Locked per theme. */
+  --press-offset: 1px;
   --weight-shift: 1;
   --hue-shift: 0;
 }
@@ -152,5 +154,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="kinetic"] {
-  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0; --parallax-scale: 0; --hue-shift: 0;
+  --tilt: 0deg; --lift: 0px; --press-offset: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0; --parallax-scale: 0; --hue-shift: 0;
 } }

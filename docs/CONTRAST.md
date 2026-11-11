@@ -10,8 +10,8 @@ Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or mo
 
 | Theme | Focus ring style | Focus ring width | Focus ring offset | Target min | Reduced motion |
 |---|---|---|---|---|---|
-| neo | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
-| kinetic | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
+| neo | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --press-offset, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
+| kinetic | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --press-offset, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
 
 | Theme.mode | Foreground | Background | Min | Ratio |
 |---|---|---|---|---|
@@ -147,3 +147,14 @@ Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or mo
 | kinetic.dark | focus-ring-color | surface | 3 | 11.10 |
 | kinetic.dark | focus-ring-color | surface-muted | 3 | 9.82 |
 | kinetic.dark | accent | surface-muted | 3 | 5.38 |
+
+## Focus ring on component surfaces (FOCUS-RING-GATE)
+
+The focus ring color against component surfaces it sits on, read through src/tokens/components.css (3:1, WCAG 1.4.11), every theme in light and dark. `--press-offset` rule (ARCH-REVIEW Addendum 8): a non-negative px length (unitless and negative rejected), 0px under reduced motion.
+
+| Theme.mode | Foreground | Background | Min | Ratio |
+|---|---|---|---|---|
+| neo.light | focus-ring-color | tabs-track (--surface-muted) | 3 | 3.80 |
+| neo.dark | focus-ring-color | tabs-track (--surface-muted) | 3 | 3.32 |
+| kinetic.light | focus-ring-color | tabs-track (--surface-muted) | 3 | 8.20 |
+| kinetic.dark | focus-ring-color | tabs-track (--surface-muted) | 3 | 9.82 |
