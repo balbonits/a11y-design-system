@@ -41,24 +41,27 @@
 .em-btn--sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--text-xs); }
 /* B-1: a control may look smaller than --target-min, but its hit area never is. */
 .em-btn::before { content: ''; position: absolute; inset: min(0px, calc((100% - var(--target-min)) / 2)); }
-.em-btn--sm::before { inset: calc((36px - var(--target-min)) / 2); }
 .em-btn--lg { min-height: 48px; padding: 0 var(--space-6); font-size: var(--text-base); }
 .em-btn--icon { padding: 0; width: var(--button-height); }
 .em-btn--sm.em-btn--icon { width: 36px; }
 .em-btn--lg.em-btn--icon { width: 48px; }
 .em-btn--primary { background: var(--button-bg); color: var(--button-fg); box-shadow: var(--button-shadow); }
-.em-btn--primary:hover:not(:disabled) { background: var(--button-bg-hover); transform: translateY(var(--button-lift)); }
+/* Hover: each variant's own fill and label, unless the theme defines the optional Addendum 10 pair --hover-fill and
+   --hover-label (kinetic's inversion). They're not @property-registered, so the fallback is what neo and any theme
+   without them get. Disabled and aria-disabled buttons never take a hover state. */
+.em-btn--primary:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--button-bg-hover)); color: var(--hover-label, var(--button-fg)); transform: translateY(var(--button-lift)); }
 .em-btn--secondary { background: var(--surface); color: var(--text); border-color: var(--border); box-shadow: var(--button-shadow); }
-.em-btn--secondary:hover:not(:disabled) { background: var(--surface-muted); }
+.em-btn--secondary:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--surface-muted)); color: var(--hover-label, var(--text)); }
 .em-btn--ghost { background: transparent; color: var(--text); }
-.em-btn--ghost:hover:not(:disabled) { background: var(--surface-muted); }
+.em-btn--ghost:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--surface-muted)); color: var(--hover-label, var(--text)); }
 .em-btn--danger { background: var(--danger); color: var(--danger-contrast); box-shadow: var(--button-shadow); }
-.em-btn--danger:hover:not(:disabled) { background: var(--danger-hover); }
-/* Pressed: the shadow drops AND the button moves into it AND the fill darkens, so shadow is never the only cue. */
-.em-btn:active:not(:disabled) { transform: translateY(1px); box-shadow: var(--button-shadow-press); }
-.em-btn--primary:active:not(:disabled) { background: var(--button-bg-hover); }
-.em-btn--secondary:active:not(:disabled), .em-btn--ghost:active:not(:disabled) { background: var(--surface-muted); border-color: var(--text); }
-.em-btn--danger:active:not(:disabled) { background: var(--danger-hover); }
+.em-btn--danger:hover:not(:disabled):not([aria-disabled="true"]) { background: var(--hover-fill, var(--danger-hover)); color: var(--hover-label, var(--danger-contrast)); }
+/* Pressed: the shadow drops AND the button moves into it AND the fill darkens, so shadow is never the only cue. Press
+   restores each variant's own fill and label over a hover fill (HANDOFF:57, "danger's red returns on press"). */
+.em-btn:active:not(:disabled):not([aria-disabled="true"]) { transform: translateY(var(--button-press-offset)); box-shadow: var(--button-shadow-press); }
+.em-btn--primary:active:not(:disabled):not([aria-disabled="true"]) { background: var(--button-bg-hover); color: var(--button-fg); }
+.em-btn--secondary:active:not(:disabled):not([aria-disabled="true"]), .em-btn--ghost:active:not(:disabled):not([aria-disabled="true"]) { background: var(--surface-muted); color: var(--text); border-color: var(--text); }
+.em-btn--danger:active:not(:disabled):not([aria-disabled="true"]) { background: var(--danger-hover); color: var(--danger-contrast); }
 .em-btn:disabled { cursor: not-allowed; opacity: 0.55; }
 .em-btn[aria-busy="true"] { cursor: progress; }
 .em-spinner {
@@ -118,16 +121,29 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-modal-foot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-4) var(--space-5); border-top: var(--card-border-width) solid var(--border-subtle); }
 
 /* ---------- Tabs ---------- */
-.em-tablist { display: flex; gap: var(--space-1); border-bottom: var(--border-width) solid var(--border); overflow-x: auto; }
+/* HIT-PATCH: the baseline is a background line, not a border, so tabs need no negative margin. The tablist scrolls
+   (overflow-x), which clipped the 2px a tab pushed over a real border: its hit area was 42px. Same look. */
+.em-tablist { display: flex; gap: var(--space-1); background: linear-gradient(var(--border), var(--border)) left bottom / 100% var(--border-width) no-repeat; overflow-x: auto; }
 .em-tab {
   min-height: var(--target-min); padding: 0 var(--space-4); font: inherit; font-size: var(--text-sm); font-weight: var(--weight-medium);
-  color: var(--text-muted); background: transparent; border: 0; border-bottom: var(--tabs-indicator-width) solid transparent; margin-bottom: calc(-1 * var(--border-width));
+  color: var(--text-muted); background: transparent; border: 0; border-bottom: var(--tabs-indicator-width) solid transparent;
   cursor: pointer; white-space: nowrap;
 }
 .em-tab { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
 .em-tab:hover:not(:disabled) { color: var(--text); background: var(--tabs-track); }
 .em-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
 .em-tab:disabled { cursor: not-allowed; opacity: 0.55; }
+/* VQA (Creatives): the tablist scrolls (overflow-x), which also clips y, so an outer ring showed one edge. Inset ring,
+   no layout change; applies in forced colors too. */
+.em-tab:focus-visible { outline-offset: calc(-1 * var(--focus-ring-width)); }
+/* Forced colors (CA, HIT-PATCH): background images are dropped and every transparent border paints CanvasText, so the
+   baseline vanished and every tab showed the same underline. Draw the baseline as a border (no clip: it sits outside the
+   tablist's content box), hide unselected indicators with Canvas, and give the selected tab a Highlight indicator. */
+@media (forced-colors: active) {
+  .em-tablist { background: none; border-bottom: var(--border-width) solid CanvasText; }
+  .em-tab { border-bottom-color: Canvas; }
+  .em-tab[aria-selected="true"] { border-bottom-color: Highlight; }
+}
 .em-tabpanel { padding: var(--space-4) 0; }
 
 /* ---------- Table ---------- */

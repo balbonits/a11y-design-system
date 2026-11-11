@@ -1,0 +1,9 @@
+<title>Ember UI · Storybook</title>
+<style>
+  /* SB-MANAGER-AA: Storybook paints the selected sidebar item's label white on colorSecondary. In dark, colorSecondary is
+     neo lime-400 (it is also link text on ink-2), so the label switches to neo ink: #111111 on #c6f432 is 15.1:1. */
+  @media (prefers-color-scheme: dark) {
+    #storybook-explorer-tree [data-selected="true"],
+    #storybook-explorer-tree [data-selected="true"] svg { color: #111111; }
+  }
+</style>

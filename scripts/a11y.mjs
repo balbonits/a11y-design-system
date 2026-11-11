@@ -5,6 +5,7 @@
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+import { runManager } from './a11y-manager.mjs';
 // Every registered theme (src/themes/registry.json) in light and dark. No theme names here.
 const REGISTRY = JSON.parse(fs.readFileSync(new URL('../src/themes/registry.json', import.meta.url), 'utf8'));
 const COMBOS = REGISTRY.flatMap(({ id }) => ['light', 'dark'].map((m) => `${id}~${m}`));
@@ -50,6 +51,7 @@ for (const motion of ['no-preference', 'reduce', 'os-dark']) {
   }
   await ctx.close();
 }
+failures += await runManager(browser); // the manager page itself, light + dark (SB-MANAGER-AA)
 await browser.close();
 const minor = results.flatMap((r) => r.violations.filter((x) => x.impact !== 'serious' && x.impact !== 'critical').map((x) => `${r.theme} ${r.id} ${x.impact} ${x.id}`));
 console.log(`axe: ${results.length} runs (${stories.length} stories + ${docs.length} docs pages x ${COMBOS.length} theme/mode combos, plus ${docs.length} docs pages x ${OS_DARK.length} theme(s) in OS dark), ${failures} failing. Minor/moderate: ${minor.length}`);

@@ -1,0 +1,8 @@
+{
+  "_note": "FU-BED-2 known target-size under-sizes. Each is SKIPPED by scripts/target-size.mjs with its cause, card and owner, but only at or above its pinned w x h: a known under-size that gets smaller fails, and an entry that no longer fails prints STALE and is deleted by its card. Empty since Ember #27 (v0.3.1, R-2b) deleted the test-fixture theme; fixtureThemes still makes the gate fail if that id appears in src/themes/registry.json or dist/.",
+  "causes": {},
+  "targets": [],
+  "fixtureThemes": [
+    "test-fixture"
+  ]
+}

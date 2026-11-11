@@ -1,8 +1,10 @@
 # tools/transcribe
 
 Offline transcripter for the VideoPlayer demo (Card 1-VP). It turns a media
-file into **WebVTT captions**, a **plain-text transcript**, and a `cues.json`
-cue list. It runs [faster-whisper](https://github.com/SYSTRAN/faster-whisper) on the CPU, with no
+file into **WebVTT captions**, a transcript as **.txt and .vtt** (the
+player's two download formats), and a `cues.json` cue list. Hand corrections
+to the machine text live in a reviewed `corrections.json` and are applied on
+every run, so the committed files stay reproducible. It runs [faster-whisper](https://github.com/SYSTRAN/faster-whisper) on the CPU, with no
 network after the first run and no paid API. It is meant to run on a Grok Bot
 box (Linux, x86-64) and was built and run there. It is never run on evo-x2 or
 the M8.
@@ -10,8 +12,8 @@ the M8.
 ## One cue model
 
 The script builds one list of cues (`start`, `end`, `text`) and renders all
-three outputs from that same list (`cues.py`). `captions.vtt`,
-`transcript.txt` and `cues.json` can't drift apart. A unit test re-parses the
+every output from that same list (`cues.py`). `captions.vtt`,
+`transcript.txt`, `transcript.vtt` and `cues.json` can't drift apart. A unit test re-parses the
 committed files and checks that they match. The VideoPlayer's transcript panel
 should read the same `.vtt` it shows as captions.
 
@@ -37,8 +39,9 @@ cd tools/transcribe
 .venv/bin/python transcribe.py samples/sintel/sintel-excerpt.mp4 \
   --out-dir samples/sintel --model small.en \
   --title "Sintel (excerpt 01:45-02:37)" \
-  --credit "Sintel (c) copyright Blender Foundation | durian.blender.org | CC BY 3.0"
-.venv/bin/python validate_vtt.py samples/sintel/captions.vtt samples/sintel/ad.vtt
+  --credit "Sintel (c) copyright Blender Foundation | durian.blender.org | CC BY 3.0" \
+  --corrections samples/sintel/corrections.json
+.venv/bin/python validate_vtt.py samples/sintel/captions.vtt samples/sintel/ad.vtt samples/sintel/transcript.vtt
 .venv/bin/python spotcheck.py samples/sintel/sintel-excerpt.mp4 samples/sintel/captions.vtt \
   --ref samples/sintel/reference/sintel_fr.srt --ref-offset -105
 ```
@@ -79,9 +82,11 @@ These settings were chosen by testing on this clip:
 | File | What it is |
 |---|---|
 | `sintel-excerpt.mp4` | 52 s excerpt (film 01:45-02:37), 480p H.264 + AAC 96 kb/s, about 3 MB |
-| `cues.json` | the cue list, the source for the next two |
-| `captions.vtt` | WebVTT captions (machine-generated, 12 cues) |
-| `transcript.txt` | plain transcript, with a new paragraph after each pause over 2 s |
+| `cues.json` | the cue list (after corrections), the source for the next three |
+| `captions.vtt` | WebVTT captions, 12 cues: machine-generated, then 4 cues corrected by hand |
+| `transcript.txt` | plain transcript, one cue per line (the player's `.txt` download, `toTxt`) |
+| `transcript.vtt` | the same cues as WebVTT with no NOTE block (the player's `.vtt` download, `toVtt`) |
+| `corrections.json` | the hand corrections: cue number, machine text, corrected text, and why |
 | `ad.vtt` | WebVTT **audio description**, hand-written for this clip (see below) |
 | `reference/sintel_fr.srt` | Blender's official hand-timed French subtitles, used to check the timing |
 
@@ -93,14 +98,34 @@ or the player's speech synthesis can voice them without talking over the
 characters. It is written by hand from the frames, not generated, and is
 validated like the captions.
 
+### Hand corrections
+
+Whisper's words were right, but four cues lost meaning in punctuation, so
+they were corrected by hand in `corrections.json`. Each entry gives the cue
+number, the exact machine text, the corrected text and the evidence:
+
+- cue 3: a comma before "so completely unprepared"
+- cue 6: "So..." because Silero VAD hears speech at 22.46-23.07 s, then about
+  1.2 s of silence before "what". Blender's French track gives "Alors..." its own subtitle.
+- cues 8 and 9: question marks, because Blender's French subtitle 9 has both
+  as questions ("Quelqu'un de très cher ? Une âme sœur ?"), and "A dragon." answers them.
+
+Each correction's evidence is Blender's hand-made French subtitles and the
+measured speech spans. Corrections change text only, never timings. If a
+future model or settings change alters a corrected cue's machine text,
+`transcribe.py` stops with an error instead of misapplying the fix.
+Re-check the entry against the audio, then update it.
+
 ### Validation
 
 - `validate_vtt.py`: a stdlib checker for WebVTT file syntax. It checks the
-  signature, header, timing lines, end after start, cue order, "-->" in text,
-  and empty cues.
+  signature, header, timing lines, end after start, cue order, no overlaps
+  within a track (a cue may not start before the previous one ends),
+  "-->" in text, and empty cues.
 - `validate-vtt-w3c.mjs`: runs W3C's reference parser
   ([webvtt.js](https://github.com/w3c/webvtt.js), the parser behind the W3C
-  online validator) in strict mode. CI runs both.
+  online validator) in strict mode. CI runs both on every `.vtt` here and in
+  `stories/media/sintel/`.
 
 ### Timing spot-check
 
@@ -123,6 +148,9 @@ Foundation | [durian.blender.org](https://durian.blender.org/), licensed
 re-encoded at 480p. The reference subtitles are Blender's official
 `sintel_fr.srt` from the same site. Changes: trimmed, scaled and re-encoded.
 The captions, transcript and audio description are ours.
+
+The official attribution for an excerpt, from durian.blender.org/sharing, is
+"© copyright Blender Foundation | durian.blender.org".
 
 To rebuild the clip:
 
@@ -154,4 +182,4 @@ narration, run through the same `transcribe.py`.
 
 ## Copies for Storybook
 
-`captions.vtt`, `ad.vtt` and `transcript.txt` are also copied to `stories/media/sintel/` (served at `/media/sintel/`). After any regen, copy them again; a unit test fails if the copies drift.
+`captions.vtt`, `ad.vtt`, `transcript.txt` and `transcript.vtt` are also copied to `stories/media/sintel/` (served at `/media/sintel/`). After any regen, copy them again; a unit test fails if the copies drift. See `stories/media/sintel/README.md`.

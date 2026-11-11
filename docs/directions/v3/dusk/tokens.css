@@ -48,8 +48,8 @@
   --radius-md: 999px;
   --radius-sm: 18px;
   --radius-full: 999px;
-  --border-width: 1.5px;
-  --border-width-strong: 2.5px;
+  --border-width: 1px;
+  --border-width-strong: 2px;
   --divider-shape: curve;
   --focus-ring-width: 3px;
   --focus-ring-offset: 3px;
@@ -96,6 +96,7 @@
   --info: var(--palette-blue-700);
   --highlight: var(--palette-coral-400);
   --highlight-contrast: var(--palette-plum-950);
+  --dialog-border: var(--text);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { [data-theme="dusk"]:not([data-mode]) {
@@ -120,6 +121,7 @@
   --info: var(--palette-blue-300);
   --highlight: var(--palette-coral-400);
   --highlight-contrast: var(--palette-aub-950);
+  --dialog-border: var(--border);
   color-scheme: dark;
 } }
 [data-theme="dusk"][data-mode="dark"] {
@@ -144,6 +146,7 @@
   --info: var(--palette-blue-300);
   --highlight: var(--palette-coral-400);
   --highlight-contrast: var(--palette-aub-950);
+  --dialog-border: var(--border);
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="dusk"] {

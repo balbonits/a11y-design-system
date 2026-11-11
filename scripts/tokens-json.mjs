@@ -6,7 +6,7 @@
 //  3. writes src/tokens.json for non-CSS consumers and the contrast gate.
 // Adding a theme = one token file + one registry entry. Nothing else names themes.
 import fs from 'node:fs';
-import { COLOR_TOKENS, EXTRA_TOKENS, SHAPE_TOKENS, TYPE_MOTION_TOKENS, componentLayerProblems, declsOf, parseTheme, registry, resolver } from './theme-contract.mjs';
+import { COLOR_TOKENS, EXTRA_TOKENS, SHAPE_TOKENS, TYPE_MOTION_TOKENS, componentLayerProblems, declsOf, themeNameProblems, parseTheme, registry, resolver } from './theme-contract.mjs';
 
 const src = (f) => new URL(`../src/${f}`, import.meta.url);
 const reg = registry();
@@ -35,6 +35,7 @@ reg.forEach(({ id, label }, n) => {
 });
 const components = declsOf(fs.readFileSync(src('tokens/components.css'), 'utf8'));
 problems.push(...componentLayerProblems(components, parsed));
+problems.push(...themeNameProblems(parsed));
 if (problems.length) { console.error(problems.join('\n')); process.exit(1); }
 fs.writeFileSync(src('tokens/themes.css'), css);
 const json = { registry: reg, primitives: declsOf(fs.readFileSync(src('tokens/primitives.css'), 'utf8')), themes, components };

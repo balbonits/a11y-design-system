@@ -10,8 +10,8 @@ Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or mo
 
 | Theme | Focus ring style | Focus ring width | Focus ring offset | Target min | Reduced motion |
 |---|---|---|---|---|---|
-| neo | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
-| kinetic | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
+| neo | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --press-offset, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
+| kinetic | solid | 3px | 3px | 44px | all 0 (--tilt, --lift, --press-offset, --parallax-scale, --hue-shift, --stagger, --weight-shift, --duration-reveal) |
 
 | Theme.mode | Foreground | Background | Min | Ratio |
 |---|---|---|---|---|
@@ -139,6 +139,87 @@ Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or mo
 | kinetic.dark | focus-ring-color | surface | 3 | 11.10 |
 | kinetic.dark | focus-ring-color | surface-muted | 3 | 9.82 |
 | kinetic.dark | accent | surface-muted | 3 | 5.38 |
+
+## Focus ring on component surfaces (FOCUS-RING-GATE)
+
+The focus ring color against component surfaces it sits on, read through src/tokens/components.css (3:1, WCAG 1.4.11), every theme in light and dark. `--press-offset` rule (ARCH-REVIEW Addendum 8): a non-negative px length (unitless and negative rejected), 0px under reduced motion.
+
+| Theme.mode | Foreground | Background | Min | Ratio |
+|---|---|---|---|---|
+| neo.light | focus-ring-color | tabs-track (--surface-muted) | 3 | 3.80 |
+| neo.dark | focus-ring-color | tabs-track (--surface-muted) | 3 | 3.32 |
+| kinetic.light | focus-ring-color | tabs-track (--surface-muted) | 3 | 8.20 |
+| kinetic.dark | focus-ring-color | tabs-track (--surface-muted) | 3 | 9.82 |
+
+## Optional hover pair (ARCH-REVIEW Addendum 10)
+
+For each theme that defines `--hover-fill` and `--hover-label` (optional contract tokens, a pair, not @property-registered): label on fill 4.5:1, fill against `--color-bg` and `--surface` 3:1 (primary, ghost and danger have no visible border), and the focus ring against the fill 3:1 only when the ring can overlap it (offset 0 or less). Such a theme keeps `--focus-ring-offset` at 2px or more (video-player HANDOFF:68-69). Themes without the pair keep each variant's own hover.
+
+| Theme.mode | Foreground | Background | Min | Ratio |
+|---|---|---|---|---|
+| kinetic.light | hover-label | hover-fill | 4.5 | 14.95 |
+| kinetic.light | hover-fill | color-bg | 3 | 14.95 |
+| kinetic.light | hover-fill | surface | 3 | 15.86 |
+| kinetic.light | focus-ring-color | hover-fill | 3 (recorded, not gated: offset 3px) | 1.67 |
+| kinetic.dark | hover-label | hover-fill | 4.5 | 17.60 |
+| kinetic.dark | hover-fill | color-bg | 3 | 17.60 |
+| kinetic.dark | hover-fill | surface | 3 | 16.08 |
+| kinetic.dark | focus-ring-color | hover-fill | 3 (recorded, not gated: offset 3px) | 1.45 |
+
+## Pressed state (ARCH-REVIEW Addendum 10, Decision 1)
+
+Press restores each variant's own fill and label (HANDOFF:57), in every theme and mode. The label on the pressed fill reaches 4.5:1. Primary and danger have no visible border, so their pressed fill reaches 3:1 against `--color-bg` and `--surface`. Secondary and ghost take a `--text` border on press, so that border is gated 3:1 instead (their fill is gated when `--border-width` is 0).
+
+| Theme.mode | Variant | Foreground | Background | Min | Ratio |
+|---|---|---|---|---|---|
+| neo.light | primary | accent-contrast | accent-hover | 4.5 | 8.88 |
+| neo.light | primary | accent-hover (fill) | color-bg | 3 | 8.36 |
+| neo.light | primary | accent-hover (fill) | surface | 3 | 8.88 |
+| neo.light | danger | danger-contrast | danger-hover | 4.5 | 8.12 |
+| neo.light | danger | danger-hover (fill) | color-bg | 3 | 7.65 |
+| neo.light | danger | danger-hover (fill) | surface | 3 | 8.12 |
+| neo.light | secondary | text | surface-muted | 4.5 | 15.95 |
+| neo.light | secondary | text (border) | color-bg | 3 | 17.79 |
+| neo.light | secondary | text (border) | surface | 3 | 18.88 |
+| neo.light | ghost | text | surface-muted | 4.5 | 15.95 |
+| neo.light | ghost | text (border) | color-bg | 3 | 17.79 |
+| neo.light | ghost | text (border) | surface | 3 | 18.88 |
+| neo.dark | primary | accent-contrast | accent-hover | 4.5 | 16.49 |
+| neo.dark | primary | accent-hover (fill) | color-bg | 3 | 16.49 |
+| neo.dark | primary | accent-hover (fill) | surface | 3 | 14.88 |
+| neo.dark | danger | danger-contrast | danger-hover | 4.5 | 9.39 |
+| neo.dark | danger | danger-hover (fill) | color-bg | 3 | 9.39 |
+| neo.dark | danger | danger-hover (fill) | surface | 3 | 8.47 |
+| neo.dark | secondary | text | surface-muted | 4.5 | 14.07 |
+| neo.dark | secondary | text (border) | color-bg | 3 | 17.79 |
+| neo.dark | secondary | text (border) | surface | 3 | 16.05 |
+| neo.dark | ghost | text | surface-muted | 4.5 | 14.07 |
+| neo.dark | ghost | text (border) | color-bg | 3 | 17.79 |
+| neo.dark | ghost | text (border) | surface | 3 | 16.05 |
+| kinetic.light | primary | accent-contrast | accent-hover | 4.5 | 8.37 |
+| kinetic.light | primary | accent-hover (fill) | color-bg | 3 | 7.89 |
+| kinetic.light | primary | accent-hover (fill) | surface | 3 | 8.37 |
+| kinetic.light | danger | danger-contrast | danger-hover | 4.5 | 10.32 |
+| kinetic.light | danger | danger-hover (fill) | color-bg | 3 | 9.73 |
+| kinetic.light | danger | danger-hover (fill) | surface | 3 | 10.32 |
+| kinetic.light | secondary | text | surface-muted | 4.5 | 13.70 |
+| kinetic.light | secondary | text (border) | color-bg | 3 | 14.95 |
+| kinetic.light | secondary | text (border) | surface | 3 | 15.86 |
+| kinetic.light | ghost | text | surface-muted | 4.5 | 13.70 |
+| kinetic.light | ghost | text (border) | color-bg | 3 | 14.95 |
+| kinetic.light | ghost | text (border) | surface | 3 | 15.86 |
+| kinetic.dark | primary | accent-contrast | accent-hover | 4.5 | 8.20 |
+| kinetic.dark | primary | accent-hover (fill) | color-bg | 3 | 8.20 |
+| kinetic.dark | primary | accent-hover (fill) | surface | 3 | 7.49 |
+| kinetic.dark | danger | danger-contrast | danger-hover | 4.5 | 11.07 |
+| kinetic.dark | danger | danger-hover (fill) | color-bg | 3 | 11.07 |
+| kinetic.dark | danger | danger-hover (fill) | surface | 3 | 10.12 |
+| kinetic.dark | secondary | text | surface-muted | 4.5 | 14.22 |
+| kinetic.dark | secondary | text (border) | color-bg | 3 | 17.60 |
+| kinetic.dark | secondary | text (border) | surface | 3 | 16.08 |
+| kinetic.dark | ghost | text | surface-muted | 4.5 | 14.22 |
+| kinetic.dark | ghost | text (border) | color-bg | 3 | 17.60 |
+| kinetic.dark | ghost | text (border) | surface | 3 | 16.08 |
 
 ## Scrim (dialog backdrop)
 

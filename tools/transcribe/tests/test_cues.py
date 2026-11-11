@@ -6,8 +6,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(HERE))
 
-from cues import (Cue, fmt_ts, from_json, pad, parse_ts, parse_vtt, render_txt,  # noqa: E402
-                  render_vtt, snap_starts, split_words, to_json, trim_lead_words, wrap)
+import json  # noqa: E402
+
+from cues import (Cue, apply_corrections, fmt_ts, from_json, pad, parse_ts, parse_vtt,  # noqa: E402
+                  render_download_txt, render_download_vtt, render_txt, render_vtt, snap_starts, split_words, to_json, trim_lead_words, wrap)
 from validate_vtt import validate  # noqa: E402
 
 SAMPLE = HERE / "samples" / "sintel"
@@ -50,6 +52,16 @@ class OneCueModel(unittest.TestCase):
         self.assertEqual(txt, "Hello there. Fish & <chips>.\n\nLater.\n")
         self.assertIn("&amp; &lt;chips&gt;", vtt)
 
+    def test_download_formats(self):
+        """Mirror ember-ui/video toTxt/toVtt: one cue per line; no NOTE, ids 1..n."""
+        self.assertEqual(render_download_txt(self.cues), "Hello there.\nFish & <chips>.\nLater.\n")
+        vtt = render_download_vtt(self.cues)
+        self.assertTrue(vtt.startswith("WEBVTT\n\n1\n00:00:01.000 --> 00:00:02.500\nHello there.\n\n2\n"))
+        self.assertTrue(vtt.endswith("Later.\n"))
+        self.assertNotIn("NOTE", vtt)
+        self.assertEqual(validate(vtt), [])
+        self.assertEqual(parse_vtt(vtt), self.cues)
+
     def test_json_round_trip(self):
         self.assertEqual(from_json(to_json(self.cues)), self.cues)
 
@@ -78,6 +90,27 @@ class Timing(unittest.TestCase):
         self.assertEqual(out[1].start, 5.0)   # onset after first word: unchanged
 
 
+class Corrections(unittest.TestCase):
+    cues = [Cue(1.0, 2.0, "A kindred spirit."), Cue(3.0, 4.0, "A dragon.")]
+
+    def test_replaces_text_only(self):
+        out = apply_corrections(self.cues, [{"cue": 1, "from": "A kindred spirit.",
+                                             "to": "A kindred spirit?", "why": "question"}])
+        self.assertEqual(out, [Cue(1.0, 2.0, "A kindred spirit?"), self.cues[1]])
+
+    def test_rejects_stale_missing_duplicate_or_unexplained(self):
+        bad = [
+            [{"cue": 1, "from": "something else", "to": "x", "why": "w"}],
+            [{"cue": 3, "from": "x", "to": "y", "why": "w"}],
+            [{"cue": 2, "from": "A dragon.", "to": "x", "why": "w"},
+             {"cue": 2, "from": "A dragon.", "to": "y", "why": "w"}],
+            [{"cue": 2, "from": "A dragon.", "to": "x", "why": " "}],
+        ]
+        for fixes in bad:
+            with self.subTest(fixes=fixes), self.assertRaises(ValueError):
+                apply_corrections(self.cues, fixes)
+
+
 class Validator(unittest.TestCase):
     def test_rejects(self):
         self.assertTrue(validate("WEBVT\n\n00:00.000 --> 00:01.000\nx\n"))
@@ -85,16 +118,33 @@ class Validator(unittest.TestCase):
         self.assertTrue(validate("WEBVTT\n\n00:00.000 -> 00:01.000\nx\n"))
         self.assertTrue(validate("WEBVTT\n\n00:02.000 --> 00:03.000\nx\n\n00:01.000 --> 00:04.000\ny\n"))
 
+    def test_rejects_overlap_within_a_track(self):
+        errs = validate("WEBVTT\n\n00:01.000 --> 00:03.000\nx\n\n00:02.500 --> 00:04.000\ny\n")
+        self.assertTrue(any("overlaps" in e for e in errs), errs)
+        # a cue nested inside a long earlier cue also overlaps
+        errs = validate("WEBVTT\n\n00:01.000 --> 00:09.000\nx\n\n00:02.000 --> 00:03.000\ny\n"
+                        "\n00:04.000 --> 00:05.000\nz\n")
+        self.assertEqual(sum("overlaps" in e for e in errs), 2, errs)
+        self.assertEqual(validate("WEBVTT\n\n00:01.000 --> 00:02.000\nx\n\n00:02.000 --> 00:03.000\ny\n"), [])
+
     def test_committed_tracks_are_valid(self):
-        for name in ("captions.vtt", "ad.vtt"):
+        for name in ("captions.vtt", "ad.vtt", "transcript.vtt"):
             self.assertEqual(validate((SAMPLE / name).read_text(encoding="utf-8")), [], name)
 
     def test_committed_outputs_agree(self):
-        """captions.vtt, transcript.txt and cues.json come from one cue list."""
+        """captions.vtt, transcript.txt, transcript.vtt and cues.json come from one cue list."""
         cues = from_json((SAMPLE / "cues.json").read_text(encoding="utf-8"))
         vtt = (SAMPLE / "captions.vtt").read_text(encoding="utf-8")
         self.assertEqual(parse_vtt(vtt), cues)
-        self.assertEqual((SAMPLE / "transcript.txt").read_text(encoding="utf-8"), render_txt(cues))
+        self.assertEqual((SAMPLE / "transcript.txt").read_text(encoding="utf-8"), render_download_txt(cues))
+        self.assertEqual((SAMPLE / "transcript.vtt").read_text(encoding="utf-8"), render_download_vtt(cues))
+
+    def test_committed_corrections_are_applied(self):
+        fixes = json.loads((SAMPLE / "corrections.json").read_text(encoding="utf-8"))
+        cues = from_json((SAMPLE / "cues.json").read_text(encoding="utf-8"))
+        for fix in fixes:
+            self.assertEqual(cues[fix["cue"] - 1].text, fix["to"])
+            self.assertTrue(fix["why"].strip())
 
 
 class AudioDescription(unittest.TestCase):
