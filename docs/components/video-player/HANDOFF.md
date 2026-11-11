@@ -243,6 +243,28 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
 
 ## For the builder
 
+**Build card (PROC-5/6)**
+- **Builder:** Full Stack Developer (FSD, 336762ab). Target is a new branch `feat/r4-player-ui` off `main`, cut after #33, #38 and Ember #27 merge.
+- **Dependencies (pinned):**
+  - Core player API: PR #33 at `130b6d4`, including CORE-API.md 5a to 5c.
+  - Media: PR #38 at `c42941e`, `stories/media/sintel/` (`sintel-excerpt.mp4`, captions, AD and transcript; French captions follow from FSD).
+  - Ember v0.3.1: PR #27 at `d963cbd`, for tokens and the per-theme scrim.
+  - Copy: `R4-PLAYER-COPY.md` (final), at `/workspace/ux-projects/copy/R4-PLAYER-COPY.md`.
+- **Hard DONE, with numbers:**
+  - axe: 0 violations at every impact, not just serious and critical.
+  - Horizontal overflow: 0 at 320, 375, 768, 1024 and 1440, in light and dark.
+  - Touch targets: no target under 44px.
+  - WCAG 1.4.12 text spacing: 0 overflow and 0 clipped. 200% zoom: 0 overflow.
+  - `contrast.mjs`, with the caption pairs (`--caption-text` on `--caption-bg`, Solid and Translucent), is green.
+  - Every keyboard row in H-6 is an e2e test.
+  - ACR rows 1.2.x are updated. 1.2.2 for the demo stays "Partially Supports" until the listening pass.
+- **Who to ask:**
+  - UX/UI Designer for the spec and layout.
+  - Chief of Creatives for visuals and creative rulings.
+  - Chief Architect for accessibility and architecture.
+- **ETA:** FSD starts once CA signs this HANDOFF and FSD's current cards ship (the #27 kinetic scrim, then SB-MANAGER-AA). The player-UI PR is open for QA, CA and VQA by Wed Nov 11, 6:00 PM PT. If it slips, escalate to CTE. The ETA was set by CTE on 2026-11-10.
+
+
 1. Build controls, caption renderer and transcript **only on the core `Player` interface** (PR #33). No adapter-specific UI code.
 2. Read `player.capabilities` once after `ready` and hide controls per H-3. Show only `capabilities.rates` chips.
 3. One cue model (`vtt.ts`) feeds captions (`activeCues`), transcript (`cueIndexAt` for the current cue, `searchCues`, `toTxt`/`toVtt` for downloads) and AD.
@@ -263,7 +285,7 @@ Every string is from `R4-PLAYER-COPY.md` (final, approved by Chief of Creatives)
 | Where | String |
 |---|---|
 | Ended card | "Video ended." / "Replay" (name "Replay {title}") |
-| Keyboard hint (visually hidden, `aria-describedby` of big Play and Play/Pause) | "Keyboard shortcuts: K or Space plays or pauses. Left and Right arrows skip 5 seconds, and J and L skip 10 seconds. Up and Down arrows change the volume. Home and End go to the start or the end. M mutes. C turns captions on or off. D turns audio description on or off. The less-than and greater-than keys slow down or speed up. F goes full screen. T opens the transcript. Escape closes a panel." Drop the Up/Down sentence when `capabilities.volume` is false, D with no descriptions track, the speed sentence with one rate, F with no full screen, T with no transcript |
+| Keyboard hint (visually hidden, `aria-describedby` of big Play and Play/Pause) | "Keyboard shortcuts: K or Space plays or pauses. Left and Right arrows skip 5 seconds, and J and L skip 10 seconds. Up and Down arrows change the volume. Home and End go to the start or the end. M mutes. C turns captions on or off. D turns audio description on or off. The less-than and greater-than keys slow down or speed up. F goes full screen. T opens the transcript. Escape closes a panel." Drop the Up/Down sentence when `capabilities.volume` is false, D with no descriptions track, the speed sentence with one rate, F with no full screen, T with no transcript, and C with no caption track or under `providerCaptions` |
 | Pause sub-toggle | "Pause video for descriptions"; disabled hint "Turn on Read descriptions aloud to use this." |
 | Adapter unavailable | "This video didn't load here." / "Watch {title} on {provider}" |
 | Provider captions (fallback only) | "Captions are shown by {provider}." / "Caption settings are in the {provider} player." |
