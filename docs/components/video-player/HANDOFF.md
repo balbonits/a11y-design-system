@@ -55,7 +55,7 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 |---|---|---|---|---|---|
 | neo | Hover `--button-bg-hover`, lift `--lift` (-3px), tilt `--tilt` (-1.5deg) | Hover `--surface-muted`, the same lift and tilt | Hover `--surface-muted`, the same lift and tilt | Hover `--danger-hover`, the same lift and tilt | `--press-offset` 3px into `--shadow-press` (1px), no tilt |
 | kinetic | Hover inverts: fill `--text`, label `--color-bg`, no lift or tilt (both are 0). Label 14.95:1 in light, 17.60:1 in dark (4.5:1 needed). Focus ring: see below | The same inversion | The same inversion | The same inversion (danger's red returns on press and focus) | `--press-offset` 1px, `--shadow-press` is none |
-| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0). Hover cue gap: see below | Hover `--surface-muted`, the same lift and shadow | Hover `--surface-muted`, the same lift and shadow | Hover `--danger-hover`, the same lift and shadow | `--press-offset` 0 (settles flat), no shadow |
+| dusk | Hover `--button-bg-hover`, lift `--lift` (-2px), shadow `--shadow-overlay`, no tilt (0), plus the inset hover ring in `--color-bg` (see Dusk hover ring) | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--surface-muted`, the same lift and shadow, plus the inset ring in `--accent` | Hover `--danger-hover`, the same lift and shadow, plus the inset ring in `--color-bg` | `--press-offset` 0 (settles flat), no shadow |
 
 **Kinetic inverted hover and contrast.** The numbers below come from `docs/directions/v3/kinetic/tokens.json`. The label pair is already one of `shared/contrast.mjs`'s TEXT pairs, `['color-bg','text']`, at 4.5:1, so it's reported in `kinetic/CONTRAST.md` (lines 29 and 59). FSD's token PR carries the same pair into `scripts/contrast.mjs`.
 
@@ -66,16 +66,24 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 
 The ring-against-fill pair applies only where the ring offset is 0, and that never happens on a kinetic Button. Kinetic's `--focus-ring-offset` is 3px, so a 3px band of `--color-bg` or `--surface` always sits between the ring and the fill. `shared/contrast.mjs` records it anyway, through `kinetic/contrast-notes.md`, as a "Recorded, not gated" table in `kinetic/CONTRAST.md`. That table lists 1.67:1 in light and 1.45:1 in dark, marked "not adjacent by rule". The label pair and both ring-to-band pairs are gated rows there. Chief of Creatives ruled on 2026-11-10 to keep these rules and not add an inverted ring.
 - **Rules that keep it that way:** in kinetic, `--focus-ring-offset` stays at 2px or more on Buttons, and a hovered, focused kinetic Button never gets an inset ring (`outline-offset` at or below 0). Tilt, lift and press never reduce `--focus-ring-offset` below 2px on kinetic. They move the button and its ring together with `transform`, and the offset is never animated or recomputed per state.
-- **If an offset-0 ring is ever needed**, it has to use `--color-bg` on the inverted fill (14.95:1 and 17.60:1), and that pair then goes into `contrast.mjs`.
+- **There is no offset-0 or inverted ring color.** Per CA, these rules are enforced, not advisory: lint or the contrast test fails any kinetic Button whose `--focus-ring-offset` resolves under 2px, or whose focus ring is drawn inset (`outline-offset` at or below 0, or an inset `box-shadow` used as the focus indicator). FSD builds that check; it's a DONE criterion below.
 
-**Dusk hover cue: gap.** `--shadow-overlay` can't be the only hover cue, and none of dusk's hover fills reaches 3:1 against its resting fill (from `dusk/tokens.json`):
+**Dusk hover ring** (Chief of Creatives' ruling, CA signed, 2026-11-10). `--shadow-overlay` can't be the only hover cue, and no dusk hover fill reaches 3:1 against its resting fill (light 1.11 to 1.33:1, dark 1.11 to 1.27:1), so dusk hover adds a ring:
+- **How it's drawn:** an inset `box-shadow`, `inset 0 0 0 var(--button-hover-border-width) <color>`, with `--button-hover-border-width: var(--border-width-strong)`. It's 2px once #44 lands (2.5px on this branch until then). It's never an `outline`, so it can't collide with the focus outline, and it never changes `border-width`, so there's no layout shift. It's listed before `--shadow-overlay` in the same `box-shadow`.
+- **Color by variant:** secondary and ghost use `--accent`. Primary uses `--color-bg` against `--accent-hover`, and danger uses `--color-bg` against `--danger-hover`. An `--accent` ring would vanish on primary's accent fill.
+- **Reduced motion:** the ring stays, because it's a state cue, not motion. Only lift goes to 0.
+- **Forced colors:** box-shadow isn't drawn, so on hover the border takes the system color (`border-color: Highlight`), at the same width.
+- **Focus:** the focus ring stays outside the button with its offset (`--focus-ring-offset` 3px). Hover and focus together show both rings, with the hover ring inside the edge and the focus ring outside it (H-4, "Hover + focus").
+- **Over video:** the player's halo (`.stage :focus-visible` box-shadow) and the hover ring share one `box-shadow` on a hovered, focused big Play, so neither drops the other.
 
-| Mode | Secondary and ghost: `--surface-muted` vs `--surface` / `--color-bg` | Primary: `--accent-hover` vs `--accent` | Danger: `--danger-hover` vs `--danger` |
+Ring against the hover fill it sits on, 3:1 needed (WCAG 1.4.11). All six pass. They're gated in `shared/contrast.mjs`, which now reads `dusk/contrast-pairs.json` for the two new pairs; `--accent` on `--surface-muted` was already a shared UI pair. They're reported in `dusk/CONTRAST.md`.
+
+| Variant | Ring on hover fill | Light | Dark |
 |---|---|---|---|
-| Light | 1.19:1 / 1.11:1 | 1.30:1 | 1.33:1 |
-| Dark | 1.11:1 / 1.18:1 | 1.17:1 | 1.27:1 |
-
-The border doesn't change on hover either. That leaves no dusk hover cue at 3:1 or above, so I'm flagging it as a gap for Chief of Creatives and CA to rule on; it isn't specced here. The candidate I see is a border change on hover from `--border-width` to `--border-width-strong` (1px to 2px after #44) in `--accent`. `--accent` is a passing TEXT pair on `--surface` and `--color-bg` in `dusk/CONTRAST.md`, so the new border is a 3:1+ edge. It would need a component token (`--button-hover-border-width: var(--border-width-strong)`) and an inset `box-shadow` or `outline`, not a border-width change, so there's no layout shift.
+| Secondary | `--accent` on `--surface-muted` | 7.72:1 pass | 9.04:1 pass |
+| Ghost | `--accent` on `--surface-muted` | 7.72:1 pass | 9.04:1 pass |
+| Primary | `--color-bg` on `--accent-hover` | 11.14:1 pass | 12.49:1 pass |
+| Danger | `--color-bg` on `--danger-hover` | 8.76:1 pass | 12.19:1 pass |
 
 **Neo secondary hover** is `--surface-muted`, per Button. Chief of Creatives' ruling stands, and the prototype's `--accent-soft` isn't spec.
 
@@ -84,6 +92,7 @@ The border doesn't change on hover either. That leaves no dusk hover cue at 3:1 
 - `--button-lift: var(--lift)` already exists and now applies to every variant.
 - `--button-hover-shadow: var(--shadow-overlay)` for dusk. It's none in kinetic, and neo keeps `--shadow-raised` on hover.
 - `--button-press-offset: var(--press-offset)`
+- `--button-hover-border-width: var(--border-width-strong)`, set only in dusk, for the hover ring.
 - Kinetic's inversion as `--button-hover-bg: var(--text)` and `--button-hover-fg: var(--color-bg)`, set only in kinetic.
 
 **`--press-offset`** (Chief Architect, ARCH-REVIEW Addendum 8, 2026-11-10 10:34 PM PT): a locked per-theme semantic length, defined in each theme's token file next to `--lift`.
@@ -103,6 +112,13 @@ Lint rejects negative and unitless values. It stays separate from `--border-widt
 - **No layout shift:** transforms and shadows only, never margin, padding, top, border-width or size changes.
 - **Hit area:** the 44px `--target-min` hit area moves with the button. Translate and a -1.5deg rotation don't shrink it, so it's 44px or more in both directions while tilted, lifted or pressed. The hover lift never moves the box out from under the pointer, because `--lift` is at most 3px.
 - **Focus ring:** the ring follows the transform. A Button's parents mustn't clip within ring offset + ring width + 3px of lift, plus about 2px of tilt overhang on a wide button: no `overflow: hidden` that close on the bar, popovers or cards. A tilted or lifted ring is never cut off.
+
+**DONE criteria for Button motion:**
+1. Per theme, hover and press match the table above, `--press-offset` comes from the theme (neo 3px, kinetic 1px, dusk 0), and reduced motion zeroes tilt, every lift and the press offset.
+2. FSD's check fails the build for any kinetic Button whose `--focus-ring-offset` is under 2px or whose focus ring is inset. It's in lint or the contrast test, and it's in CI.
+3. `shared/contrast.mjs` (and FSD's `scripts/contrast.mjs` port) gates the kinetic label pair and the six dusk hover-ring pairs, with 0 failures.
+4. Hover + focus shows both rings on dusk and kinetic, light and dark, at 320 and 1280, as in the `-hoverfocus-` shots (H-9).
+5. No layout shift on hover or press. The 44px hit area holds, and no focus ring is clipped while tilted or lifted.
 
 ## H-1 Layout, mobile-first
 
@@ -190,6 +206,7 @@ All shown in the prototype's States gallery (static, no media load) and in `hand
 | Loading | pill "Loading video" | appears only after about 1 second, the same moment the polite status announces it (no flash on fast loads); static text and a dotted ring, **no spinner** |
 | Stalled (native, HLS) | the same pill, the same words; the lighter fill draws one segment per buffered range | pill from the core `waiting` until `resumed`; fill redrawn on `bufferedchange` (`canReportBufferedRanges` true) |
 | Stalled (YouTube, Vimeo) | the same pill; one fill from 0 to `fraction` | `ranges` is null. No fill when `fraction` is 0 |
+| Hover + focus (Buttons) | both rings at once: the theme's hover (dusk's inset ring, kinetic's inversion) inside the edge, and the focus ring outside with its offset | dusk and kinetic, light and dark, 320 and 1280 in the `-hoverfocus-` shots (H-9); neither ring replaces the other |
 | No buffering report | no pill, no fill | `canReportBuffering` false (none of the four adapters today; kept for future adapters) |
 | Playing | captions on by default, Pause icon | |
 | Paused, More open | Playback speed, Audio description, Read descriptions aloud (disabled with hint), the pause sub-toggle (disabled), Caption language, Caption settings | |
@@ -309,7 +326,7 @@ Contrast on Solid: white, yellow and cyan on black are 21:1, 19.6:1 and 15.6:1; 
 
 ## H-9 Annotated screenshots
 
-In [`handoff/`](handoff/): `vp-<theme>-<width>-<mode>.png` (full page), `-annotated.png` (full page) and `-annotated-top.png` (first screen) for themes neo, kinetic, dusk, widths 320, 375, 768, 1024, 1440 and modes light, dark (90 shots). Labels: green dashed = landmarks and the player section, purple = headings, pink = focusable targets numbered in tab order with size, red = under 44px (none). Full screen can't be captured headless; its rules are in H-4 and H-7.
+In [`handoff/`](handoff/): `vp-<theme>-<width>-<mode>.png` (full page), `-annotated.png` (full page) and `-annotated-top.png` (first screen) for themes neo, kinetic, dusk, widths 320, 375, 768, 1024, 1440 and modes light, dark (90 shots). Hover + focus: `vp-<theme>-<width>-<mode>-hoverfocus-<primary|secondary>.png` for dusk and kinetic at 320 and 1280, light and dark (16 shots), made by `hoverfocus.cjs` (run from this folder, the same way as `annotate.cjs`). Each is clipped to the hovered, focused button with a label, and `hoverfocus.cjs` prints `:hover`, `:focus-visible`, the outline and the box-shadow for each so you can check both rings are drawn. Labels: green dashed = landmarks and the player section, purple = headings, pink = focusable targets numbered in tab order with size, red = under 44px (none). Full screen can't be captured headless; its rules are in H-4 and H-7.
 
 Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_modules with playwright-core and @axe-core/playwright> node annotate.cjs http://127.0.0.1:PORT/docs/components/video-player/index.html` from `docs/components/video-player/` (it writes relative `handoff/` paths and adds `?theme=` itself).
 
