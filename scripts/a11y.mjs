@@ -1,8 +1,9 @@
-// Runs axe on every Storybook story in light and dark, plus a reduced-motion check.
+// Runs axe on every Storybook story in all 6 theme x mode combos, plus a reduced-motion check.
 // Usage: node scripts/a11y.mjs [baseUrl]   (default http://127.0.0.1:6007, a served storybook-static)
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+const COMBOS = ['editorial', 'bold', 'tactile'].flatMap((t) => ['light', 'dark'].map((m) => `${t}-${m}`));
 
 const require = createRequire(import.meta.url);
 const axeSrc = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
@@ -19,10 +20,11 @@ for (const motion of ['no-preference', 'reduce']) {
   const ctx = await browser.newContext({ reducedMotion: motion, viewport: { width: 1024, height: 768 } });
   const page = await ctx.newPage();
   const targets = motion === 'reduce' ? stories.filter((s) => /modal|toast|button--loading/.test(s.id)) : [...stories, ...docs];
-  for (const theme of ['light', 'dark']) {
+  for (const theme of COMBOS) {
+    const [th, md] = theme.split('-');
     for (const s of targets) {
       const mode = s.type === 'docs' ? 'docs' : 'story';
-      await page.goto(`${base}/iframe.html?id=${s.id}&viewMode=${mode}&globals=theme:${theme}`, { waitUntil: 'load' });
+      await page.goto(`${base}/iframe.html?id=${s.id}&viewMode=${mode}&globals=theme:${th};mode:${md}`, { waitUntil: 'load' });
       await page.waitForSelector('#storybook-root > *, #storybook-docs > *', { timeout: 15000 });
       await page.waitForTimeout(mode === 'docs' ? 1200 : 400); // let entry animations (toast pop) finish so axe measures settled colors
       if (motion === 'reduce') {
@@ -44,6 +46,6 @@ for (const motion of ['no-preference', 'reduce']) {
 }
 await browser.close();
 const minor = results.flatMap((r) => r.violations.filter((x) => x.impact !== 'serious' && x.impact !== 'critical').map((x) => `${r.theme} ${r.id} ${x.impact} ${x.id}`));
-console.log(`axe: ${results.length} runs (${stories.length} stories + ${docs.length} docs pages x light/dark), ${failures} failing. Minor/moderate: ${minor.length}`);
+console.log(`axe: ${results.length} runs (${stories.length} stories + ${docs.length} docs pages x 6 theme/mode combos), ${failures} failing. Minor/moderate: ${minor.length}`);
 if (minor.length) console.log(minor.join('\n'));
 process.exit(failures ? 1 : 0);

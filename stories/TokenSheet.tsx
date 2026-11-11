@@ -1,4 +1,7 @@
+import { THEMES, type Theme } from '../src';
 import { useEffect, useRef, useState } from 'react';
+
+const NAME: Record<Theme, string> = { editorial: 'Editorial', bold: 'Bold', tactile: 'Tactile' };
 
 const PAIRS: Array<[string, string, 'text' | 'ui']> = [
   ['--text', '--color-bg', 'text'],
@@ -37,7 +40,8 @@ export function ratio(a: string, b: string) {
 }
 
 /** Reads the live token values and computes every documented pair's contrast ratio. */
-export function ContrastTable({ theme }: { theme: 'light' | 'dark' }) {
+export function ContrastTable({ theme, mode }: { theme: Theme; mode: 'light' | 'dark' }) {
+  const name = `${NAME[theme]} ${mode}`;
   const ref = useRef<HTMLDivElement>(null);
   const [rows, setRows] = useState<Array<{ fg: string; bg: string; kind: string; r: number; fgc: string; bgc: string }>>([]);
   useEffect(() => {
@@ -55,13 +59,13 @@ export function ContrastTable({ theme }: { theme: 'light' | 'dark' }) {
       return { fg, bg, kind, r: ratio(fgc, bgc), fgc, bgc };
     }));
     probe.remove();
-  }, [theme]);
+  }, [theme, mode]);
   return (
-    <div ref={ref} data-theme={theme} className="ember sb-unstyled" style={{ background: 'var(--color-bg)', color: 'var(--text)', padding: 16, marginBottom: 16, maxWidth: '100%' }}>
+    <div ref={ref} data-theme={theme} data-mode={mode} className="em-scope ember sb-unstyled" style={{ background: 'var(--color-bg)', color: 'var(--text)', padding: 16, marginBottom: 16, maxWidth: '100%' }}>
       {/* The table can be wider than a narrow docs column, so it scrolls in its own focusable region. */}
-      <div role="region" tabIndex={0} aria-label={`${theme === 'light' ? 'Light' : 'Dark'} theme contrast table`} className="sb-scroll">
+      <div role="region" tabIndex={0} aria-label={`${name} contrast table`} className="sb-scroll">
       <table className="em-table">
-        <caption>{theme === 'light' ? 'Light' : 'Dark'} theme contrast</caption>
+        <caption>{name} contrast</caption>
         <thead>
           <tr><th scope="col">Sample</th><th scope="col">Foreground</th><th scope="col">Background</th><th scope="col">Ratio</th><th scope="col">Needs</th><th scope="col">Result</th></tr>
         </thead>
@@ -70,7 +74,10 @@ export function ContrastTable({ theme }: { theme: 'light' | 'dark' }) {
             const need = x.kind === 'ui' ? 3 : 4.5;
             return (
               <tr key={x.fg + x.bg}>
-                <td><span style={{ display: 'inline-block', padding: '2px 8px', color: x.fgc, background: x.bgc, border: x.kind === 'ui' ? `2px solid ${x.fgc}` : '1px solid var(--border-subtle)' }}>Aa</span></td>
+                <td>{x.kind === 'ui'
+                  // UI pairs need 3:1, not text contrast, so their sample is a bordered box with no text.
+                  ? <span aria-hidden="true" style={{ display: 'inline-block', width: 36, height: 22, verticalAlign: 'middle', background: x.bgc, border: `2px solid ${x.fgc}` }} />
+                  : <span style={{ display: 'inline-block', padding: '2px 8px', color: x.fgc, background: x.bgc, border: '1px solid var(--border-subtle)' }}>Aa</span>}</td>
                 <td><code>{x.fg}</code></td>
                 <td><code>{x.bg}</code></td>
                 <td>{x.r.toFixed(2)}:1</td>
@@ -89,9 +96,9 @@ export function ContrastTable({ theme }: { theme: 'light' | 'dark' }) {
 export function Swatches({ names }: { names: string[] }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
-      {(['light', 'dark'] as const).map((t) => (
-        <div key={t} data-theme={t} className="ember sb-unstyled" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'inherit', gap: 8, background: 'var(--color-bg)', padding: 12 }}>
-          <strong style={{ gridColumn: '1 / -1', color: 'var(--text)' }}>{t === 'light' ? 'Light' : 'Dark'}</strong>
+      {THEMES.flatMap((th) => (['light', 'dark'] as const).map((t) => (
+        <div key={th + t} data-theme={th} data-mode={t} className="em-scope ember sb-unstyled" style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'inherit', gap: 8, background: 'var(--color-bg)', padding: 12 }}>
+          <strong style={{ gridColumn: '1 / -1', color: 'var(--text)' }}>{NAME[th]} {t}</strong>
           {names.map((n) => (
             <div key={n} style={{ border: '1px solid var(--border-subtle)', background: 'var(--surface)', color: 'var(--text)' }}>
               <div style={{ height: 40, background: `var(${n})` }} />
@@ -99,7 +106,7 @@ export function Swatches({ names }: { names: string[] }) {
             </div>
           ))}
         </div>
-      ))}
+      )))}
     </div>
   );
 }

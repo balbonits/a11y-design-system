@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table, type Column } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 type Row = { company: string; role: string; stage: string; updated: string };
 const rows: Row[] = [
@@ -52,3 +53,9 @@ export const Zebra: S = { args: { zebra: true } };
 export const Dense: S = { args: { dense: true } };
 export const Empty: S = { args: { rows: [], empty: 'No roles yet. Add your first one.' } };
 export const FocusVisible: S = { parameters: { pseudo: { focusVisible: true } } };
+
+/** Table in all 6 theme x mode combos (R-2). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: (a) => <AllThemes>{(l) => <Table {...a} caption={`Roles (${l})`} />}</AllThemes>,
+};

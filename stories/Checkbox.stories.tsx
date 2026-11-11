@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Checkbox, CheckboxGroup } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Components/Checkbox',
@@ -54,3 +55,17 @@ export const FocusVisible: S = { parameters: { pseudo: { focusVisible: true } } 
 export const Disabled: S = { args: { disabled: true } };
 export const Error: S = { args: { label: 'I confirm the details are correct', error: 'Confirm before saving.' } };
 export const Group: S = { render: () => <GroupDemo /> };
+
+/** Unchecked, checked and error in all 6 theme x mode combos (R-2). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => (
+    <AllThemes>{() => (
+      <div>
+        <Checkbox label="Remote only" />
+        <Checkbox label="Has salary range" defaultChecked />
+        <Checkbox label="I confirm the details" error="Confirm before saving." />
+      </div>
+    )}</AllThemes>
+  ),
+};

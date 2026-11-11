@@ -1,0 +1,279 @@
+/* Layer 2 - semantic. Axes: data-theme=editorial|bold|tactile (absent = editorial), data-mode=light|dark (absent = prefers-color-scheme).
+   Selectors also match .em-scope, so a nested element (e.g. an "All themes" story) can show any combo. */
+
+:is(:root, .em-scope), :is(:root, .em-scope)[data-theme="editorial"] {
+  --font-display: var(--font-serif);
+  --font-body: var(--font-sans);
+  --weight-display: 400;
+  --radius-surface: 28px;
+  --radius-control: 9999px;
+  --radius-field: 14px;
+  --border-width: 1px;
+  --shadow-1: 0 1px 3px rgb(0 0 0 / .08);
+  --shadow-2: 0 1px 2px rgb(0 0 0 / .05), 0 18px 40px -12px rgb(0 0 0 / .16);
+  --shadow-press: none;
+  --blur-glass: 14px;
+  --duration-fast: 120ms;
+  --duration-base: 220ms;
+  --duration-slow: 420ms;
+  --duration-reveal: 720ms;
+  --ease-standard: cubic-bezier(.22,1,.36,1);
+  --ease-press: cubic-bezier(.3,0,.5,1);
+  --duration-ticker: 28s;
+  --parallax-scale: 1;
+  --lift: -2px;
+}
+
+:is(:root, .em-scope):not([data-theme]):not([data-mode="dark"]), :is(:root, .em-scope)[data-theme="editorial"]:not([data-mode="dark"]) {
+  color-scheme: light;
+  --success: var(--palette-green-800);
+  --warning: var(--palette-amber-800);
+  --danger: var(--palette-red-700);
+  --danger-hover: var(--palette-red-800);
+  --danger-contrast: var(--palette-white);
+  --info: var(--palette-sky-700);
+  --focus: var(--palette-teal-700);
+  --color-bg: var(--palette-stone-50);
+  --surface: var(--palette-stone-0);
+  --surface-muted: var(--palette-stone-100);
+  --text: var(--palette-stone-900);
+  --text-muted: var(--palette-stone-700);
+  --border: var(--palette-stone-400);
+  --border-subtle: var(--palette-stone-200);
+  --accent: var(--palette-ember-700);
+  --accent-hover: var(--palette-ember-800);
+  --accent-soft: var(--palette-ember-50);
+  --accent-contrast: var(--palette-white);
+}
+
+:is(:root, .em-scope):not([data-theme])[data-mode="dark"], :is(:root, .em-scope)[data-theme="editorial"][data-mode="dark"] {
+  color-scheme: dark;
+  --color-bg: var(--palette-stone-950d);
+  --surface: var(--palette-stone-900d);
+  --surface-muted: var(--palette-stone-800d);
+  --text: var(--palette-stone-50d);
+  --text-muted: var(--palette-stone-100d);
+  --border: var(--palette-stone-600d);
+  --border-subtle: var(--palette-stone-800d);
+  --accent: var(--palette-ember-400);
+  --accent-hover: var(--palette-ember-300);
+  --accent-soft: var(--palette-ember-950);
+  --accent-contrast: var(--palette-stone-950d);
+  --danger-contrast: var(--palette-stone-950d);
+  --success: var(--palette-green-400);
+  --warning: var(--palette-amber-300);
+  --danger: var(--palette-red-400);
+  --danger-hover: var(--palette-red-300);
+  --info: var(--palette-sky-400);
+  --focus: var(--palette-teal-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(:root, .em-scope):not([data-theme]):not([data-mode]), :is(:root, .em-scope)[data-theme="editorial"]:not([data-mode]) {
+    color-scheme: dark;
+    --color-bg: var(--palette-stone-950d);
+    --surface: var(--palette-stone-900d);
+    --surface-muted: var(--palette-stone-800d);
+    --text: var(--palette-stone-50d);
+    --text-muted: var(--palette-stone-100d);
+    --border: var(--palette-stone-600d);
+    --border-subtle: var(--palette-stone-800d);
+    --accent: var(--palette-ember-400);
+    --accent-hover: var(--palette-ember-300);
+    --accent-soft: var(--palette-ember-950);
+    --accent-contrast: var(--palette-stone-950d);
+    --danger-contrast: var(--palette-stone-950d);
+    --success: var(--palette-green-400);
+    --warning: var(--palette-amber-300);
+    --danger: var(--palette-red-400);
+    --danger-hover: var(--palette-red-300);
+    --info: var(--palette-sky-400);
+    --focus: var(--palette-teal-300);
+  }
+}
+
+:is(:root, .em-scope)[data-theme="bold"] {
+  --font-display: var(--font-sans);
+  --font-body: var(--font-sans);
+  --weight-display: 800;
+  --radius-surface: 22px;
+  --radius-control: 12px;
+  --radius-field: 12px;
+  --border-width: 1px;
+  --shadow-1: 0 0 0 1px var(--border-subtle);
+  --shadow-2: 0 0 0 1px var(--border-subtle), 0 24px 60px -20px rgb(0 0 0 / .55);
+  --shadow-press: 0 8px 30px -6px color-mix(in srgb, var(--accent) 55%, transparent);
+  --blur-glass: 16px;
+  --duration-fast: 100ms;
+  --duration-base: 180ms;
+  --duration-slow: 360ms;
+  --duration-reveal: 640ms;
+  --ease-standard: cubic-bezier(.16,1,.3,1);
+  --ease-press: cubic-bezier(.4,0,.2,1);
+  --duration-ticker: 22s;
+  --parallax-scale: 1.4;
+  --lift: -3px;
+}
+
+:is(:root, .em-scope)[data-theme="bold"]:not([data-mode="dark"]) {
+  color-scheme: light;
+  --color-bg: var(--palette-night-50);
+  --surface: var(--palette-night-0);
+  --surface-muted: var(--palette-night-100);
+  --text: var(--palette-night-900);
+  --text-muted: var(--palette-night-600);
+  --border: var(--palette-night-400);
+  --border-subtle: var(--palette-night-200);
+  --accent: var(--palette-flare-700);
+  --accent-hover: var(--palette-flare-800);
+  --accent-soft: var(--palette-flare-50);
+  --accent-contrast: var(--palette-white);
+  --success: var(--palette-green-700);
+  --warning: var(--palette-amber-800);
+  --danger: var(--palette-red-700);
+  --danger-hover: var(--palette-red-800);
+  --danger-contrast: var(--palette-white);
+  --info: var(--palette-sky-700);
+  --focus: var(--palette-teal-700);
+}
+
+:is(:root, .em-scope)[data-theme="bold"][data-mode="dark"] {
+  color-scheme: dark;
+  --color-bg: var(--palette-night-950d);
+  --surface: var(--palette-night-900d);
+  --surface-muted: var(--palette-night-800d);
+  --text: var(--palette-night-50d);
+  --text-muted: var(--palette-night-300d);
+  --border: var(--palette-night-600d);
+  --border-subtle: var(--palette-night-800d);
+  --accent: var(--palette-flare-400);
+  --accent-hover: var(--palette-flare-300);
+  --accent-soft: var(--palette-flare-950);
+  --accent-contrast: var(--palette-night-950d);
+  --danger-contrast: var(--palette-night-950d);
+  --success: var(--palette-green-400);
+  --warning: var(--palette-amber-300);
+  --danger: var(--palette-red-400);
+  --danger-hover: var(--palette-red-300);
+  --info: var(--palette-sky-400);
+  --focus: var(--palette-teal-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(:root, .em-scope)[data-theme="bold"]:not([data-mode]) {
+    color-scheme: dark;
+    --color-bg: var(--palette-night-950d);
+    --surface: var(--palette-night-900d);
+    --surface-muted: var(--palette-night-800d);
+    --text: var(--palette-night-50d);
+    --text-muted: var(--palette-night-300d);
+    --border: var(--palette-night-600d);
+    --border-subtle: var(--palette-night-800d);
+    --accent: var(--palette-flare-400);
+    --accent-hover: var(--palette-flare-300);
+    --accent-soft: var(--palette-flare-950);
+    --accent-contrast: var(--palette-night-950d);
+    --danger-contrast: var(--palette-night-950d);
+    --success: var(--palette-green-400);
+    --warning: var(--palette-amber-300);
+    --danger: var(--palette-red-400);
+    --danger-hover: var(--palette-red-300);
+    --info: var(--palette-sky-400);
+    --focus: var(--palette-teal-300);
+  }
+}
+
+:is(:root, .em-scope)[data-theme="tactile"] {
+  --font-display: var(--font-grotesque);
+  --font-body: var(--font-grotesque);
+  --weight-display: 800;
+  --radius-surface: 20px;
+  --radius-control: 14px;
+  --radius-field: 12px;
+  --border-width: 2px;
+  --shadow-1: 2px 2px 0 var(--border);
+  --shadow-2: 4px 4px 0 var(--border);
+  --shadow-press: 3px 3px 0 var(--border);
+  --blur-glass: 10px;
+  --duration-fast: 90ms;
+  --duration-base: 200ms;
+  --duration-slow: 380ms;
+  --duration-reveal: 600ms;
+  --ease-standard: cubic-bezier(.34,1.56,.64,1);
+  --ease-press: cubic-bezier(.5,0,.5,1);
+  --duration-ticker: 28s;
+  --parallax-scale: .8;
+  --lift: -2px;
+}
+
+:is(:root, .em-scope)[data-theme="tactile"]:not([data-mode="dark"]) {
+  color-scheme: light;
+  --color-bg: var(--palette-oat-50);
+  --surface: var(--palette-oat-0);
+  --surface-muted: var(--palette-oat-100);
+  --text: var(--palette-oat-900);
+  --text-muted: var(--palette-oat-600);
+  --border: var(--palette-oat-900);
+  --border-subtle: var(--palette-oat-200);
+  --accent: var(--palette-forest-700);
+  --accent-hover: var(--palette-forest-800);
+  --accent-soft: var(--palette-forest-50);
+  --accent-contrast: var(--palette-white);
+  --success: var(--palette-green-800);
+  --warning: var(--palette-amber-900);
+  --danger: var(--palette-red-700);
+  --danger-hover: var(--palette-red-800);
+  --danger-contrast: var(--palette-white);
+  --info: var(--palette-sky-800);
+  --focus: var(--palette-teal-700);
+}
+
+:is(:root, .em-scope)[data-theme="tactile"][data-mode="dark"] {
+  color-scheme: dark;
+  --color-bg: var(--palette-oat-950d);
+  --surface: var(--palette-oat-900d);
+  --surface-muted: var(--palette-oat-800d);
+  --text: var(--palette-oat-50d);
+  --text-muted: var(--palette-oat-300d);
+  --border: var(--palette-oat-300d);
+  --border-subtle: var(--palette-oat-800d);
+  --accent: var(--palette-forest-400);
+  --accent-hover: var(--palette-forest-300);
+  --accent-soft: var(--palette-forest-950);
+  --accent-contrast: var(--palette-forest-950);
+  --danger-contrast: var(--palette-oat-950d);
+  --success: var(--palette-green-400);
+  --warning: var(--palette-amber-300);
+  --danger: var(--palette-red-400);
+  --danger-hover: var(--palette-red-300);
+  --info: var(--palette-sky-400);
+  --focus: var(--palette-teal-300);
+}
+
+@media (prefers-color-scheme: dark) {
+  :is(:root, .em-scope)[data-theme="tactile"]:not([data-mode]) {
+    color-scheme: dark;
+    --color-bg: var(--palette-oat-950d);
+    --surface: var(--palette-oat-900d);
+    --surface-muted: var(--palette-oat-800d);
+    --text: var(--palette-oat-50d);
+    --text-muted: var(--palette-oat-300d);
+    --border: var(--palette-oat-300d);
+    --border-subtle: var(--palette-oat-800d);
+    --accent: var(--palette-forest-400);
+    --accent-hover: var(--palette-forest-300);
+    --accent-soft: var(--palette-forest-950);
+    --accent-contrast: var(--palette-forest-950);
+    --danger-contrast: var(--palette-oat-950d);
+    --success: var(--palette-green-400);
+    --warning: var(--palette-amber-300);
+    --danger: var(--palette-red-400);
+    --danger-hover: var(--palette-red-300);
+    --info: var(--palette-sky-400);
+    --focus: var(--palette-teal-300);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(:root, .em-scope), :is(:root, .em-scope)[data-theme] { --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; }
+}

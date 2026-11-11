@@ -8,8 +8,10 @@ A small, accessible React design system: tokens for light and dark themes, eight
 
 ## What's inside
 
-- `src/tokens.css`: one file of design tokens (raw palette, then semantic roles) for light and dark. Dark applies with `data-theme="dark"`, or follows the system when no theme is set. Reduced motion sets every duration to 0. `src/tokens.json` is generated from it.
-- Components: Button, Input, Select, Checkbox (and CheckboxGroup), Modal, Tabs, Table, Toast. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
+- Themes on two axes: `data-theme="editorial|bold|tactile"` (editorial when absent) and `data-mode="light|dark"` (follows the system when absent), on `<html>` or any `.em-scope` element. That's 6 combos, all checked for AA contrast and axe in CI.
+- Tokens in three layers in `src/tokens/`: primitives (the only place raw colors live), semantic (per theme and mode), and components (`--button-*`, `--field-*` and so on). `src/tokens.css` imports all three, and `src/tokens.json` is generated from them. Reduced motion sets every duration to 0.
+- `ThemeSwitcher`: two native radio groups (Theme, Color mode) that persist to `jdilig:theme` and `jdilig:mode`. Put `PREPAINT_SCRIPT` inline in `<head>` so there's no flash of the wrong theme. The Tactile theme uses Bricolage Grotesque (`@fontsource-variable/bricolage-grotesque`).
+- Components: Button, Input, Select, Checkbox (and CheckboxGroup), Modal, Tabs, Table, Toast, ThemeSwitcher. Every state (default, hover, focus-visible, active, disabled, error, loading where it applies) has a story.
 - Docs pages in a fixed order: usage, anatomy, variants, states, keyboard, accessibility notes, code.
 
 ## Accessibility checks

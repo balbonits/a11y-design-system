@@ -1,8 +1,9 @@
 // Mobile-first sweep of every Storybook docs page: page-level overflow, 44px targets and axe,
-// at 320/375/414/768/920px in light and dark. Usage: node scripts/mobile.mjs [baseUrl]
+// at 320/375/414/768/920/1280px in all 6 theme x mode combos. Usage: node scripts/mobile.mjs [baseUrl]
 import { chromium } from 'playwright-core';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
+const COMBOS = ['editorial', 'bold', 'tactile'].flatMap((t) => ['light', 'dark'].map((m) => `${t}-${m}`));
 
 const require = createRequire(import.meta.url);
 const axeSrc = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
@@ -10,7 +11,7 @@ const base = (process.argv[2] ?? 'http://127.0.0.1:6007').replace(/\/$/, '');
 const exe = process.env.CHROME_PATH ?? '/usr/bin/google-chrome';
 const index = await (await fetch(`${base}/index.json`)).json();
 const docs = Object.values(index.entries).filter((e) => e.type === 'docs');
-const widths = [320, 375, 414, 768, 920];
+const widths = [320, 375, 414, 768, 920, 1280];
 
 const browser = await chromium.launch({ executablePath: exe });
 let failures = 0;
@@ -18,10 +19,11 @@ let runs = 0;
 for (const width of widths) {
   const ctx = await browser.newContext({ viewport: { width, height: 800 }, bypassCSP: true });
   const page = await ctx.newPage();
-  for (const theme of ['light', 'dark']) {
+  for (const theme of COMBOS) {
+    const [th, md] = theme.split('-');
     for (const d of docs) {
       runs++;
-      await page.goto(`${base}/iframe.html?id=${d.id}&viewMode=docs&globals=theme:${theme}`, { waitUntil: 'load' });
+      await page.goto(`${base}/iframe.html?id=${d.id}&viewMode=docs&globals=theme:${th};mode:${md}`, { waitUntil: 'load' });
       await page.waitForSelector('#storybook-docs > *', { timeout: 15000 });
       await page.waitForTimeout(1000);
       const r = await page.evaluate(() => {
@@ -69,5 +71,5 @@ for (const width of widths) {
   await ctx.close();
 }
 await browser.close();
-console.log(`mobile: ${runs} runs (${docs.length} docs pages x ${widths.join('/')} x light/dark), ${failures} failing`);
+console.log(`mobile: ${runs} runs (${docs.length} docs pages x ${widths.join('/')} x 6 theme/mode combos), ${failures} failing`);
 process.exit(failures ? 1 : 0);

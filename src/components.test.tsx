@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { Button, Modal, Tabs, ToastProvider, useToast, Input } from './index';
+import { Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher } from './index';
 
 function ModalDemo() {
   const [open, setOpen] = useState(false);
@@ -181,5 +181,43 @@ describe('Toast', () => {
     await u.click(screen.getByRole('button', { name: 'Undo' }));
     expect(undo).toHaveBeenCalledOnce();
     expect(screen.getByRole('status')).not.toHaveTextContent('Reminder done');
+  });
+});
+
+describe('ThemeSwitcher (R-2)', () => {
+  const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k), m }; };
+  afterEach(() => { document.documentElement.removeAttribute('data-theme'); document.documentElement.removeAttribute('data-mode'); });
+
+  it('has two labelled radio groups and starts from storage', () => {
+    const s = mem(); s.setItem('jdilig:theme', 'bold'); s.setItem('jdilig:mode', 'dark');
+    render(<ThemeSwitcher storage={s} />);
+    expect(screen.getByRole('group', { name: 'Theme' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Color mode' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Bold' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Dark' })).toBeChecked();
+    expect(document.documentElement.dataset.theme).toBe('bold');
+    expect(document.documentElement.dataset.mode).toBe('dark');
+  });
+
+  it('works by keyboard, persists, announces, and removes keys for Editorial and Auto', async () => {
+    const s = mem(); const onChange = vi.fn(); const u = userEvent.setup();
+    render(<ThemeSwitcher storage={s} onChange={onChange} />);
+    await u.tab();
+    expect(screen.getByRole('radio', { name: 'Editorial' })).toHaveFocus();
+    await u.keyboard('{ArrowRight}');
+    expect(screen.getByRole('radio', { name: 'Bold' })).toBeChecked();
+    expect(s.m.get('jdilig:theme')).toBe('bold');
+    expect(document.documentElement.dataset.theme).toBe('bold');
+    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Bold, automatic \((dark|light)\) mode$/);
+    await u.click(screen.getByRole('radio', { name: 'Light' }));
+    expect(s.m.get('jdilig:mode')).toBe('light');
+    expect(screen.getByRole('status')).toHaveTextContent('Theme Bold, light mode');
+    await u.click(screen.getByRole('radio', { name: 'Editorial' }));
+    await u.click(screen.getByRole('radio', { name: 'Auto' }));
+    expect(s.m.has('jdilig:theme')).toBe(false);
+    expect(s.m.has('jdilig:mode')).toBe(false);
+    expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
+    expect(document.documentElement.hasAttribute('data-mode')).toBe(false);
+    expect(onChange).toHaveBeenLastCalledWith('editorial', 'auto');
   });
 });

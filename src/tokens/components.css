@@ -1,0 +1,38 @@
+/* Layer 3 - component tokens. Reference semantic tokens only (CI: no raw hex/rgb, no --palette-*). */
+:is(:root, .em-scope) {
+  --button-radius: var(--radius-control);
+  --button-border-width: var(--border-width);
+  --button-shadow: var(--shadow-press);
+  --button-bg: var(--accent);
+  --button-fg: var(--accent-contrast);
+  --button-bg-hover: var(--accent-hover);
+  --button-lift: var(--lift);
+  --button-duration: var(--duration-base);
+  --button-press-duration: var(--duration-fast);
+  --button-ease: var(--ease-standard);
+  --button-press-ease: var(--ease-press);
+  --field-radius: var(--radius-field);
+  --field-border: var(--border-width) solid var(--border);
+  --field-bg: var(--surface);
+  --field-fg: var(--text);
+  --card-radius: var(--radius-surface);
+  --card-bg: var(--surface);
+  --card-shadow: var(--shadow-2);
+  --card-border: var(--border-width) solid var(--border-subtle);
+  --modal-radius: var(--radius-surface);
+  --modal-shadow: var(--shadow-2);
+  --modal-backdrop: color-mix(in srgb, var(--text) 45%, transparent);
+  --tabs-radius: var(--radius-control);
+  --tabs-track: var(--surface-muted);
+  --tabs-active-bg: var(--surface);
+  --toast-radius: var(--radius-field);
+  --toast-bg: var(--text);
+  --toast-fg: var(--color-bg);
+  --table-border: 1px solid var(--border-subtle);
+  --table-head-bg: var(--surface-muted);
+  --focus-ring: 3px solid var(--focus);
+  --focus-offset: 2px;
+  --ticker-duration: var(--duration-ticker);
+  --reveal-duration: var(--duration-reveal);
+  --reveal-ease: var(--ease-standard);
+}

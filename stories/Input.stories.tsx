@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Input } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 const meta: Meta<typeof Input> = {
   title: 'Components/Input',
@@ -38,3 +39,16 @@ export const Hover: S = { parameters: { pseudo: { hover: true } } };
 export const FocusVisible: S = { parameters: { pseudo: { focusVisible: true } } };
 export const Disabled: S = { args: { disabled: true, defaultValue: 'Acme' } };
 export const Error: S = { args: { required: true, error: 'Enter the company name.' } };
+
+/** Default, hint and error in all 6 theme x mode combos (R-2). */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => (
+    <AllThemes>{() => (
+      <div style={{ display: 'grid', gap: 12 }}>
+        <Input label="Company" hint="As it appears on the posting." />
+        <Input label="Role" required error="Enter the role title." />
+      </div>
+    )}</AllThemes>
+  ),
+};

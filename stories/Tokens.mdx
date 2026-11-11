@@ -5,7 +5,13 @@ import { ContrastTable, Swatches } from './TokenSheet';
 
 # Tokens
 
-All tokens live in one file, `src/tokens.css`. `npm run tokens` exports the same values to `src/tokens.json`. The raw palette sits underneath a semantic layer, and components only use the semantic names. Dark applies with `data-theme="dark"`, or with `prefers-color-scheme: dark` when no theme is set.
+Tokens come in three layers, one source file each, in `src/tokens/`. `npm run tokens` exports them to `src/tokens.json`.
+
+1. **Primitives** (`primitives.css`): the raw palette, which is the only place raw colors live, plus the type, space and radius ramps.
+2. **Semantic** (`semantic.css`): one set per theme and mode. The theme comes from `html[data-theme="editorial|bold|tactile"]` (editorial when absent), and the mode from `html[data-mode="light|dark"]`, which follows `prefers-color-scheme` when absent.
+3. **Components** (`components.css`): `--button-*`, `--field-*`, `--card-*`, `--modal-*` and the rest. These reference semantic tokens only, and component CSS reads only these and the semantic tokens. CI fails on any raw color there (`npm run lint:colors`).
+
+Use the toolbar's Theme and Mode menus to switch this whole Storybook. The swatches and contrast tables below always show all 6 combos.
 
 ## Color (semantic)
 
@@ -15,8 +21,14 @@ All tokens live in one file, `src/tokens.css`. `npm run tokens` exports the same
 
 Measured live from the tokens. Text pairs need 4.5:1 (WCAG 1.4.3). Borders and the focus ring need 3:1 (WCAG 1.4.11).
 
-<ContrastTable theme="light" />
-<ContrastTable theme="dark" />
+<ContrastTable theme="editorial" mode="light" />
+<ContrastTable theme="editorial" mode="dark" />
+<ContrastTable theme="bold" mode="light" />
+<ContrastTable theme="bold" mode="dark" />
+<ContrastTable theme="tactile" mode="light" />
+<ContrastTable theme="tactile" mode="dark" />
+
+CI checks a longer list, 174 pairs across the 6 combos, with `npm run contrast` (`scripts/contrast.mjs`). The full table is in `docs/CONTRAST.md`.
 
 ## Type
 
@@ -25,9 +37,11 @@ Measured live from the tokens. Text pairs need 4.5:1 (WCAG 1.4.3). Borders and t
 | `--font-sans` | Geist | UI and body |
 | `--font-serif` | Instrument Serif | Display accents |
 | `--font-mono` | JetBrains Mono | Code and numbers |
+| `--font-grotesque` | Bricolage Grotesque | Tactile display and body |
+| `--font-display`, `--font-body` | Per theme | Editorial: Instrument Serif and Geist. Bold: Geist. Tactile: Bricolage Grotesque |
 | `--text-2xs` to `--text-7xl` | 11, 12, 14, 16, 18, 20, 24, 30, 36, 48, 64, 80px | Type scale |
 
-<div className="ember" style={{ display: 'grid', gap: 4 }}>
+<div className="ember" style={{ display: 'grid', gap: 4, padding: 16, background: 'var(--color-bg)', color: 'var(--text)', borderRadius: 'var(--radius-field)' }}>
   <span style={{ fontSize: 'var(--text-xs)' }}>12px · Sphinx of black quartz, judge my vow</span>
   <span style={{ fontSize: 'var(--text-base)' }}>16px · Sphinx of black quartz, judge my vow</span>
   <span style={{ fontSize: 'var(--text-2xl)' }}>24px · Sphinx of black quartz, judge my vow</span>
@@ -48,16 +62,25 @@ A 4px base: `--space-1` 4px, `-2` 8px, `-3` 12px, `-4` 16px, `-5` 20px, `-6` 24p
   ))}
 </div>
 
-## Radius
+## Shape and depth (per theme)
 
-`--radius` is 2px (matches jdilig.me). `--radius-full` is for pills.
+| Token | Editorial | Bold | Tactile |
+| --- | --- | --- | --- |
+| `--radius-surface` | 28px | 22px | 20px |
+| `--radius-control` | 9999px (pill) | 12px | 14px |
+| `--radius-field` | 14px | 12px | 12px |
+| `--border-width` | 1px | 1px | 2px |
+| `--shadow-2` | Soft drop shadow | Hairline plus deep glow | Hard 4px offset |
 
-## Motion
+`--radius` (2px) and `--radius-full` stay in the primitives for small details.
 
-| Token | Value |
-| --- | --- |
-| `--duration-fast` | 120ms (0ms under reduced motion) |
-| `--duration-base` | 200ms (0ms under reduced motion) |
-| `--ease-standard` | cubic-bezier(0.2, 0, 0, 1) |
+## Motion (per theme)
 
-Under `prefers-reduced-motion: reduce`, durations drop to 0 and keyframe animations (dialog and toast entry, spinner) are turned off.
+| Token | Editorial | Bold | Tactile |
+| --- | --- | --- | --- |
+| `--duration-fast` | 120ms | 100ms | 90ms |
+| `--duration-base` | 220ms | 180ms | 200ms |
+| `--duration-slow` | 420ms | 360ms | 380ms |
+| `--duration-reveal` | 720ms | 640ms | 600ms |
+
+Under `prefers-reduced-motion: reduce`, every duration is 0ms, `--lift` is 0px and `--parallax-scale` is 0, and keyframe animations (dialog and toast entry, spinner) are turned off.

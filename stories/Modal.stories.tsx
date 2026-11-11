@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Button, Input, Modal } from '../src';
 import { doc, FOCUS_NOTE } from './doc';
+import { AllThemes } from './AllThemes';
 
 function Demo({ startOpen = false, danger = false }: { startOpen?: boolean; danger?: boolean }) {
   const [open, setOpen] = useState(startOpen);
@@ -59,3 +60,18 @@ type S = StoryObj<typeof Modal>;
 export const Default: S = { render: () => <Demo /> };
 export const Open: S = { render: () => <Demo startOpen /> };
 export const ConfirmDanger: S = { render: () => <Demo startOpen danger /> };
+
+/** The dialog panel in all 6 theme x mode combos (R-2). A real modal blocks the page, so this
+ *  shows the same panel styles statically; the Open story shows the live dialog. */
+export const AllThemesStory: S = {
+  name: 'All themes',
+  render: () => (
+    <AllThemes>{(l) => (
+      <div className="em-modal" style={{ position: 'static', display: 'block', width: '100%' }}>
+        <div className="em-modal-head"><p className="em-modal-title">Add a role</p><Button variant="ghost" iconOnly aria-label={`Close (${l})`}><span aria-hidden="true">✕</span></Button></div>
+        <div className="em-modal-body"><Input label="Company" /></div>
+        <div className="em-modal-foot"><Button variant="secondary">Cancel</Button><Button>Save</Button></div>
+      </div>
+    )}</AllThemes>
+  ),
+};

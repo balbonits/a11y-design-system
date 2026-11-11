@@ -1,6 +1,6 @@
 {
   "name": "ember-ui",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "private": true,
   "description": "Ember UI: a small, accessible React design system starter by John Dilig.",
   "type": "module",
@@ -20,14 +20,17 @@
     "test:a11y": "node scripts/a11y.mjs",
     "test:mobile": "node scripts/mobile.mjs",
     "build:lib": "npm run tokens && vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json",
-    "prepare": "npm run build:lib"
+    "prepare": "npm run build:lib",
+    "contrast": "node scripts/contrast.mjs",
+    "lint:colors": "node scripts/lint-colors.mjs"
   },
   "dependencies": {
+    "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource-variable/geist": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
     "@fontsource/instrument-serif": "^5.3.0",
-    "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
