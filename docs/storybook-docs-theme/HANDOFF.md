@@ -161,8 +161,10 @@ Pages: introduction, tokens, components-button docs, components-table docs; widt
 
 | Build | Pass | Fail |
 |---|---|---|
-| This design | **4353** | **0** |
-| This design, `--no-has` (fallback, below) | **488** | **0** |
+| This design (FU-SB-DOCS-ANCHOR-KBD, on main 2d59d7b, `results/docs-check-anchorkbd.txt`) | **5509** | **0** |
+| This design, `--no-has` (fallback, below; `results/docs-check-anchorkbd-no-has.txt`) | **1240** | **0** |
+| This design without `useDocsAnchors()` (negative for H, J, K, `results/docs-check-anchorkbd-negative.txt`) | 4245 | 624 (440 J: no link on any heading; 184 K: names, Tab order, focus; H has nothing to measure) |
+| #58 (FU-SB-DOCS-NITS), for reference | 4353 | 0 |
 | This design without the anchor-gutter rule (negative for J, `results/docs-check-nits-negative.txt`) | 4177 | 176 (all J, at 320, 375, 599 and 600: icon x -12..2) |
 | main 80f782d (negative control) | 3891 | 144 (A 37, B 12, D 2, E 30 — e.g. zoom 44×44 with probe hits `100111111`, clipped by the 40px bar) |
 
@@ -170,8 +172,9 @@ The main run is the negative control: the gate catches every defect this card fi
 
 ## axe
 
-- `axe-docs.cjs`: 78 runs (13 docs pages on main bc84d67 × 375/1280 × light/dark/auto-OS-dark), **0 failing**, 168 minor/moderate (`results/axe-docs-new.txt`).
-- Repo `scripts/a11y.mjs` on the new build: 362 runs plus 8 manager runs, **0 failing**, exit 0 (`results/a11y-full-new.txt`).
+- `axe-docs.cjs`: 78 runs (13 docs pages × 375/1280 × light/dark/auto-OS-dark), **0 failing**, 168 minor/moderate (`results/axe-docs-anchorkbd.txt`; #58: `results/axe-docs-new.txt`).
+- Repo `scripts/a11y.mjs` (test:a11y) on the FU-SB-DOCS-ANCHOR-KBD build on main 2d59d7b: 366 runs plus 8 manager runs, **0 failing, 0 serious or critical**, exit 0 (`results/a11y-full-anchorkbd.txt`). The heading-link names are asserted by docs-check K.
+- Repo `scripts/mobile.mjs`: 468 runs, 0 failing (`results/mobile-anchorkbd.txt`). `scripts/target-size.mjs`: 576 runs, 1824 targets, 0 failing (`results/target-size-anchorkbd.txt`). `scripts/contrast.mjs`: 190 pairs + 10 assertions, 0 failures.
 
 ## Fallback without `:has()` (SPIKE-DOCS-2, CA ruling)
 
@@ -185,7 +188,7 @@ doesn't use `:has()`), with the far corner clipped by the 12px radius. The Canva
 story offset don't use `:has()`, so they hold. Floor, gated by `docs-check.cjs --no-has` (strips every rule whose
 selector contains `:has(` from the served preview head): every docs button at least 24x24 (they are 44 tall),
 `elementFromPoint` hits at the centre and 4 edge midpoints, no Canvas bar covering its story, the anchor circles clear,
-the anchors on-canvas (J), and no sideways scroll. Result: 488 pass, 0 fail (`results/docs-check-new-no-has.txt`). Colour checks A-C, D and G are
+the anchors on-canvas (J), and no sideways scroll. Result: 1240 pass, 0 fail with heading links (`results/docs-check-anchorkbd-no-has.txt`; #58: 488/0). K (keyboard) is skipped in this mode. Colour checks A-C, D and G are
 skipped in that mode; the action buttons there use Storybook's own colours, as on main.
 
 ## Version pin (Storybook 8.6.19)
@@ -283,4 +286,4 @@ Negative for check J: serve a copy of the build whose `iframe.html` has the `FU-
 (That negative is from #58, before heading links; with the enhancer on, Storybook's anchor is hidden.)
 
 Negative for H, J and K (FU-SB-DOCS-ANCHOR-KBD): build with the `useDocsAnchors();` line in `EmberDocsContainer`
-commented out. docs-check then fails {{NEG}} (`results/docs-check-anchorkbd-negative.txt`).
+commented out. docs-check then fails 624, 440 J and 184 K (`results/docs-check-anchorkbd-negative.txt`; that negative build is on #58's head 29f0a0e, which has the same `.storybook` as main).

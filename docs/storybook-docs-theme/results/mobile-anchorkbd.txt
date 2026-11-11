@@ -1,0 +1,1 @@
+mobile: 468 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 320/375/414/640/768/920/1024/1280/1440 x 4 theme/mode combos), 0 failing
