@@ -50,10 +50,11 @@ jobs:
       - name: Unit tests and committed-file checks (no model)
         working-directory: tools/transcribe
         run: python3 -m unittest discover -s tests -v
-      - name: Validate committed WebVTT (W3C webvtt.js, strict)
+      - name: Validate committed WebVTT (W3C webvtt.js strict, then monotonic times and no overlaps per track)
         run: |
           npm install --no-save --prefix tools/transcribe/.w3c webvtt-parser@2.2.0
-          node tools/transcribe/validate-vtt-w3c.mjs tools/transcribe/samples/sintel/*.vtt
+          node tools/transcribe/validate-vtt-w3c.mjs tools/transcribe/samples/sintel/*.vtt stories/media/sintel/*.vtt
+          python3 tools/transcribe/validate_vtt.py tools/transcribe/samples/sintel/*.vtt stories/media/sintel/*.vtt
       - name: Clean-checkout run (transcribe, validate, spot-check)
         run: tools/transcribe/run.sh
       - name: Regenerated output matches the committed files

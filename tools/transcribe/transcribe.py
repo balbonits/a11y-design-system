@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
-"""Offline transcripter: media file -> cues.json + captions.vtt + transcript.txt.
+"""Offline transcripter: media file -> cues.json, captions.vtt, transcript.txt, transcript.vtt.
 
 Runs faster-whisper on CPU (float32). No network after the model is cached, and
-no paid API. All three outputs come from one cue list (see cues.py).
+no paid API. Every output comes from one cue list (see cues.py). Optional hand
+corrections (--corrections FILE.json) replace cue text, never timings.
+transcript.txt and transcript.vtt use the player's download formats.
 
 Usage:
   python3 transcribe.py INPUT --out-dir DIR [--model small.en] [--lang en]
-                        [--title "..."] [--credit "..."]
+                        [--title "..."] [--credit "..."] [--corrections FILE.json]
 """
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
-from cues import pad, render_txt, render_vtt, snap_starts, split_words, to_json, trim_lead_words
+from cues import (apply_corrections, pad, render_download_txt, render_download_vtt, render_vtt, snap_starts, split_words, to_json, trim_lead_words)
 
 
 def transcribe(path: str, model_name: str, lang: str, threads: int):
@@ -54,6 +57,8 @@ def main(argv: list[str]) -> int:
                     help="keep Whisper's raw first-word start times (no lead-word trim, no VAD snap)")
     ap.add_argument("--title", default="")
     ap.add_argument("--credit", default="")
+    ap.add_argument("--corrections", default="",
+                    help="JSON list of hand corrections: {cue, from, to, why}; text only")
     a = ap.parse_args(argv)
 
     words, meta = transcribe(a.input, a.model, a.lang, a.threads)
@@ -72,17 +77,21 @@ def main(argv: list[str]) -> int:
             first_word_end.append(next(w[1] for w in words if round(w[0], 3) >= c.start))
         cues = snap_starts(cues, spans, first_word_end)
     cues = pad(cues)
+    fixes = json.loads(Path(a.corrections).read_text(encoding="utf-8")) if a.corrections else []
+    cues = apply_corrections(cues, fixes)
     out = Path(a.out_dir)
     out.mkdir(parents=True, exist_ok=True)
     note = "\n".join(x for x in [
         a.title,
         f"Machine-generated captions: {meta['engine']}, model {meta['model']}, CPU float32.",
+        f"Text of {len(fixes)} cues corrected by hand: see {Path(a.corrections).name}." if fixes else "",
         a.credit,
     ] if x)
     (out / "cues.json").write_text(to_json(cues), encoding="utf-8")
     (out / "captions.vtt").write_text(render_vtt(cues, header_note=note), encoding="utf-8")
-    (out / "transcript.txt").write_text(render_txt(cues), encoding="utf-8")
-    print(f"{len(cues)} cues, {meta['engine']}, {meta['model']}, audio {meta['duration']} s -> {out}")
+    (out / "transcript.txt").write_text(render_download_txt(cues), encoding="utf-8")
+    (out / "transcript.vtt").write_text(render_download_vtt(cues), encoding="utf-8")
+    print(f"{len(cues)} cues ({len(fixes)} corrected), {meta['engine']}, {meta['model']}, audio {meta['duration']} s -> {out}")
     return 0
 
 
