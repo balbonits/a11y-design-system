@@ -88,8 +88,8 @@ Shape names follow ARCH-REVIEW Addendum 5 (`--radius-sm/md/lg/full`, `--border-w
 | `--radius-md` | `999px` |
 | `--radius-sm` | `18px` |
 | `--radius-full` | `999px` |
-| `--border-width` | `1.5px` |
-| `--border-width-strong` | `2.5px` |
+| `--border-width` | `1px` |
+| `--border-width-strong` | `2px` |
 | `--divider-shape` | `curve` |
 | `--focus-ring-width` | `3px` |
 | `--focus-ring-offset` | `3px` |

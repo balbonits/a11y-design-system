@@ -14,7 +14,7 @@ D={'scrim':'scrim','color-bg':'aub-950','surface':'aub-900','surface-muted':'aub
  'success':'green-300','warning':'amber-300','danger':'rose-300','danger-hover':'rose-200','danger-contrast':'aub-950','info':'blue-300',
  'highlight':'coral-400','highlight-contrast':'aub-950'}
 SHAPE={'--font-display':"'Young Serif', Georgia, serif",'--font-body':"'Nunito Sans', system-ui, sans-serif",'--font-mono':"'Nunito Sans', system-ui, sans-serif",
- '--weight-display':'400','--radius-lg':'24px','--radius-xl':'28px','--radius-md':'999px','--radius-sm':'18px','--radius-full':'999px','--border-width':'1.5px','--border-width-strong':'2.5px','--divider-shape':'curve','--focus-ring-width':'3px','--focus-ring-offset':'3px','--focus-ring-style':'solid','--control-height':'48px','--control-padding-x':'1.4rem','--control-gap':'.6rem','--target-min':'44px','--tilt':'0deg',
+ '--weight-display':'400','--radius-lg':'24px','--radius-xl':'28px','--radius-md':'999px','--radius-sm':'18px','--radius-full':'999px','--border-width':'1px','--border-width-strong':'2px','--divider-shape':'curve','--focus-ring-width':'3px','--focus-ring-offset':'3px','--focus-ring-style':'solid','--control-height':'48px','--control-padding-x':'1.4rem','--control-gap':'.6rem','--target-min':'44px','--tilt':'0deg',
  '--shadow-raised':'0 2px 6px rgb(61 19 64 / .08)','--shadow-overlay':'0 18px 48px -18px rgb(61 19 64 / .28)','--shadow-press':'none','--blur-glass':'0px',
  '--duration-fast':'200ms','--duration-base':'420ms','--duration-slow':'800ms','--duration-reveal':'1100ms',
  '--ease-standard':'cubic-bezier(.37,0,.17,1)','--ease-press':'cubic-bezier(.45,0,.2,1)','--duration-ticker':'0s','--parallax-scale':'0.12','--lift':'-2px','--hue-shift':'1'}
