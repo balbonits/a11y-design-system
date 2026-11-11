@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, type ReactNode, type KeyboardEvent } from 'react';
+import { useEffect, useId, useRef, type ReactNode } from 'react';
 import { Button } from './Button';
+import { TOAST_OUTLET_CLASS } from './Toast';
 
 export type ModalProps = {
   open: boolean;
@@ -45,32 +46,44 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
     };
   }, []);
 
-  function onKeyDown(e: KeyboardEvent<HTMLDialogElement>) {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      onClose();
-      return;
-    }
-    if (e.key !== 'Tab') return;
-    const items = [...(ref.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [])];
-    if (!items.length) return;
-    const first = items[0];
-    const last = items[items.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
-      e.preventDefault();
-      last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
-      e.preventDefault();
-      first.focus();
-    }
-  }
+  // A native listener, not React's onKeyDown: toasts are portaled into this dialog from <ToastProvider>, and React
+  // events bubble through the React tree, so Tab on a toast button would skip the wrap. DOM events still bubble here.
+  const close = useRef(onClose);
+  useEffect(() => { close.current = onClose; });
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    const onKeyDown = (e: globalThis.KeyboardEvent) => {
+      // A nested modal handles its own keys; they still bubble through this dialog in the DOM.
+      if ((e.target as Element | null)?.closest?.('dialog') !== d) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        close.current();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = [...d.querySelectorAll<HTMLElement>(FOCUSABLE)].filter((el) => el.closest('dialog') === d);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    d.addEventListener('keydown', onKeyDown);
+    return () => d.removeEventListener('keydown', onKeyDown);
+  }, []);
 
   return (
     <dialog
       ref={ref}
       className="em-modal"
       aria-labelledby={titleId}
-      onKeyDown={onKeyDown}
+      data-em-modal=""
       onCancel={(e) => {
         e.preventDefault();
         onClose();
@@ -87,6 +100,8 @@ export function Modal({ open, onClose, title, children, actions }: ModalProps) {
       </div>
       <div className="em-modal-body">{children}</div>
       {actions && <div className="em-modal-foot">{actions}</div>}
+      {/* Toasts fired while this is the topmost modal render here (FU-EMBER-TOAST-MODAL). */}
+      <div className={TOAST_OUTLET_CLASS} />
     </dialog>
   );
 }
