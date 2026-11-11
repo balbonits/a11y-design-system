@@ -1,5 +1,5 @@
 """Shared v3 HANDOFF.md writer (PROC-5/PROC-6: every handoff carries everything the receiver needs).
-write(dir, fields) pastes UI Copywriter's V3-STATE-COPY tables, leaving out the dashboard rows still pending a decision."""
+write(dir, body) appends UI Copywriter's V3-STATE-COPY tables, leaving out the dashboard rows still pending a decision."""
 import os,re
 COPY='/workspace/ux-projects/copy/V3-STATE-COPY.md'
 def copy_tables():
@@ -8,53 +8,15 @@ def copy_tables():
     s=s.split('## Open questions')[0]
     body=s[s.index('## 1. Dev dashboard'):].replace('\n## ','\n### ')
     return body.strip()
-def write(d,f):
-    L=lambda xs:'\n'.join(f'- {x}' for x in xs)
-    md=f"""# HANDOFF: v3 direction {f['title']}
+def write(d,body):
+    """body: the H-1..H-8 handoff text (neo HANDOFF.md template). Appends UI Copywriter's state copy so every string is written down (PROC-6)."""
+    md=body.rstrip()+f"""
 
-From UX/UI Designer, {f['date']}. Card from Chief of Creatives (John's order, relayed by ECOS at 5:09 PM PT).
-
-## Goal and John's ask
-{f['goal']}
-
-John's words, quoted in BRIEF.md: "make the design way different across all 3 UX projects (Ember UI + Storybook, job tracker, dev dashboard)."
-
-## DONE criteria for this card (Chief of Creatives)
-{L(f['done'])}
-
-## Links
-{L(f['links'])}
-
-## Files in this folder
-{L(f['files'])}
-
-## Art direction as built
-{L(f['art'])}
-
-## Accessibility decisions
-{L(f['a11y'])}
-
-## Self-check results
-{L(f['checks'])}
-
-## Prior decisions this follows
-{L(f['decisions'])}
-
-## Known issues and open questions
-{L(f['issues'])}
-
-## Dependencies
-{L(f['deps'])}
-
-## Who to ask
-{L(f['ask'])}
-
-## ETA and next steps
-{L(f['eta'])}
-
-## State microcopy (pasted from {COPY}, UI Copywriter, 2026-11-10)
-The prototype uses these strings where its screens show the same component. The dashboard stats, builds list and chart rows are left out on purpose: they are pending a Chief of Creatives decision because DASH-SPEC v1.0 doesn't include them.
+## Copy: every state string (pasted from V3-STATE-COPY.md, UI Copywriter, 2026-11-10)
+Use these exact strings. The dashboard stats, builds list and chart rows are left out on purpose: they are pending a Chief of Creatives decision because DASH-SPEC v1.0 doesn't include them (see Known issues).
 
 {copy_tables()}
+
+Anything missing or unclear: tell Chief of Creatives and it gets added here, not guessed.
 """
     open(os.path.join(d,'HANDOFF.md'),'w').write(md)

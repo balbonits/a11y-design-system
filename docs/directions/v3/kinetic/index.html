@@ -13,7 +13,7 @@ html{background:var(--color-bg);color:var(--text);font:400 1.0625rem/1.6 var(--f
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;min-height:100vh;overflow-x:hidden}
 a{color:var(--text);text-decoration-thickness:2px;text-underline-offset:.2em}
-:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+:focus-visible{outline:var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color);outline-offset:var(--focus-ring-offset)}
 .skip{position:absolute;left:-999px;top:8px;background:var(--surface);color:var(--text);padding:.6rem 1rem;border:var(--border-width) solid var(--border);z-index:9}
 .skip:focus{left:8px}
 .wrap{max-width:1320px;margin:0 auto;padding:0 1.25rem}
@@ -28,7 +28,7 @@ h1,h2,h3,h4{font-family:var(--font-display);margin:0;line-height:.95;letter-spac
 /* header */
 header.top{position:sticky;top:0;z-index:5;background:var(--color-bg);border-bottom:var(--rule) solid var(--border)}
 .bar{display:flex;align-items:center;gap:.4rem 1.2rem;min-height:64px;flex-wrap:wrap;padding-block:.4rem}
-.logo{font:800 1.35rem var(--font-display);letter-spacing:-.04em;text-decoration:none;margin-right:auto;display:flex;align-items:baseline;gap:.6rem}
+.logo{font:800 1.35rem var(--font-display);letter-spacing:-.04em;text-decoration:none;margin-right:auto;display:flex;align-items:center;min-height:44px;gap:.6rem}
 .logo .mono{font-weight:400;letter-spacing:.06em}
 nav.views{display:flex;gap:1.2rem;overflow-x:auto;width:100%;order:3}
 @media(min-width:900px){nav.views{width:auto;order:0}}
@@ -36,7 +36,7 @@ nav.views a{flex:none;text-decoration:none;font-weight:600;min-height:44px;displ
 nav.views a[aria-current="page"]{border-bottom-color:var(--accent)}
 nav.views a:hover{border-bottom-color:var(--border)}
 /* buttons: flat, square, no shadow */
-.btn{font:600 1rem var(--font-body);min-height:48px;padding:.6rem 1.3rem;border-radius:var(--radius-control);border:var(--border-width) solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;transition:background var(--duration-fast) var(--ease-press),color var(--duration-fast) var(--ease-press)}
+.btn{font:600 1rem var(--font-body);min-height:max(var(--control-height),var(--target-min));padding:.6rem var(--control-padding-x);border-radius:var(--radius-md);border:var(--border-width) solid var(--border);background:transparent;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;transition:background var(--duration-fast) var(--ease-press),color var(--duration-fast) var(--ease-press)}
 .btn:hover{background:var(--text);color:var(--color-bg)}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
 .btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
@@ -46,13 +46,16 @@ nav.views a:hover{border-bottom-color:var(--border)}
 .btn.text:hover{background:none;color:var(--accent)}
 .btn .arr{transition:transform var(--duration-base) var(--ease-standard)}.btn:hover .arr{transform:translateX(4px)}
 #mode{min-height:44px;padding:.4rem .9rem;font-size:.92rem}
+.btn:active{transform:translateY(1px)}
+.btn.primary:active{background:var(--accent-hover);border-color:var(--accent-hover)}
+@media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
 /* ticker: the one solid band */
-.ticker{background:var(--highlight);color:var(--highlight-contrast);display:flex;align-items:center;overflow:hidden;--focus:var(--highlight-contrast)}
+.ticker{background:var(--highlight);color:var(--highlight-contrast);display:flex;align-items:center;overflow:hidden;--focus-ring-color:var(--highlight-contrast)}
 .ticker .clip{overflow:hidden;flex:1;display:flex;min-width:0}
 .ticker .track{display:flex;flex:none;white-space:nowrap;font:600 1.05rem var(--font-display);letter-spacing:-.01em;padding:.75rem 0;animation:tick var(--duration-ticker) linear infinite}
 .ticker .track span{padding-right:3rem}
 .ticker[data-paused] .track{animation-play-state:paused}
-.ticker button{flex:none;margin:.35rem .6rem;min-height:44px;padding:0 1rem;border:2px solid var(--highlight-contrast);border-radius:var(--radius-control);background:transparent;color:var(--highlight-contrast);font:600 .85rem var(--font-body);cursor:pointer}
+.ticker button{flex:none;margin:.35rem .6rem;min-height:44px;padding:0 1rem;border:2px solid var(--highlight-contrast);border-radius:var(--radius-md);background:transparent;color:var(--highlight-contrast);font:600 .85rem var(--font-body);cursor:pointer}
 @keyframes tick{to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.ticker .track{animation:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -68,6 +71,7 @@ nav.views a:hover{border-bottom-color:var(--border)}
 @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
 main section{padding:0 0 4rem}
 section[hidden]{display:none}
+main:focus{outline:none}
 .hero{padding:2.5rem 0 3rem}
 .hero .lede{font-size:1.2rem;max-width:44ch;margin:1.6rem 0}
 .blk{padding:2.2rem 0}
@@ -77,7 +81,7 @@ section[hidden]{display:none}
 /* form: underline fields, no boxes */
 label{font-weight:600;display:block;margin-bottom:.2rem}
 .field{margin-bottom:1.4rem}
-.field input,.field select{width:100%;font:inherit;font-size:1.1rem;min-height:48px;padding:.4rem 0;border:0;border-bottom:var(--border-width) solid var(--border);border-radius:var(--radius-field);background:transparent;color:var(--text)}
+.field input,.field select{width:100%;font:inherit;font-size:1.1rem;min-height:48px;padding:.4rem 0;border:0;border-bottom:var(--border-width) solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--text)}
 .field select{background:var(--color-bg)}
 .hint{font-size:.92rem;color:var(--text-muted);margin-top:.35rem}
 .check{display:flex;gap:.7rem;align-items:center;min-height:44px}
@@ -133,7 +137,9 @@ dialog::backdrop{background:rgb(6 18 63 / .6)}
 .sw i{display:block;height:72px;border:var(--rule) solid var(--border-subtle)}
 .sw span{display:block;padding-top:.4rem;font:400 .78rem var(--font-mono)}
 footer{border-top:var(--rule) solid var(--border);padding:1.6rem 0 4.5rem}
+footer a{display:inline-flex;align-items:center;min-height:44px}
 </style>
+<link rel="stylesheet" href="../shared/states.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -142,12 +148,12 @@ footer{border-top:var(--rule) solid var(--border);padding:1.6rem 0 4.5rem}
  <nav class="views" aria-label="Prototype screens">
   <a href="#components">Components</a><a href="#tracker">Job tracker</a><a href="#dashboard">Dev dashboard</a><a href="#tokens">Tokens</a>
  </nav>
- <button class="btn" id="mode" type="button" aria-pressed="false"><span class="lbl">Dark mode</span></button>
+ <button class="btn" id="mode" type="button"><span class="lbl">Dark mode</span></button>
 </div></header>
 <div class="ticker" id="ticker" role="region" aria-label="Release notes ticker">
  <div class="clip"><div class="track" aria-hidden="true"><span>Accessible by default / Keyboard first / AA contrast in light and dark / Reduced motion respected / Mobile first /</span><span>Accessible by default / Keyboard first / AA contrast in light and dark / Reduced motion respected / Mobile first /</span></div>
  <span class="sr">Accessible by default. Keyboard first. AA contrast in light and dark. Reduced motion respected. Mobile first.</span></div>
- <button type="button" id="tickbtn" aria-pressed="false">Pause ticker</button>
+ <button type="button" id="tickbtn">Pause ticker</button>
 </div>
 <main id="main" class="wrap" tabindex="-1">
 
@@ -181,7 +187,28 @@ footer{border-top:var(--rule) solid var(--border);padding:1.6rem 0 4.5rem}
   </div>
  </div>
  <div class="blk g rule reveal">
-  <div class="rail"><span class="mono muted">03</span><h2>Table</h2></div>
+  <div class="rail"><span class="mono muted">03</span><h2>States</h2></div>
+  <div class="body off">
+<div class="states">
+ <div><h3>Button states</h3>
+  <div class="row"><button class="btn primary" type="button" aria-busy="true"><span class="spin" aria-hidden="true"></span>Saving…</button>
+  <span class="st-col"><button class="btn primary" type="button" disabled aria-describedby="sd-h">Save changes</button><span class="hint" id="sd-h">Fill in the required fields to save.</span></span></div>
+ </div>
+ <div><h3>Field states</h3>
+  <div class="field"><label for="se">Email <span class="req">(required)</span></label><input id="se" type="email" value="name@" required aria-invalid="true" aria-describedby="se-e"><p class="err" id="se-e"><span class="badge" aria-hidden="true">!</span>Enter an email address like name@example.com.</p></div>
+  <div class="field"><label for="sa">Account ID</label><input id="sa" type="text" disabled aria-describedby="sa-h"><div class="hint" id="sa-h">Set by your admin.</div></div>
+  <label class="check"><input type="checkbox" aria-invalid="true" aria-describedby="sc-e"> I agree to the terms</label><p class="err" id="sc-e"><span class="badge" aria-hidden="true">!</span>Check this box to continue.</p>
+ </div>
+ <div><h3>Table states</h3>
+  <p class="st-label">Loading</p><div class="skel-wrap" aria-busy="true"><span class="skel" aria-hidden="true"></span><span class="skel" aria-hidden="true"></span><span class="skel" aria-hidden="true"></span><p class="hint" role="status">Loading rows</p></div>
+  <p class="st-label">Empty</p><div class="empty"><b>No rows to show.</b></div>
+  <p class="st-label">Error</p><div class="loaderr" id="st-err"><p class="err"><span class="badge" aria-hidden="true">!</span>Couldn't load rows.</p><button class="btn" type="button" id="st-retry">Retry</button></div>
+ </div>
+</div>
+  </div>
+ </div>
+ <div class="blk g rule reveal">
+  <div class="rail"><span class="mono muted">04</span><h2>Table</h2></div>
   <div class="body off"><div class="tscroll" tabindex="0" role="region" aria-label="Components table, scrolls sideways"><table><caption class="sr">Ember UI components</caption><thead><tr><th scope="col">Component</th><th scope="col">Keyboard</th><th scope="col">Status</th></tr></thead>
   <tbody><tr><th scope="row">Button</th><td>Enter, Space</td><td><span class="st ok">Stable</span></td></tr><tr><th scope="row">Modal</th><td>Esc closes, focus trapped</td><td><span class="st ok">Stable</span></td></tr><tr><th scope="row">Toast</th><td>Announced politely</td><td><span class="st warn">Beta</span></td></tr></tbody></table></div></div>
  </div>
@@ -194,7 +221,7 @@ footer{border-top:var(--rule) solid var(--border);padding:1.6rem 0 4.5rem}
   <div class="stage"><h2>Applied <span class="n">02 / 1</span></h2><article class="job"><div class="mono muted">Acme Corp (fictional)</div><h3>Front-end Engineer</h3><div class="muted">Applied 6 days ago</div><div class="remind">Follow up with the recruiter</div><button class="btn text" type="button">Move or edit <span class="sr">Front-end Engineer</span></button></article></div>
   <div class="stage"><h2>Interviewing <span class="n">03 / 1</span></h2><article class="job"><div class="mono muted">Globex Inc. (fictional)</div><h3>Senior UI Developer</h3><div class="muted">Interviewing for 3 days</div><div class="remind">Send a thank-you note</div><button class="btn text" type="button">Move or edit <span class="sr">Senior UI Developer</span></button></article></div>
   <div class="stage"><h2>Offer <span class="n">04 / 1</span></h2><article class="job"><div class="mono muted">Hooli Labs (fictional)</div><h3>Accessibility Engineer</h3><div class="muted">Offer received 2 days ago</div><div class="remind">Reply to the offer</div><button class="btn text" type="button">Move or edit <span class="sr">Accessibility Engineer</span></button></article></div>
-  <div class="stage"><h2>Closed <span class="n">05 / 0</span></h2><p class="muted">Nothing here yet.</p></div>
+  <div class="stage"><h2>Closed <span class="n">05 / 0</span></h2><p class="muted">No roles in Closed.</p></div>
  </div>
 </section>
 
@@ -213,16 +240,16 @@ footer{border-top:var(--rule) solid var(--border);padding:1.6rem 0 4.5rem}
  <div class="blk g rule reveal">
   <div class="rail"><span class="mono muted">Log</span><h2>Recent deploys</h2></div>
   <div class="body off"><ul class="deploys">
-   <li><span class="st ok">Live</span><span><b>ember-ui</b> v0.2.2</span><span class="mono muted">example</span></li>
-   <li><span class="st ok">Live</span><span><b>job-tracker</b></span><span class="mono muted">example</span></li>
-   <li><span class="st warn">Pending</span><span><b>dev-dashboard</b></span><span class="mono muted">example</span></li>
+   <li><span class="st ok">Succeeded</span><span><b>ember-ui</b> v0.2.2</span><span class="mono muted">example</span></li>
+   <li><span class="st ok">Succeeded</span><span><b>job-tracker</b></span><span class="mono muted">example</span></li>
+   <li><span class="st warn">In progress</span><span><b>dev-dashboard</b></span><span class="mono muted">example</span></li>
   </ul></div>
  </div>
 </section>
 
 <section id="v-tokens" aria-labelledby="h-tok" hidden>
  <div class="trhead"><div><p class="mono muted" style="margin:0 0 .6rem">Semantic colors, current mode</p><h1 id="h-tok" class="kin" style="font-size:clamp(2.8rem,11vw,7rem)">Tokens</h1></div></div>
- <p class="muted" style="max-width:60ch">The full sheet is in <a href="TOKENS.md">TOKENS.md</a> and the contrast results are in <a href="CONTRAST.md">CONTRAST.md</a>.</p>
+ <p class="muted doclinks" style="max-width:60ch">The full sheet is in <a href="TOKENS.md">TOKENS.md</a> and the contrast results are in <a href="CONTRAST.md">CONTRAST.md</a>.</p>
  <div class="sw" id="sw" style="margin-top:1.5rem"></div>
 </section>
 </main>
