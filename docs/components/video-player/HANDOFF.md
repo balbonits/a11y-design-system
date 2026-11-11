@@ -5,9 +5,9 @@ Status: **draft for Chief Architect sign-off.** Coders build from this file plus
 - Prototype: [`index.html`](index.html) (open through a server that supports HTTP Range requests, e.g. `npx serve` or GitHub Pages; Python's `http.server` can't seek video).
 - Annotated shots: [`handoff/`](handoff/), made by [`annotate.cjs`](annotate.cjs) (neo pattern).
 - Core it is designed against: FSD's [PR #33](https://github.com/balbonits/a11y-design-system/pull/33), `feat/r4-video` at `8f4eb06` (`src/video/player.ts`, `src/video/vtt.ts`, adapters), and its current head `acd2f93` with `docs/components/video-player/CORE-API.md` sections 5a (tracks, descriptions, voicing) and 5b (`waiting`/`resumed`, `bufferedchange`, `getBuffered()` → `{ fraction, ranges }`, `canReportBuffering`, `canReportBufferedRanges`, `providerCaptions`, `VideoAdapterUnavailable`, `descriptions.setTrack`, `readVideoPrefs`/`writeVideoPrefs`). Read with `gh`/`git show` only.
-- Copy: `R4-PLAYER-COPY.md` from UI Copywriter (final, approved by Chief of Creatives). Every string in the prototype comes from it except the ones still marked `[COPY-TBD]` (see Copy).
+- Copy: `R4-PLAYER-COPY.md` from UI Copywriter (final, approved by Chief of Creatives). Every string in the prototype comes from it; none is left as `[COPY-TBD]`.
 - Identity: neo tokens only (`docs/directions/v3/neo/tokens.css`), locked Addendum 5 and 7 names, no aliases, no new tokens. `--scrim` from `e48047a`. `--target-min` is 44px.
-- Media for the demo: `tools/transcribe/samples/sintel/` (52s excerpt, 1126×480, captions.vtt, ad.vtt, transcript.txt) and `media/captions-fr.vtt` (the official French Sintel subtitles from `reference/sintel_fr.srt`, re-timed to the excerpt, so the Caption language picker has two real tracks). Sintel © Blender Foundation, CC BY 3.0.
+- Media: the shipped demo (Storybook) reads `stories/media/sintel/` (captions.vtt, ad.vtt, transcript.txt, ATTRIBUTION.md are there). FSD copies `sintel-excerpt.mp4` (52s, 1126×480, under 10 MB per R-4) and this folder's `media/captions-fr.vtt` (the official French Sintel subtitles from `reference/sintel_fr.srt`, re-timed to the excerpt, for the Caption language picker) into it during the player build (CA ruling). `tools/transcribe/samples/sintel/` is only the generator's input; this prototype plays from it because the mp4 isn't in `stories/` yet. Sintel © Blender Foundation, CC BY 3.0.
 
 Checks at this commit (from `annotate.cjs`): 320 / 375 / 768 / 1024 / 1440 × light / dark: horizontal overflow 0, axe serious+critical 0, WCAG 1.4.12 text spacing overflow 0 and clipped 0, 200% zoom (640 css px) overflow 0, targets under 44px: none, page errors: none. Keyboard smoke test passes: End, Home, arrows, J/L, `<`/`>` speed steps, Shift+M ignored, M (aria-pressed and "Muted" valuetext), D, C, T (focus to the transcript), Esc returns focus, caption language switch (French cue renders with `lang=fr`), Caption settings dialog (focus to the checked size, live preview, Reset announces "Caption settings reset.", Esc closes and focus returns to More), prefs written as one `ember:video:v1` object, a corrupt stored value falls back silently, transcript search count, Enter / Shift+Enter, no-results text, Clear search.
 
@@ -54,14 +54,14 @@ Decisions (pushback, with reasons):
 | Time | flanks scrubber | inline `cur / dur` | never |
 | Mute | bar, `aria-pressed` | bar | never (works even on iOS) |
 | Volume slider | hidden | bar, **only with `(hover:hover) and (pointer:fine)`** | `capabilities.volume === false` (iOS) |
-| Captions | bar, `aria-pressed` | bar | `capabilities.providerCaptions`. With no usable track it stays visible, `aria-disabled="true"`, `aria-describedby` the hint "No captions for this video." |
+| Captions | bar, `aria-pressed` | bar | `capabilities.providerCaptions`: replaced by the static note "Captions are shown by {provider}." under the bar. With no track at all (and no provider captions) it stays visible, `aria-disabled="true"`, `aria-describedby` the hint "No captions for this video." |
 | Speed | inside More (radio chips) | bar button showing the value ("Normal", "1.5×"), name "Playback speed, {value}" | `rate === false` or `rates.length < 2`; otherwise only chips in `capabilities.rates` |
-| Transcript | inside More, `aria-expanded` | bar button, `aria-expanded` | no transcript configured |
-| Audio description | inside More, `aria-pressed`, `AD` badge plus full name | inside More | no descriptions track (a failed descriptions VTT hides it) |
+| Transcript | inside More, `aria-expanded` | bar button, `aria-expanded` | no transcript configured, or `providerCaptions` (the panel hides too) |
+| Audio description | inside More, `aria-pressed`, `AD` badge plus full name | inside More | no descriptions track (a failed descriptions VTT hides it). **How AD reaches assistive tech, not only the visual line:** each description cue's text is put in a polite live region as it starts, so screen readers read it (see Live-region policy). With Read descriptions aloud on, the live region turns off and the speech engine speaks it instead, so it's heard once, never twice. It's also always in the transcript as a labeled Description row |
 | Read descriptions aloud | inside More, under Audio description, `aria-pressed` | inside More | no descriptions track, or no speech engine (`canVoice()` false). Disabled (`aria-disabled`, hint "Turn on Audio description to use this.") while AD is off |
-| Pause video while reading `[COPY-TBD]` | sub-toggle under Read aloud, `aria-pressed`, default off | inside More | same as Read aloud. Disabled until Read aloud is on |
+| Pause video for descriptions | sub-toggle under Read aloud, `aria-pressed`, default off. Disabled (`aria-disabled`, `aria-describedby` the hint "Turn on Read descriptions aloud to use this.") until Read aloud is on | inside More | same as Read aloud |
 | Caption language | inside More, native `select` with Off first | inside More | fewer than 2 caption tracks, or `providerCaptions` |
-| Caption settings | inside More, opens a modal dialog | inside More | `providerCaptions` |
+| Caption settings | inside More, opens a modal dialog | inside More | `providerCaptions`: replaced by the static note "Caption settings are in the {provider} player." in More |
 | Full screen | bar, name "Full screen" / "Exit full screen" | bar | `capabilities.fullscreen === false` (iPhone Safari) |
 
 - **More is a disclosure (`button aria-expanded` plus a `role=group` panel), not `role=menu`.** It mixes radio chips, toggles and a select; menu semantics would force arrow-key-only navigation and break the radios.
@@ -80,14 +80,14 @@ From PR #33 and 5b. "Ours" means our UI renders it from the core.
 | Mute | ours | ours | ours | ours |
 | Volume slider | ours, except iOS (`volume:false`) | same as native | ours | ours |
 | Speed | ours, `capabilities.rates` | ours | ours, YouTube's rate list | hidden unless the owner account allows it (`rate:false`) |
-| Captions, language, settings | ours from VTT | ours from VTT | ours from VTT. Only when the host has no VTT and passes `providerCaptions`: our caption controls hide and More shows "Captions are shown by YouTube." | same: "Captions are shown by Vimeo." |
+| Captions, language, settings | ours from VTT | ours from VTT | ours from VTT. Only when the source has no VTT of ours: the adapter turns on YouTube's captions (`cc_load_policy:1`), the core sets `providerCaptions`, our Captions, Caption language, Caption settings and Transcript hide, and the two fallback notes show | same, with Vimeo's text track |
 | Audio description, Read aloud | ours | ours | ours | ours |
 | Transcript | ours | ours | ours | ours |
 | Full screen | ours on the container, except iPhone (`fullscreen:false`) | same | ours on the container | ours on the container |
 | Buffered fill | one segment per range (`ranges`) | one segment per range | one fill from `fraction` (`ranges` null) | one fill from `fraction`. On any adapter, no fill when `fraction` is 0 |
 | Adapter can't load | Error state | **Unavailable state** when `hls.js` is missing on a browser without native HLS | Error state | **Unavailable state** when `@vimeo/player` is missing |
 
-Unavailable state: the core rejects with `VideoAdapterUnavailable` (`adapter: 'vimeo' \| 'hls'`). The frame shows "This video can't play here." `[COPY-TBD]` and a text link to the video `[COPY-TBD]` (a plain `a` to the source page, focusable, 44px), with no bar and no big Play (CA ruling).
+Unavailable state: the core rejects with `VideoAdapterUnavailable` (`adapter: 'vimeo' \| 'hls'`). The frame shows "This video didn't load here." and a text link "Watch {title} on {provider}" (e.g. "Watch Sintel (excerpt) on Vimeo"; a plain `a` to the source page, same tab, 44px; if a host opens it in a new tab, the name adds "(opens in a new tab)"), with no bar and no big Play (CA ruling). It's static, or `role=alert` if it fails after the page has loaded.
 
 ## H-4 States
 
@@ -105,10 +105,11 @@ All shown in the prototype's States gallery (static, no media load) and in `hand
 | Audio description on | AD line under the frame; Read descriptions aloud enabled | when Read aloud is on, the AD text stops being a live region so the screen reader and speech engine don't talk at once |
 | Caption settings dialog | preview line, Text size, Text color, Background, Font, Reset, Close | |
 | Error | `--scrim` over the frame, "The video didn't load." and Retry | if it fails after the user started playback: `role=alert` and focus moves to Retry. A failure on first load shows the card without an alert |
-| Ended | `--scrim`, card and Replay | `[COPY-TBD]` |
+| Ended | `--scrim`, "Video ended." and Replay | Replay's name is "Replay {title}" (visible "Replay" plus hidden title) and its `aria-describedby` is the message, so the message isn't also a live region. When playback ends after the user started it, focus moves to Replay |
 | No captions | Captions `aria-disabled`, hint "No captions for this video." under the bar | C does nothing |
 | Limited source | no Speed, no volume slider, no Full screen | from `capabilities` |
-| Adapter unavailable | `--scrim`, card with message and a text link to the video, no bar | Vimeo or hls.js module missing; `[COPY-TBD]` |
+| Adapter unavailable | `--scrim`, "This video didn't load here." and "Watch {title} on {provider}", no bar | Vimeo or hls.js module missing |
+| Provider captions | provider draws captions; "Captions are shown by {provider}." under the bar; More shows "Caption settings are in the {provider} player."; no Transcript button or panel | only when the source has no caption track of ours (`providerCaptions`). Both notes are static text, not live regions |
 | Transcript search | count "1 of 3 matches" / "1 match", current match outlined, Previous match and Next match | buttons `aria-disabled` at 0 matches; Enter and Shift+Enter step |
 | Transcript, no results | 'No lines match "zzz".' | |
 | Transcript empty | "This video has no transcript." | search, downloads and Jump are hidden |
@@ -164,7 +165,7 @@ Shortcuts work **only while focus is inside that player** (never global, WCAG 2.
 - Tab order: big Play (poster only), scrubber, Play, Mute, Volume, Captions, Speed, Transcript, More, Full screen, then any open panel, then the transcript (Download, search, Clear search, Previous match, Next match, rows, Jump to current).
 - Focus ring: neo `--focus-ring-*`. Bar padding is larger than ring offset + width so rings never clip.
 - Panels: one open at a time. Opening a panel moves focus to its first control. The Download disclosure moves focus to its first link and Esc closes it.
-- The player has `aria-describedby` pointing at a visually hidden keyboard hint (Copy).
+- Keyboard hint ("Keyboard shortcuts: ...", Copy) is visually hidden and is the `aria-describedby` of the big Play button and of Play/Pause, not of the `section`: a description on the region isn't read when focus lands on a child. A sentence drops when its feature is off (volume, descriptions, speed with one rate, full screen, transcript).
 - Captions box is `aria-hidden`; captions in another language get `lang` on the caption box.
 
 ## H-7 Motion
@@ -203,16 +204,32 @@ Only these neo tokens are used (no new tokens, no aliases):
 | Focus | `--focus-ring-width`, `--focus-ring-offset`, `--focus-ring-style`, `--focus-ring-color` |
 | Motion | `--duration-fast`, `--duration-base`, `--ease-standard`, `--ease-press` |
 
-Caption settings follow the approved copy (viewer overrides). This replaces the earlier token-pair presets.
+Caption settings follow the approved copy (viewer overrides) in a native dialog. Colors are tokens per CA's ARCH-REVIEW 9:35 ruling (was Known issue 7), and they're **unthemed**: identical in neo, kinetic and dusk, because caption legibility mustn't change with the theme.
+
+**Tokens (FSD adds them to the shared token layer, not to a theme):**
+
+- Primitives: `--palette-caption-white: #ffffff`, `--palette-caption-yellow: #ffe600`, `--palette-caption-cyan: #00e5ff`, `--palette-caption-black: #000000`.
+- Two registered extras the component reads, and nothing else: `--caption-text` and `--caption-bg`. Neutral defaults are the White pair (`--caption-text: var(--palette-caption-white)`, `--caption-bg: var(--palette-caption-black)`).
+- Mapping in the token layer: `[data-caption-color=white|yellow|cyan|black]` sets both extras, and `[data-caption-bg=none|half|solid]` sets the band opacity. The component sets those attributes on the player root from the saved prefs. No raw values in the component.
+
+| Text color (`data-caption-color`) | `--caption-text` | `--caption-bg` | Solid | Half (70%) over the worst frame |
+|---|---|---|---|---|
+| White (default) | `--palette-caption-white` | `--palette-caption-black` | 21.00:1 | 8.45:1 over a white frame |
+| Yellow | `--palette-caption-yellow` | `--palette-caption-black` | 16.57:1 | 6.67:1 over a white frame |
+| Cyan | `--palette-caption-cyan` | `--palette-caption-black` | 13.65:1 | 5.50:1 over a white frame |
+| Black | `--palette-caption-black` | `--palette-caption-white` (light band) | 21.00:1 | 9.90:1 over a black frame |
+
+- **Half is 70% band opacity, not 50%.** Checked over a bright frame as Creatives asked: at 50%, white text over a white frame is 3.95:1, yellow 3.12:1 and cyan 2.57:1, all under 4.5:1. 70% is the lowest round value where every pair passes (cyan is the worst at 5.50:1). The label stays "Half" per the copy.
+- **None** is a viewer opt-out: no band, only a 1px outline in `--caption-bg` (Half has it too). It can't guarantee 4.5:1 over every frame, so it's never the default (Known issue 4).
+- For `scripts/contrast.mjs` (FSD adds these pairs, unthemed, checked once): the four Solid pairs above at 4.5:1 or better, plus the four Half pairs composited over the worst frame (white for White/Yellow/Cyan, black for Black).
+- Captions on must still pass WCAG 1.4.12 text spacing (the prototype's text-spacing scan runs with captions on).
 
 | Setting | Values (stored value) | Rule |
 |---|---|---|
 | Text size | Small, Medium (default), Large, Extra large (`s`, `m`, `l`, `xl`); chips show S, M, L, XL with the full name as hidden text | `clamp(.875rem,.45rem+2cqi,1.6rem)` / `clamp(1rem,.55rem+2.4cqi,1.9rem)` / `clamp(1.2rem,.7rem+3cqi,2.3rem)` / `clamp(1.45rem,.85rem+3.8cqi,2.8rem)` |
-| Text color | White (default), Yellow, Cyan, Black (`white`, `yellow`, `cyan`, `black`) | `#fff`, `#ffe600`, `#00e5ff`, `#000`. Black switches the band to white. Component-local values, pending CA (Known issue 7) |
-| Background | None, Half, Solid (default) (`none`, `half`, `solid`) | band at 0 / 50% / 100% of black (white for Black text). None and Half add a 1px outline in the band color so text holds over bright frames |
+| Text color | White (default), Yellow, Cyan, Black (`white`, `yellow`, `cyan`, `black`) | the token pairs above |
+| Background | None, Half, Solid (default) (`none`, `half`, `solid`) | band opacity 0 / 70% / 100% of `--caption-bg` |
 | Font | Sans serif (default), Serif, Monospace (`sans`, `serif`, `mono`) | `--font-body` / `Georgia, serif` (no serif token) / `--font-mono` |
-
-Contrast on Solid: white, yellow and cyan on black are 21:1, 19.6:1 and 15.6:1; black on white is 21:1.
 
 **Saved prefs:** one JSON object in `localStorage["ember:video:v1"]` (override with the `storageKey` prop), the same shape as the core's `readVideoPrefs`/`writeVideoPrefs`: `{ volume, muted, rate, captions: lang | 'off' | null, descriptions: 'off' | 'text' | 'voice', pauseWhileReading, captionStyle: { size, color, background, font } }`. A bad field falls back to its default, and a storage error falls back silently. Only the main player saves; demos don't. Reset restores the caption style defaults only.
 
@@ -233,7 +250,7 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
 5. Keyboard listener on the player root, not `document` (H-6). Ignore events from text inputs and with modifiers.
 6. States from events: `play`/`pause`/`ended`/`error` map directly; Loading is "play requested, no `play` yet"; Stalled is `waiting` until `resumed`; redraw the fill on `bufferedchange`; catch `VideoAdapterUnavailable` into the Unavailable state. Start the 1s timer on entering either and clear it on leaving.
 7. Overlay bar and auto-hide only under `:fullscreen` (H-7).
-8. Copy: every string comes from `R4-PLAYER-COPY.md`; anything still marked `[COPY-TBD]` waits for UI Copywriter.
+8. Copy: every string comes from `R4-PLAYER-COPY.md`.
 9. Prototype CSS is the reference for spacing and sizes; port it to the Ember component's CSS with the same token names.
 10. Prefs through `readVideoPrefs`/`writeVideoPrefs` (5b) plus `pauseWhileReading`; validate `captionStyle` per field against H-8.
 11. Voicing through `createDescriptions` and `browserSpeech()` (5a). `pauseWhileSpeaking` maps to `pauseWhileReading`, default false.
@@ -241,14 +258,15 @@ Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_module
 
 ## Copy
 
-Strings are from `R4-PLAYER-COPY.md` (final). Still open with UI Copywriter (asked at 9:35 PM PT, cc Chief of Creatives):
+Every string is from `R4-PLAYER-COPY.md` (final, approved by Chief of Creatives). The last ones filled in this revision:
 
-| Where | Placeholder in the prototype |
+| Where | String |
 |---|---|
-| Ended card | `[COPY-TBD] Ended` / `[COPY-TBD] Replay` |
-| Keyboard hint (screen readers, `aria-describedby`) | `[COPY-TBD] Keyboard: K or Space to play or pause, ...` (draft lists every key in H-6) |
-| Pause sub-toggle | `[COPY-TBD] Pause video while reading` |
-| Adapter unavailable | `[COPY-TBD] This video can't play here.` / `[COPY-TBD] Watch the video` |
+| Ended card | "Video ended." / "Replay" (name "Replay {title}") |
+| Keyboard hint (visually hidden, `aria-describedby` of big Play and Play/Pause) | "Keyboard shortcuts: K or Space plays or pauses. Left and Right arrows skip 5 seconds, and J and L skip 10 seconds. Up and Down arrows change the volume. Home and End go to the start or the end. M mutes. C turns captions on or off. D turns audio description on or off. The less-than and greater-than keys slow down or speed up. F goes full screen. T opens the transcript. Escape closes a panel." Drop the Up/Down sentence when `capabilities.volume` is false, D with no descriptions track, the speed sentence with one rate, F with no full screen, T with no transcript |
+| Pause sub-toggle | "Pause video for descriptions"; disabled hint "Turn on Read descriptions aloud to use this." |
+| Adapter unavailable | "This video didn't load here." / "Watch {title} on {provider}" |
+| Provider captions (fallback only) | "Captions are shown by {provider}." / "Caption settings are in the {provider} player." |
 
 Track labels in the language picker ("English", "Français") come from the track metadata, not UI copy.
 
@@ -260,8 +278,8 @@ Track labels in the language picker ("English", "Français") come from the track
 4. Caption backgrounds Half and None are user choices and can drop below contrast over bright frames even with the outline; Solid is the default.
 5. No hover time preview (thumbnails) on the scrubber.
 6. Captions don't show in native full screen on iOS when the browser takes over the video element.
-7. **Open with CA:** the four caption text colors aren't registered tokens. Either register them (e.g. `--palette-caption-*`) or keep them component-local as now.
-8. **Open with CA:** embed captions. The copy and Creatives want a provider note when the provider shows captions; CA ruled provider captions only for a source with no VTT of ours (`providerCaptions`). The prototype follows CA: ours everywhere we have VTT, the note only with `providerCaptions`.
+7. ~~Caption colors aren't tokens.~~ Resolved (CA ARCH-REVIEW 9:35): `--caption-text`/`--caption-bg` from `--palette-caption-*`, unthemed (H-8).
+8. ~~Embed captions.~~ Resolved (CA): our VTT captions on every adapter; provider captions and the two fallback notes only for a source with no VTT of ours. AD placement under the frame (H-1 point 4) is approved by CA, with the assistive-tech condition on the AD row (H-3).
 9. Speech voicing uses the browser's speech engine (`speechSynthesis`); voices and timing vary by OS, so Read aloud is hidden where `canVoice()` is false.
 
 ## Out of scope
