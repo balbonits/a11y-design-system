@@ -85,3 +85,6 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - Contrast: the focus-ring-color vs border pair now applies only when `--focus-ring-offset` is 0 (the ring touches the border only then). Both themes use a 3px offset. Flagged to Chief Architect.
 - Switch component (role="switch" checkbox, 44x24 track in a --target-min row, label and hint, forced-colors and reduced-motion rules) with stories for every state and a unit test.
 - Gates: tokens and lint:colors 0; contrast 124 pairs and 8 assertions across 2 themes, 0 failures; vitest 15/15; axe 362 runs, 0 failing; mobile 468 runs (13 docs pages x 9 widths x 4 theme/mode combos), 0 failing.
+
+## 2026-11-10 7:46 PM PT: kinetic fonts vendored (CTE ruling)
+- Reverted 48d72ac (the three `@fontsource` devDependencies) with a new commit. Kinetic's fonts are now latin-subset woff2 files in `.storybook/fonts` (Bricolage Grotesque 300/700/800, Instrument Sans 400/500/600, IBM Plex Mono 400), each family's OFL.txt alongside, loaded by `@font-face` with `font-display: swap`. neo's fontsource setup is unchanged, and the Ember package still ships no fonts. Version stays 0.3.1.
