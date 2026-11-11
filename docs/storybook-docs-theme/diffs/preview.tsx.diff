@@ -1,8 +1,6 @@
-diff --git a/.storybook/preview.tsx b/.storybook/preview.tsx
-index aae0016..d238ea7 100644
 --- a/.storybook/preview.tsx
 +++ b/.storybook/preview.tsx
-@@ -8,7 +8,68 @@ import '@fontsource/jetbrains-mono';
+@@ -9,7 +9,68 @@
  import { addons } from '@storybook/preview-api';
  import '../src/ember.css';
  import { ToastProvider, applyTheme, DEFAULT_THEME, THEME_REGISTRY, type Theme, type Mode } from '../src';
@@ -72,7 +70,7 @@ index aae0016..d238ea7 100644
  
  // Code samples scroll sideways on narrow screens. Make each scroll box reachable by
  // keyboard (WCAG 2.1.1) and give it a name, since Storybook's Source block doesn't.
-@@ -62,6 +123,7 @@ const preview: Preview = {
+@@ -63,6 +124,7 @@
      layout: 'fullscreen',
      controls: { expanded: true },
      docs: {
