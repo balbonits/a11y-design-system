@@ -26,3 +26,36 @@ jobs:
       - run: npm run test:mobile
         env:
           CHROME_PATH: /usr/bin/google-chrome
+  transcribe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tools/transcribe/requirements.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install ffmpeg
+        run: sudo apt-get update -q && sudo apt-get install -y -q ffmpeg
+      - name: Cache Whisper model
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-faster-whisper-small.en-v1
+      - name: Unit tests and committed-file checks (no model)
+        working-directory: tools/transcribe
+        run: python3 -m unittest discover -s tests -v
+      - name: Validate committed WebVTT (W3C webvtt.js, strict)
+        run: |
+          npm install --no-save --prefix tools/transcribe/.w3c webvtt-parser@2.2.0
+          node tools/transcribe/validate-vtt-w3c.mjs tools/transcribe/samples/sintel/*.vtt
+      - name: Clean-checkout run (transcribe, validate, spot-check)
+        run: tools/transcribe/run.sh
+      - name: Regenerated output matches the committed files
+        run: |
+          if ! git diff --exit-code -- tools/transcribe/samples; then
+            echo "::warning::Regenerated captions differ from the committed ones on this CPU; review the diff above."
+          fi
