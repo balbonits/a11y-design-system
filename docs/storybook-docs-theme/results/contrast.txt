@@ -1,0 +1,60 @@
+| Pair | Tokens (light / dark) | Min | Light | Dark |
+|---|---|---|---|---|
+| Body text on page | --text on --surface | 4.5 | 18.88 | 16.05 |
+| Muted text (Stories label, ArgTypes header) on page | --text-muted on --surface | 4.5 | 10.86 | 10.18 |
+| Headings h1-h2 on page | --text on --surface | 4.5 | 18.88 | 16.05 |
+| Link on page | --accent-hover / --accent on --surface | 4.5 | 8.88 | 13.30 |
+| Link in a zebra table row | --accent-hover / --accent on --surface-muted | 4.5 | 7.50 | 11.66 |
+| Text in a zebra table row | --text on --surface-muted | 4.5 | 15.95 | 14.07 |
+| Inline code text on its chip | --text on --surface-muted | 4.5 | 15.95 | 14.07 |
+| Code: plain | --text on --surface-muted | 4.5 | 15.95 | 14.07 |
+| Code: keyword, tag, class-name | --accent-hover / --accent on --surface-muted | 4.5 | 7.50 | 11.66 |
+| Code: attr-name | --warning on --surface-muted | 4.5 | 5.43 | 9.30 |
+| Code: string, attr-value | --success on --surface-muted | 4.5 | 5.24 | 7.81 |
+| Code: punctuation, operator, comment | --text-muted on --surface-muted | 4.5 | 9.18 | 8.92 |
+| ArgTypes required asterisk | --danger on --surface | 4.5 | 6.04 | 6.83 |
+| Copy / Show code label | --text on --surface | 4.5 | 18.88 | 16.05 |
+| Canvas toolbar zoom icon (barTextColor on barBg) | --text-muted on --surface | 3 | 10.86 | 10.18 |
+| Canvas border on page | --border on --surface | 3 | 18.88 | 16.05 |
+| Code-block border on page | --border on --surface | 3 | 18.88 | 16.05 |
+| Copy / Show code border on story canvas | --border on --color-bg | 3 | 17.79 | 17.79 |
+| Copy border on code block | --border on --surface-muted | 3 | 15.95 | 14.07 |
+| Rules and table lines (appBorderColor) | --border-subtle on --surface | 3 | 5.33 | 5.07 |
+| Focus ring on page | --focus-ring-color on --surface | 3 | 4.50 | 3.79 |
+| Focus ring on code block / zebra row | --focus-ring-color on --surface-muted | 3 | 3.80 | 3.32 |
+| Focus ring on story canvas | --focus-ring-color on --color-bg | 3 | 4.24 | 4.20 |
+
+Rendered lowest ratio by kind, main 80f782d vs this design:
+| Mode, kind | main | this | |
+|---|---|---|---|
+| dark ArgTypes table | 3.45 | 5.69 | up |
+| dark body text | 12.62 | 16.05 | up |
+| dark code block | 8.37 | 7.81 | DOWN |
+| dark docs button | 12.62 | 16.05 | up |
+| dark heading | 5.72 | 16.05 | up |
+| dark inline code | 8.88 | 14.07 | up |
+| dark link | 7.21 | 13.30 | up |
+| dark table | 12.04 | 14.07 | up |
+| light ArgTypes table | 3.45 | 6.04 | up |
+| light body text | 12.62 | 18.88 | up |
+| light code block | 8.37 | 5.24 | DOWN |
+| light docs button | 12.62 | 18.88 | up |
+| light heading | 5.72 | 18.88 | up |
+| light inline code | 8.88 | 15.95 | up |
+| light link | 7.21 | 8.88 | up |
+| light table | 12.04 | 15.95 | up |
+| dark Canvas border | 7.99 | 16.05 | up |
+| dark Copy/Show code border | 7.99 | 16.05 | up |
+| dark code-block border | 7.99 | 16.05 | up |
+| dark focus ring on code block | 3.32 | 3.32 | same |
+| dark focus ring on page | 3.79 | 3.79 | same |
+| dark zoom icon | 3.96 | 10.18 | up |
+| light Canvas border | 7.99 | 18.88 | up |
+| light Copy/Show code border | 7.99 | 18.88 | up |
+| light code-block border | 7.99 | 18.88 | up |
+| light focus ring on code block | 3.80 | 3.80 | same |
+| light focus ring on page | 4.50 | 4.50 | same |
+| light zoom icon | 3.96 | 10.86 | up |
+
+Syntax floor 4.5: 10 token pairs + 2 rendered code-block lows
+46 token pairs checked, 0 failures; rendered kinds vs main: 22 up, 4 same, 2 down

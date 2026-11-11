@@ -1,0 +1,58 @@
+diff --git a/.storybook/preview-head.html b/.storybook/preview-head.html
+index 841597a..1e8d951 100644
+--- a/.storybook/preview-head.html
++++ b/.storybook/preview-head.html
+@@ -1,12 +1,45 @@
+ <style>
+-  /* Docs-page contrast fixes for Storybook's own chrome (links and code highlighting) so axe passes AA. */
+-  .sbdocs a:not(.em-btn) { color: #0b57a4; text-decoration: underline; }
+-  .docblock-source .token, .docblock-source code span { color: #1f2328 !important; }
+-  .docblock-source .token.comment { color: #57606a !important; }
+-  .docblock-source .token.tag, .docblock-source .token.class-name, .docblock-source .token.keyword { color: #8a1c3d !important; }
+-  .docblock-source .token.attr-name { color: #6f3d00 !important; }
+-  .docblock-source .token.string, .docblock-source .token.attr-value { color: #0a5a2a !important; }
+-  .docblock-source .token.punctuation, .docblock-source .token.operator { color: #3d4450 !important; }
++  /* STORYBOOK-DOCS-THEME: docs-page colors come from the neo tokens (src/tokens.json, live on :root here), so they follow
++     the Mode toolbar and prefers-color-scheme. No raw colors in this file. Ratios: docs/storybook-docs-theme/contrast.mjs. */
++  .sbdocs h1, .sbdocs h2 { font-family: var(--font-display); font-weight: var(--weight-display); color: var(--text); letter-spacing: 0; }
++  .sbdocs a:not(.em-btn) { color: var(--docs-link); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
++  .sbdocs a:not(.em-btn):hover { text-decoration-thickness: 2px; }
++  :root { --docs-link: var(--accent-hover); --docs-keyword: var(--accent-hover); }
++  :root[data-mode="dark"] { --docs-link: var(--accent); --docs-keyword: var(--accent); }
++  @media (prefers-color-scheme: dark) { :root:not([data-mode]) { --docs-link: var(--accent); --docs-keyword: var(--accent); } }
++  /* Inline code (Markdown backticks) */
++  .sbdocs :not(pre) > code { background: var(--surface-muted) !important; border: 1px solid var(--border-subtle) !important; color: var(--text) !important; font-family: var(--font-mono); }
++  /* Code blocks (Source block and the "Show code" panel) */
++  .docblock-source { background: var(--surface-muted) !important; border: var(--border-width) solid var(--border) !important; border-radius: var(--radius-md) !important; }
++  .docblock-source .token, .docblock-source code span { color: var(--text) !important; }
++  .docblock-source .token.comment, .docblock-source .token.punctuation, .docblock-source .token.operator { color: var(--text-muted) !important; }
++  .docblock-source .token.tag, .docblock-source .token.class-name, .docblock-source .token.keyword { color: var(--docs-keyword) !important; }
++  .docblock-source .token.attr-name { color: var(--warning) !important; }
++  .docblock-source .token.string, .docblock-source .token.attr-value { color: var(--success) !important; }
++  /* ArgTypes: Storybook's required-prop asterisk is a fixed #ff4400 (3.45:1 on white). Use the theme's danger color. */
++  .docblock-argstable span[title="Required"] { color: var(--danger) !important; }
++  /* ArgTypes type and default chips: Storybook tints them blue-grey at 70% text alpha. Match the inline code chips. */
++  .docblock-argstable td div > span[class]:not([title]) { background: var(--surface-muted) !important; border: 1px solid var(--border-subtle) !important; color: var(--text) !important; font-family: var(--font-mono); }
++  /* Markdown tables: Storybook's zebra rows are a fixed blue-grey; use the theme's muted surface. */
++  .sbdocs-content table tr:nth-of-type(2n) { background-color: var(--surface-muted) !important; }
++  /* Canvas blocks (story previews): neo's 2px border, no soft shadow. */
++  .sbdocs-preview { border: var(--border-width) solid var(--border) !important; box-shadow: none !important; }
++  /* The Canvas toolbar (zoom) is 40px tall with overflow-y hidden, which clips the 44px zoom buttons to 40.
++     Make the bar 48px so the whole 44px button is tappable. The story under it moves down the extra 8px (Storybook's preview padding-top
++     is 40px for its 40px bar). A sibling selector, not a has-selector, so a browser without one still never hides the story's top 8px. */
++  .sbdocs-preview > .sb-bar + .docs-story { margin-top: 8px; }
++  .sbdocs-preview > .sb-bar, .sbdocs-preview > .sb-bar > div, .sbdocs-preview > .sb-bar > div > div, .sbdocs-preview > .sb-bar > div > div > div { height: 48px !important; min-height: 48px; }
++  .sbdocs-preview > .sb-bar > div > div > div { align-items: center; }
++  /* Action bars (Copy, Show code) sit in the bottom-right corner of a box with a 12px radius and overflow hidden,
++     which clips the button's corner. Inset the bar 4px (more than 12 x (1 - 1/sqrt 2) = 3.5px) so no part is
++     clipped, and draw each button as a small neo button. */
++  .docblock-source > div:has(> button), .docs-story > div:has(> .docblock-code-toggle) { bottom: 4px !important; right: 4px !important; display: flex; gap: 4px; }
++  .docblock-source > div:has(> button) > button, .docs-story > div:has(> .docblock-code-toggle) > button {
++    border: var(--border-width) solid var(--border) !important; border-radius: var(--radius-sm) !important;
++    background: var(--surface) !important; color: var(--text) !important; font-family: var(--font-body); font-weight: 600; }
++  /* One focus ring for Storybook's own docs controls (links, Copy, Show code, zoom, code scroll boxes). */
++  .sbdocs a:focus-visible, .sbdocs button:not(.em-btn):not(.em-sort):not([role="tab"]):focus-visible, .docblock-source [data-radix-scroll-area-viewport]:focus-visible {
++    outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color) !important; outline-offset: 2px !important; }
+   /* Mobile-first docs: nothing may push the page sideways. Wide tables and code scroll inside their own box. */
+   .sbdocs-wrapper { overflow-x: hidden; }
+   .sbdocs-content { max-width: 100%; min-width: 0; }

@@ -1,0 +1,39 @@
+{
+  "note": "Docs theme (preview iframe) field -> neo token, per mode [light, dark]. Same as the manager map in docs/storybook-brand/theme-map.json (#52) except appBorderColor, which uses --border-subtle for the docs page's dense rules and table lines.",
+  "fields": {
+    "colorPrimary":       ["--accent-hover", "--accent"],
+    "colorSecondary":     ["--accent", "--accent"],
+    "appBg":              ["--color-bg", "--color-bg"],
+    "appContentBg":       ["--surface", "--surface"],
+    "appPreviewBg":       ["--color-bg", "--color-bg"],
+    "appBorderColor":     ["--border-subtle", "--border-subtle"],
+    "textColor":          ["--text", "--text"],
+    "textInverseColor":   ["--surface", "--color-bg"],
+    "textMutedColor":     ["--text-muted", "--text-muted"],
+    "barTextColor":       ["--text-muted", "--text-muted"],
+    "barSelectedColor":   ["--accent-hover", "--accent"],
+    "barHoverColor":      ["--accent-hover", "--accent-hover"],
+    "barBg":              ["--surface", "--surface"],
+    "buttonBg":           ["--surface", "--surface-muted"],
+    "buttonBorder":       ["--border", "--border"],
+    "booleanBg":          ["--surface-muted", "--color-bg"],
+    "booleanSelectedBg":  ["--surface", "--surface-muted"],
+    "inputBg":            ["--surface", "--color-bg"],
+    "inputBorder":        ["--border", "--border"],
+    "inputTextColor":     ["--text", "--text"]
+  },
+  "shape": { "appBorderRadius": "--radius-md", "inputBorderRadius": "--radius-md" },
+  "fonts": { "fontBase": "--font-body", "fontCode": "--font-mono" },
+  "css": {
+    "link":            "--accent-hover (light) / --accent (dark), hover underline 2px",
+    "headings h1 h2":  "--font-display, --weight-display, color --text",
+    "inline code":     "bg --surface-muted, 1px --border-subtle, text --text, --font-mono",
+    "code block":      "bg --surface-muted, 2px --border, radius --radius-md",
+    "syntax.plain":    "--text",
+    "syntax.keyword":  "--accent-hover (light) / --accent (dark)  (tag, keyword, class-name)",
+    "syntax.attr":     "--warning   (attr-name)",
+    "syntax.string":   "--success   (string, attr-value)",
+    "syntax.punct":    "--text-muted (punctuation, operator, comment)",
+    "focus":           "3px solid --focus-ring-color, offset 2px"
+  }
+}
