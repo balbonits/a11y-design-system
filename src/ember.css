@@ -128,6 +128,9 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-tab:hover:not(:disabled) { color: var(--text); background: var(--tabs-track); }
 .em-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
 .em-tab:disabled { cursor: not-allowed; opacity: 0.55; }
+/* VQA (Creatives): the tablist scrolls (overflow-x), which also clips y, so an outer ring showed one edge. Inset ring,
+   no layout change; applies in forced colors too. */
+.em-tab:focus-visible { outline-offset: calc(-1 * var(--focus-ring-width)); }
 /* Forced colors (CA, HIT-PATCH): background images are dropped and every transparent border paints CanvasText, so the
    baseline vanished and every tab showed the same underline. Draw the baseline as a border (no clip: it sits outside the
    tablist's content box), hide unselected indicators with Canvas, and give the selected tab a Highlight indicator. */
