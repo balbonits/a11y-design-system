@@ -64,8 +64,8 @@ No row uses `--hue-shift`: dusk defines it, but no direction's buttons use it.
 | Light | 14.95:1 pass | 8.95:1 / 9.49:1 pass | 1.67:1, not adjacent |
 | Dark | 17.60:1 pass | 12.14:1 / 11.10:1 pass | 1.45:1, not adjacent |
 
-The ring-against-fill pair applies only where the ring offset is 0, and that never happens on a kinetic Button. Kinetic's `--focus-ring-offset` is 3px, so a 3px band of `--color-bg` or `--surface` always sits between the ring and the fill. That's why `contrast.mjs` doesn't add the pair: it would report a combination that's never drawn.
-- **Rules that keep it that way:** in kinetic, `--focus-ring-offset` stays at 2px or more on Buttons, and a hovered, focused kinetic Button never gets an inset ring (`outline-offset` at or below 0).
+The ring-against-fill pair applies only where the ring offset is 0, and that never happens on a kinetic Button. Kinetic's `--focus-ring-offset` is 3px, so a 3px band of `--color-bg` or `--surface` always sits between the ring and the fill. `shared/contrast.mjs` records it anyway, through `kinetic/contrast-notes.md`, as a "Recorded, not gated" table in `kinetic/CONTRAST.md`. That table lists 1.67:1 in light and 1.45:1 in dark, marked "not adjacent by rule". The label pair and both ring-to-band pairs are gated rows there. Chief of Creatives ruled on 2026-11-10 to keep these rules and not add an inverted ring.
+- **Rules that keep it that way:** in kinetic, `--focus-ring-offset` stays at 2px or more on Buttons, and a hovered, focused kinetic Button never gets an inset ring (`outline-offset` at or below 0). Tilt, lift and press never reduce `--focus-ring-offset` below 2px on kinetic. They move the button and its ring together with `transform`, and the offset is never animated or recomputed per state.
 - **If an offset-0 ring is ever needed**, it has to use `--color-bg` on the inverted fill (14.95:1 and 17.60:1), and that pair then goes into `contrast.mjs`.
 
 **Dusk hover cue: gap.** `--shadow-overlay` can't be the only hover cue, and none of dusk's hover fills reaches 3:1 against its resting fill (from `dusk/tokens.json`):
