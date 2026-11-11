@@ -1,39 +1,39 @@
 {
   "fields": {
-    "colorPrimary":      ["--accent", "--accent"],
-    "colorSecondary":    ["--accent", "--accent"],
-    "appBg":             ["--color-bg", "--color-bg"],
-    "appContentBg":      ["--surface", "--surface"],
-    "appPreviewBg":      ["--color-bg", "--color-bg"],
-    "appBorderColor":    ["--border", "--border"],
-    "textColor":         ["--text", "--text"],
-    "textInverseColor":  ["--color-bg", "--color-bg"],
-    "textMutedColor":    ["--text-muted", "--text-muted"],
-    "barTextColor":      ["--text-muted", "--text-muted"],
-    "barSelectedColor":  ["--accent", "--accent"],
-    "barHoverColor":     ["--accent-hover", "--accent-hover"],
-    "barBg":             ["--surface", "--surface"],
-    "buttonBg":          ["--surface", "--surface"],
-    "buttonBorder":      ["--border", "--border"],
-    "booleanBg":         ["--surface-muted", "--surface-muted"],
-    "booleanSelectedBg": ["--surface", "--surface"],
-    "inputBg":           ["--surface", "--surface"],
-    "inputBorder":       ["--border", "--border"],
-    "inputTextColor":    ["--text", "--text"]
+    "colorPrimary":       ["--accent-hover", "--accent"],
+    "colorSecondary":     ["--accent", "--accent"],
+    "appBg":              ["--color-bg", "--color-bg"],
+    "appContentBg":       ["--surface", "--surface"],
+    "appPreviewBg":       ["--surface", "--color-bg"],
+    "appBorderColor":     ["--border", "--border"],
+    "textColor":          ["--text", "--text"],
+    "textInverseColor":   ["--surface", "--color-bg"],
+    "textMutedColor":     ["--text-muted", "--text-muted"],
+    "barTextColor":       ["--text-muted", "--text-muted"],
+    "barSelectedColor":   ["--accent-hover", "--accent"],
+    "barHoverColor":      ["--accent-hover", "--accent-hover"],
+    "barBg":              ["--surface", "--surface"],
+    "buttonBg":           ["--surface", "--surface-muted"],
+    "buttonBorder":       ["--border", "--border"],
+    "booleanBg":          ["--surface-muted", "--color-bg"],
+    "booleanSelectedBg":  ["--surface", "--surface-muted"],
+    "inputBg":            ["--surface", "--color-bg"],
+    "inputBorder":        ["--border", "--border"],
+    "inputTextColor":     ["--text", "--text"]
   },
   "cssVars": {
-    "--eb-text":          "--text",
-    "--eb-border":        "--border",
-    "--eb-blob":          "--highlight",
-    "--eb-focus":         "--focus-ring-color",
-    "--eb-selected-text": "--accent-contrast"
+    "--eb-text":           "--text",
+    "--eb-border":         "--border",
+    "--eb-blob":           "--highlight",
+    "--eb-focus":          "--focus-ring-color",
+    "--eb-selected-text":  "--accent-contrast"
   },
   "shape": {
-    "appBorderRadius":   "--radius-md",
-    "inputBorderRadius": "--radius-md"
+    "appBorderRadius":     "--radius-md",
+    "inputBorderRadius":   "--radius-md"
   },
   "fonts": {
-    "fontBase": "--font-body",
-    "fontCode": "--font-mono"
+    "fontBase":            "--font-body",
+    "fontCode":            "--font-mono"
   }
 }

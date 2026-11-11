@@ -13,7 +13,7 @@ for(const [w,h] of [[320,640],[768,800],[1280,800]])for(const cs of ['light','da
  if(w<600){ // Storybook mobile nav: open the drawer from the bottom bar
   await p.click('nav button:has-text("Components/Button/Docs"), button:has-text("Components/Button/Docs")');await p.waitForTimeout(800);
   await p.keyboard.press('Tab');await p.focus('a:has(> .ember-brand)');
-  items=[['a:has(> .ember-brand)','1 brand link {wh}, focus ring --focus-ring-color 3px/3px',G,'below'],['.sidebar-item[data-selected="true"]','2 selected row',P,'below'],['#storybook-explorer-searchfield','3 search: --surface/--border',P,'below']];
+  items=[['a:has(> .ember-brand)','1 brand link {wh}, focus ring --focus-ring-color 3px/3px',G,'below'],['.sidebar-item[data-selected="true"]','2 selected row',P,'below'],['#storybook-explorer-searchfield','3 search: inputBg/inputBorder',P,'below']];
  } else if(w<1024){
   items=[['.sb-bar','1 toolbar: --surface, --text-muted, selected --accent',P],['[aria-label="Show sidebar"], button[title="Show sidebar"]','2 Show sidebar (collapsed 600-1023, manager.ts navSize 0) {wh}',G]];
  } else {

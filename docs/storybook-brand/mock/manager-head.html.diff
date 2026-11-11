@@ -1,0 +1,27 @@
+--- pr45/manager-head.html	2026-11-11 00:52:01.589348018 -0800
++++ mock/manager-head.html	2026-11-11 00:52:01.589348018 -0800
+@@ -1,9 +1,20 @@
+ <title>Ember UI · Storybook</title>
+ <style>
+   /* SB-MANAGER-AA: Storybook paints the selected sidebar item's label white on colorSecondary. In dark, colorSecondary is
+-     neo lime-400 (it is also link text on ink-2), so the label switches to neo ink: #111111 on #c6f432 is 15.1:1. */
+-  @media (prefers-color-scheme: dark) {
+-    #storybook-explorer-tree [data-selected="true"],
+-    #storybook-explorer-tree [data-selected="true"] svg { color: #111111; }
++     neo lime-400 (it is also link text on ink-2), so the label switches to neo ink: #111111 on #c6f432 is 14.74:1.
++     STORYBOOK-BRAND: the color now comes from --eb-selected-text (neo --accent-contrast, set by manager.ts) in both
++     modes. In light it's #ffffff, the same as Storybook's default, so light is unchanged. */
++  #storybook-explorer-tree [data-selected="true"],
++  #storybook-explorer-tree [data-selected="true"] svg { color: var(--eb-selected-text) !important; }
++  /* STORYBOOK-BRAND. Colors come from --eb-* vars that manager.ts sets from src/tokens.json; no literals here. */
++  /* Brand mark: neo's existing .logo (docs/directions/v3/neo/index.html:27-28), blob plus wordmark. */
++  .ember-brand { display: inline-flex; align-items: center; gap: .45rem; font-family: 'Archivo Black', 'Arial Black', sans-serif; font-size: 1.2rem; line-height: 1; color: var(--eb-text); white-space: nowrap; }
++  .ember-brand__blob { flex: none; width: 30px; height: 30px; border-radius: 40% 60% 55% 45%; background: var(--eb-blob); border: 2px solid var(--eb-border); }
++  /* The brand link: 44px target, neo focus ring (3px solid --focus-ring-color, 3px offset). Replaces Storybook's 1px colorSecondary border. */
++  a:has(> .ember-brand) { display: inline-flex !important; align-items: center; min-height: 44px; min-width: 44px; margin: 0 !important; padding: 0 4px !important; border: 0 !important; border-radius: 12px !important; }
++  a:has(> .ember-brand):focus-visible { outline: 3px solid var(--eb-focus) !important; outline-offset: 3px; }
++  /* Reduced motion: Storybook 8.6's manager has no prefers-reduced-motion handling (mobile drawer slide, sidebar and control transitions). Neo's rule is motion off under reduce, so zero it here. */
++  @media (prefers-reduced-motion: reduce) {
++    *, *::before, *::after { transition-duration: 0s !important; transition-delay: 0s !important; animation-duration: 0s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+   }
+ </style>
