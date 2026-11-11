@@ -5,9 +5,9 @@
 //  - the open modal is identifiable (1.4.11, CA v0.3.1): the dialog border, or its surface when the border width is 0,
 //    reaches 3:1 against --scrim alpha-composited over --color-bg, in light and dark, with text-muted under the scrim
 //    at 3:1, no lightening and an 8-digit --scrim (scripts/lib/scrim.mjs, SCRIM-GATE; table in the Scrim section);
-//  - --focus-ring-color reaches 3:1 against --color-bg, --surface (and --card-bg if it differs), --tabs-track and,
-//    where a theme defines it, --hover-fill, in light and dark (WCAG 1.4.11 AA requirement, 2.4.13 AAA house aim;
-//    scripts/lib/focus-ring.mjs, FOCUS-RING-GATE; table in the Focus ring section);
+//  - --focus-ring-color reaches 3:1 against --color-bg, --surface (and --card-bg if it differs) and --tabs-track, in
+//    light and dark (WCAG 1.4.11 AA requirement, 2.4.13 AAA house aim; scripts/lib/focus-ring.mjs, FOCUS-RING-GATE;
+//    table in the Focus ring section). The ring vs --hover-fill pair lives in the optional hover pair section below;
 //  - --focus-ring-style is never none/hidden and --focus-ring-width is at least 2px;
 //  - --target-min is at least 44px;
 //  - every contract name is defined (Addendum 5 and 7, incl. --scrim, --radius-xl and the registered extras);
@@ -58,7 +58,7 @@ for (const { id } of registry()) {
     // Open modal (CA v0.3.1, WCAG 1.4.11): the scrim checks live in scripts/lib/scrim.mjs (SCRIM-GATE), run below.
     scrimThemes.push({ name, mode, get: (k) => r(k) ?? (CARD_DEFAULTS[k] ? r(CARD_DEFAULTS[k].slice(4, -1)) : undefined),
       opts: { border: '--card-border-color', width: '--card-border-width', surface: '--card-bg' } });
-    // Focus ring (FOCUS-RING-GATE): the ring on --color-bg, --surface, --tabs-track and (where defined) --hover-fill, in
+    // Focus ring (FOCUS-RING-GATE): the ring on --color-bg, --surface and --tabs-track, in
     // scripts/lib/focus-ring.mjs, run below. Cards, the dialog and the toast paint --card-bg (src/ember.css); it gets its
     // own row only when it resolves differently from --surface, so the dialog surface is always covered.
     const fget = safe((k) => r(k) ?? viaComponent(r, k));
@@ -99,7 +99,7 @@ for (const { id } of registry()) {
 const scrim = scrimGate(scrimThemes, new URL('./contrast.known.json', import.meta.url));
 for (const f of scrim.fails) bad(`scrim ${f}`);
 for (const k of scrim.knowns) console.log('KNOWN scrim', k);
-// ---- Focus ring, FOCUS-RING-GATE: the ring on --color-bg, --surface, --tabs-track and optional --hover-fill, logic in
+// ---- Focus ring, FOCUS-RING-GATE: the ring on --color-bg, --surface and --tabs-track, logic in
 // scripts/lib/focus-ring.mjs (WCAG 1.4.11 AA requirement, 2.4.13 AAA house aim).
 // Registered themes only; known fails pin in scripts/contrast.known.json ("focusRing", empty). ----
 const focus = focusRingGate(focusThemes, new URL('./contrast.known.json', import.meta.url));
