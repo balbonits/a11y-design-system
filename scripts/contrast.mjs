@@ -3,7 +3,8 @@
 //  - every text/bg pair reaches 4.5:1, every UI/bg pair 3:1 (incl. focus ring vs bg, surface AND border,
 //    and --highlight-contrast on --highlight at 4.5:1);
 //  - the open modal is identifiable (1.4.11, CA v0.3.1): the dialog border, or its surface when the border width is 0,
-//    reaches 3:1 against --scrim alpha-composited over --color-bg, in light and dark;
+//    reaches 3:1 against --scrim alpha-composited over --color-bg, in light and dark, with text-muted under the scrim
+//    at 3:1, no lightening and an 8-digit --scrim (scripts/lib/scrim.mjs, SCRIM-GATE; table in the Scrim section);
 //  - --focus-ring-style is never none/hidden and --focus-ring-width is at least 2px;
 //  - --target-min is at least 44px;
 //  - every contract name is defined (Addendum 5 and 7, incl. --scrim, --radius-xl and the registered extras);
@@ -11,6 +12,7 @@
 // (--shadow-press is never the only pressed cue: src/ember.css also moves and recolors pressed buttons.)
 // Writes docs/CONTRAST.md and exits 1 on any failure.
 import fs from 'node:fs';
+import { scrimGate } from './lib/scrim.mjs';
 import { COLOR_TOKENS, EXTRA_TOKENS, REDUCED_ZERO, SHAPE_TOKENS, TYPE_MOTION_TOKENS, parseTheme, registry, resolver } from './theme-contract.mjs';
 
 const hex = (c) => { if (!/^#[0-9a-f]{6}$/i.test(c)) throw new Error(`not a 6-digit hex: ${c}`); return c; };
@@ -24,18 +26,12 @@ const TEXT = [
 ];
 const UI = [['border', 'color-bg'], ['border', 'surface'], ['border', 'surface-muted'], ['focus-ring-color', 'color-bg'], ['focus-ring-color', 'surface'],
   ['focus-ring-color', 'surface-muted'], ['focus-ring-color', 'border'], ['accent', 'surface-muted']];
-// Alpha-composite an #rrggbbaa (or #rrggbb) over an opaque #rrggbb.
-const over = (fg, bg) => {
-  if (!/^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(fg)) throw new Error(`not a hex color: ${fg}`);
-  const a = fg.length === 9 ? parseInt(fg.slice(7, 9), 16) / 255 : 1;
-  return '#' + [1, 3, 5].map((i) => Math.round(parseInt(fg.slice(i, i + 2), 16) * a + parseInt(hex(bg).slice(i, i + 2), 16) * (1 - a)).toString(16).padStart(2, '0')).join('');
-};
 // Component defaults (src/tokens/components.css) for the modal, unless a theme overrides them.
 const CARD_DEFAULTS = { '--card-bg': 'var(--surface)', '--card-border-width': 'var(--border-width)', '--card-border-color': 'var(--border)' };
 const px = (v) => { if (String(v).trim() === '0') return 0; const m = String(v).match(/^(-?[\d.]+)px$/); return m ? Number(m[1]) : NaN; };
 const zero = (v) => /^-?0(\.0+)?(px|deg|rem|em|ms|s)?$/.test(String(v).trim());
 
-let fail = 0; const rows = []; const checks = [];
+let fail = 0; const rows = []; const checks = []; const scrimThemes = [];
 const bad = (msg) => { fail++; console.log('FAIL', msg); };
 for (const { id } of registry()) {
   const t = parseTheme(fs.readFileSync(`src/themes/${id}.css`, 'utf8'), id);
@@ -47,20 +43,9 @@ for (const { id } of registry()) {
     // The ring only touches the control's border when --focus-ring-offset is 0; with a gap it sits on the background,
     // so focus-ring-color vs border is required only at offset 0 (WCAG 1.4.11 adjacent colors).
     const gap = px(r('--focus-ring-offset')) > 0;
-    {
-      const tok = (k) => r(k) ?? r(CARD_DEFAULTS[k].slice(4, -1));
-      const scrimmed = over(r('--scrim'), r('--color-bg'));
-      const width = px(tok('--card-border-width'));
-      const [f, fv] = width > 0 ? ['dialog border', tok('--card-border-color')] : ['dialog surface', tok('--card-bg')];
-      const ratio = cr(fv, scrimmed); rows.push([`${name}.${mode}`, f, `scrim over color-bg (${scrimmed})`, 3, ratio]);
-      if (ratio < 3) bad(`${name}.${mode}: ${f} on scrim over color-bg ${ratio.toFixed(2)} < 3`);
-      // Page under the scrim (design CONTRAST Scrim sections): text-muted stays recognizable, both composited, at 3:1,
-      // and the scrim never lightens --color-bg.
-      const mutedUnder = cr(over(r('--scrim'), r('--text-muted')), scrimmed);
-      rows.push([`${name}.${mode}`, 'text-muted under scrim', `scrim over color-bg (${scrimmed})`, 3, mutedUnder]);
-      if (mutedUnder < 3) bad(`${name}.${mode}: text-muted under the scrim ${mutedUnder.toFixed(2)} < 3`);
-      if (lum(scrimmed) > lum(r('--color-bg')) + 1e-9) bad(`${name}.${mode}: the scrim lightens --color-bg (${r('--color-bg')} to ${scrimmed})`);
-    }
+    // Open modal (CA v0.3.1, WCAG 1.4.11): the scrim checks live in scripts/lib/scrim.mjs (SCRIM-GATE), run below.
+    scrimThemes.push({ name, mode, get: (k) => r(k) ?? (CARD_DEFAULTS[k] ? r(CARD_DEFAULTS[k].slice(4, -1)) : undefined),
+      opts: { border: '--card-border-color', width: '--card-border-width', surface: '--card-bg' } });
     for (const [list, min] of [[TEXT, 4.5], [UI, 3]]) for (const [f, b] of list) {
       if (gap && f === 'focus-ring-color' && b === 'border') continue;
       const ratio = cr(r(`--${f}`), r(`--${b}`)); rows.push([`${name}.${mode}`, f, b, min, ratio]);
@@ -85,12 +70,17 @@ for (const { id } of registry()) {
   if (!okTarget) bad(`${name}: --target-min ${target}px < 44px`);
   if (!okReduced) bad(`${name}: not 0 under reduced motion: ${notZero.map((k) => `${k}=${rm[k]}`).join(', ')}`);
 }
+// ---- Scrim (dialog backdrop), SCRIM-GATE: one gate, all logic in scripts/lib/scrim.mjs. Registered themes only;
+// the stories-only test fixture is out of scope (CTE). Known fails pin in scripts/contrast.known.json (empty). ----
+const scrim = scrimGate(scrimThemes, new URL('./contrast.known.json', import.meta.url));
+for (const f of scrim.fails) bad(`scrim ${f}`);
+for (const k of scrim.knowns) console.log('KNOWN scrim', k);
 const md = [
   '# Contrast and theme contract', '', 'Generated by `npm run contrast` from every registered theme (src/themes/registry.json). Text needs 4.5:1, UI (borders, focus ring) 3:1.', '',
   'Open-modal rule (Chief Architect, v0.3.1, WCAG 1.4.11): the dialog border (or the dialog surface when its border width is 0) reaches 3:1 against `--scrim` alpha-composited over `--color-bg`, in light and dark. Page text under the scrim: `--text-muted` composited under the scrim reaches 3:1 against the composited `--color-bg`, and the scrim never lightens `--color-bg` (the design CONTRAST Scrim sections). Dialog text sits on the dialog\'s own opaque surface, so it has no scrim check.', '', 'Focus ring rule (Chief Architect, v0.3.1): `--focus-ring-offset` must be 0 or more. The focus ring color must reach 3:1 against every surface a control can sit on (`--color-bg`, `--surface`, which cards and raised controls use, and `--surface-muted`) in light and dark, at any offset. When the offset is 0 the ring also touches the control border, so focus ring vs `--border` is required too; when the offset is above 0 the ring sits on the page and that pair is not required.', '', '`--hue-shift` rule (Chief Architect, v0.3.1): a unitless multiplier from 0 to 1, with any unit rejected. Neutral default 0, and 0 under reduced motion. The maximum angle lives in the consuming CSS, as `calc(var(--hue-shift) * 40deg)`.', '',
   '| Theme | Focus ring style | Focus ring width | Focus ring offset | Target min | Reduced motion |', '|---|---|---|---|---|---|', ...checks.map((c) => `| ${c.join(' | ')} |`), '',
   '| Theme.mode | Foreground | Background | Min | Ratio |', '|---|---|---|---|---|', ...rows.map(([c, f, b, m, r]) => `| ${c} | ${f} | ${b} | ${m} | ${r.toFixed(2)} |`),
 ].join('\n');
-fs.writeFileSync(new URL('../docs/CONTRAST.md', import.meta.url), md + '\n');
-console.log(`${rows.length} pairs and ${checks.length * 5} contract assertions checked across ${registry().length} themes, ${fail} failures`);
+fs.writeFileSync(new URL('../docs/CONTRAST.md', import.meta.url), md + '\n' + scrim.md + '\n');
+console.log(`${rows.length} pairs and ${checks.length * 5} contract assertions checked across ${registry().length} themes, ${scrim.rows.length} scrim rows (${scrim.knowns.length} known), ${fail} failures`);
 process.exit(fail ? 1 : 0);
