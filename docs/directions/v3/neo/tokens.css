@@ -26,6 +26,7 @@
   --palette-red-800: #a00e26;
   --palette-red-300: #ff7a8c;
   --palette-red-200: #ff9aa8;
+  --palette-pink-600: #e0217a;
   --palette-sky-700: #0b5cad;
   --palette-sky-300: #7fb6ff;
 }
@@ -34,15 +35,18 @@
   --font-body: 'Archivo', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --weight-display: 400;
-  --radius-surface: 18px;
-  --radius-control: 12px;
-  --radius-field: 10px;
-  --radius-pill: 999px;
-  --border-width: 2.5px;
-  --shadow-1: 4px 4px 0 var(--border);
-  --shadow-2: 7px 7px 0 var(--border);
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 999px;
+  --radius: var(--radius-md);
+  --border-width: 2px;
+  --border-width-strong: 2.5px;
+  --shadow-raised: 4px 4px 0 var(--border);
   --shadow-press: 1px 1px 0 var(--border);
-  --blur-glass: 0px;
+  --divider-shape: none;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
   --duration-fast: 120ms;
   --duration-base: 220ms;
   --duration-slow: 420ms;
@@ -66,7 +70,8 @@
   --accent-hover: var(--palette-blue-700);
   --accent-soft: var(--palette-blue-100);
   --accent-contrast: var(--palette-paper);
-  --focus: var(--palette-blue-700);
+  --focus-ring-color: var(--palette-pink-600);
+  --focus: var(--palette-pink-600);
   --success: var(--palette-green-700);
   --warning: var(--palette-amber-800);
   --danger: var(--palette-red-700);
@@ -89,7 +94,8 @@
   --accent-hover: var(--palette-lime-300);
   --accent-soft: var(--palette-lime-900);
   --accent-contrast: var(--palette-ink);
-  --focus: var(--palette-blue-300);
+  --focus-ring-color: var(--palette-pink-600);
+  --focus: var(--palette-pink-600);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-red-300);
@@ -112,7 +118,8 @@
   --accent-hover: var(--palette-lime-300);
   --accent-soft: var(--palette-lime-900);
   --accent-contrast: var(--palette-ink);
-  --focus: var(--palette-blue-300);
+  --focus-ring-color: var(--palette-pink-600);
+  --focus: var(--palette-pink-600);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-red-300);

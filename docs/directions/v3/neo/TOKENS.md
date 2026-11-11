@@ -20,7 +20,8 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | `--accent-hover` | `blue-700` | `#1530d0` | `lime-300` | `#d7ff5a` |
 | `--accent-soft` | `blue-100` | `#e3e8ff` | `lime-900` | `#2c3310` |
 | `--accent-contrast` | `paper` | `#ffffff` | `ink` | `#111111` |
-| `--focus` | `blue-700` | `#1530d0` | `blue-300` | `#8fa2ff` |
+| `--focus-ring-color` | `pink-600` | `#e0217a` | `pink-600` | `#e0217a` |
+| `--focus` | `pink-600` | `#e0217a` | `pink-600` | `#e0217a` |
 | `--success` | `green-700` | `#17702a` | `green-300` | `#5ed27a` |
 | `--warning` | `amber-800` | `#855400` | `amber-300` | `#ffc24a` |
 | `--danger` | `red-700` | `#c4122f` | `red-300` | `#ff7a8c` |
@@ -30,7 +31,7 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | `--highlight` | `lime-400` | `#c6f432` | `blue-600` | `#1f3dff` |
 | `--highlight-contrast` | `ink` | `#111111` | `paper` | `#ffffff` |
 
-`--highlight` and `--highlight-contrast` are proposed additions (a sticker or chip fill and its text). Everything else uses Ember's existing names.
+New semantic tokens for the additive minor release after v0.3.0 (every theme must define them, `0` or `none` when unused): `--highlight` and `--highlight-contrast` (a sticker or chip fill and its text); the shape set `--radius-sm`, `--radius-md`, `--radius-lg`, `--border-width-strong`, `--shadow-raised`, `--shadow-press` and `--divider-shape`, named per Chief Architect; and `--focus-ring-width`, `--focus-ring-offset`, `--tilt` and `--lift`. `--focus-ring-color` is the ring color; `--focus` and `--radius` stay as deprecated aliases until v0.4 (pointing to `--focus-ring-color` and `--radius-md`), per Chief Architect's final ruling. All other names are Ember's existing ones.
 
 ## Shape, type and motion
 | Token | Value |
@@ -39,15 +40,18 @@ Swatches are in the live prototype's Tokens section. Contrast results are in [CO
 | `--font-body` | `'Archivo', system-ui, sans-serif` |
 | `--font-mono` | `'JetBrains Mono', ui-monospace, monospace` |
 | `--weight-display` | `400` |
-| `--radius-surface` | `18px` |
-| `--radius-control` | `12px` |
-| `--radius-field` | `10px` |
-| `--radius-pill` | `999px` |
-| `--border-width` | `2.5px` |
-| `--shadow-1` | `4px 4px 0 var(--border)` |
-| `--shadow-2` | `7px 7px 0 var(--border)` |
+| `--radius-sm` | `10px` |
+| `--radius-md` | `12px` |
+| `--radius-lg` | `18px` |
+| `--radius-full` | `999px` |
+| `--radius` | `var(--radius-md)` |
+| `--border-width` | `2px` |
+| `--border-width-strong` | `2.5px` |
+| `--shadow-raised` | `4px 4px 0 var(--border)` |
 | `--shadow-press` | `1px 1px 0 var(--border)` |
-| `--blur-glass` | `0px` |
+| `--divider-shape` | `none` |
+| `--focus-ring-width` | `3px` |
+| `--focus-ring-offset` | `3px` |
 | `--duration-fast` | `120ms` |
 | `--duration-base` | `220ms` |
 | `--duration-slow` | `420ms` |
