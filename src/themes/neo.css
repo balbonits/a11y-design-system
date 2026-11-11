@@ -2,6 +2,9 @@
    A theme file holds its own palette (the :root block is scoped to the theme by npm run tokens) and every
    semantic token in ARCH-REVIEW Addendum 5. Register it in registry.json; no component code changes. */
 :root {
+  /* Dialog backdrop per mode (Addendum 7 (b); UX spec a11y PR #32, e48047a). */
+  --palette-scrim: #11111173;
+  --palette-scrim-dark: #1111118c;
   --palette-ink: #111111;
   --palette-ink-2: #1c1c1c;
   --palette-ink-3: #272727;
@@ -40,6 +43,7 @@
   --radius-sm: 10px;
   --radius-md: 12px;
   --radius-lg: 18px;
+  --radius-xl: var(--radius-lg);
   --radius-full: 999px;
   --border-width: 2px;
   --border-width-strong: 3px;
@@ -63,8 +67,20 @@
   --parallax-scale: 0.08;
   --lift: -3px;
   --tilt: -1.5deg;
+  /* Addendum 8 (video-player HANDOFF:98-107): how far a pressed button moves, every variant. Locked per theme. */
+  --press-offset: 3px;
+  /* Addendum 7 registered extras, neutral defaults for neo. */
+  --rule: 0px;
+  --shadow-overlay: none;
+  --weight-display-min: 400;
+  --weight-display-max: 400;
+  --weight-shift: 0;
+  --stagger: 0ms;
+  --blur-glass: 0px;
+  --hue-shift: 0;
 }
 [data-theme="neo"], [data-theme="neo"][data-mode="light"] {
+  --scrim: var(--palette-scrim);
   --color-bg: var(--palette-cream);
   --surface: var(--palette-paper);
   --surface-muted: var(--palette-cream-2);
@@ -88,6 +104,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { [data-theme="neo"]:not([data-mode]) {
+  --scrim: var(--palette-scrim-dark);
   --color-bg: var(--palette-ink);
   --surface: var(--palette-ink-2);
   --surface-muted: var(--palette-ink-3);
@@ -111,6 +128,7 @@
   color-scheme: dark;
 } }
 [data-theme="neo"][data-mode="dark"] {
+  --scrim: var(--palette-scrim-dark);
   --color-bg: var(--palette-ink);
   --surface: var(--palette-ink-2);
   --surface-muted: var(--palette-ink-3);
@@ -134,5 +152,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="neo"] {
-  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg;
+  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --tilt: 0deg; --press-offset: 0px; --stagger: 0ms; --hue-shift: 0;
 } }

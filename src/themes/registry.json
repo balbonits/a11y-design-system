@@ -1,3 +1,4 @@
 [
-  { "id": "neo", "label": "Neo" }
+  { "id": "neo", "label": "Neo" },
+  { "id": "kinetic", "label": "Kinetic" }
 ]

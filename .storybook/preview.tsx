@@ -5,6 +5,7 @@ import '@fontsource/archivo/400.css';
 import '@fontsource/archivo/500.css';
 import '@fontsource/archivo/600.css';
 import '@fontsource/jetbrains-mono';
+import './fonts/fonts.css';
 import { addons } from '@storybook/preview-api';
 import '../src/ember.css';
 import { ToastProvider, applyTheme, DEFAULT_THEME, THEME_REGISTRY, type Theme, type Mode } from '../src';

@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher, THEMES, THEME_REGISTRY, DEFAULT_THEME, PREPAINT_SCRIPT, prepaintScript } from './index';
+import { Switch, Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher, THEMES, THEME_REGISTRY, DEFAULT_THEME, PREPAINT_SCRIPT, prepaintScript } from './index';
 
 function ModalDemo() {
   const [open, setOpen] = useState(false);
@@ -186,15 +186,15 @@ describe('Toast', () => {
 
 describe('ThemeSwitcher (R-2)', () => {
   const mem = () => { const m = new Map<string, string>(); return { getItem: (k: string) => m.get(k) ?? null, setItem: (k: string, v: string) => void m.set(k, v), removeItem: (k: string) => void m.delete(k), m }; };
-  // A second, test-only theme (not in Ember's registry) so the Theme group renders.
-  const themes = [THEME_REGISTRY[0], { id: 'test-fixture', label: 'Test fixture, not a design' }];
+  // Ember's registry has two themes (neo, kinetic), so the Theme group renders.
+  const themes = THEME_REGISTRY;
   const def = THEME_REGISTRY[0];
   afterEach(() => { document.documentElement.removeAttribute('data-theme'); document.documentElement.removeAttribute('data-mode'); });
 
   it('reads themes from the registry: the default is the first entry and no theme is hardcoded', () => {
     expect(THEMES).toEqual(THEME_REGISTRY.map((t) => t.id));
     expect(DEFAULT_THEME).toBe(THEMES[0]);
-    expect(prepaintScript(themes)).toContain("['test-fixture']");
+    expect(prepaintScript(themes)).toContain("['kinetic']");
     expect(PREPAINT_SCRIPT).toContain(JSON.stringify(THEMES.slice(1)).replace(/"/g, "'"));
   });
 
@@ -205,13 +205,13 @@ describe('ThemeSwitcher (R-2)', () => {
   });
 
   it('has two labelled radio groups and starts from storage', () => {
-    const s = mem(); s.setItem('jdilig:theme', 'test-fixture'); s.setItem('jdilig:mode', 'dark');
+    const s = mem(); s.setItem('jdilig:theme', 'kinetic'); s.setItem('jdilig:mode', 'dark');
     render(<ThemeSwitcher storage={s} themes={themes} />);
     expect(screen.getByRole('group', { name: 'Theme' })).toBeInTheDocument();
     expect(screen.getByRole('group', { name: 'Color mode' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Test fixture, not a design' })).toBeChecked();
+    expect(screen.getByRole('radio', { name: 'Kinetic' })).toBeChecked();
     expect(screen.getByRole('radio', { name: 'Dark' })).toBeChecked();
-    expect(document.documentElement.dataset.theme).toBe('test-fixture');
+    expect(document.documentElement.dataset.theme).toBe('kinetic');
     expect(document.documentElement.dataset.mode).toBe('dark');
   });
 
@@ -228,13 +228,13 @@ describe('ThemeSwitcher (R-2)', () => {
     await u.tab();
     expect(screen.getByRole('radio', { name: def.label })).toHaveFocus();
     await u.keyboard('{ArrowRight}');
-    expect(screen.getByRole('radio', { name: 'Test fixture, not a design' })).toBeChecked();
-    expect(s.m.get('jdilig:theme')).toBe('test-fixture');
-    expect(document.documentElement.dataset.theme).toBe('test-fixture');
-    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Test fixture, not a design, automatic \((dark|light)\) mode$/);
+    expect(screen.getByRole('radio', { name: 'Kinetic' })).toBeChecked();
+    expect(s.m.get('jdilig:theme')).toBe('kinetic');
+    expect(document.documentElement.dataset.theme).toBe('kinetic');
+    expect(screen.getByRole('status')).toHaveTextContent(/^Theme Kinetic, automatic \((dark|light)\) mode$/);
     await u.click(screen.getByRole('radio', { name: 'Light' }));
     expect(s.m.get('jdilig:mode')).toBe('light');
-    expect(screen.getByRole('status')).toHaveTextContent('Theme Test fixture, not a design, light mode');
+    expect(screen.getByRole('status')).toHaveTextContent('Theme Kinetic, light mode');
     await u.click(screen.getByRole('radio', { name: def.label }));
     await u.click(screen.getByRole('radio', { name: 'Auto' }));
     expect(s.m.has('jdilig:theme')).toBe(false);
@@ -242,5 +242,21 @@ describe('ThemeSwitcher (R-2)', () => {
     expect(document.documentElement.hasAttribute('data-theme')).toBe(false);
     expect(document.documentElement.hasAttribute('data-mode')).toBe(false);
     expect(onChange).toHaveBeenLastCalledWith(def.id, 'auto');
+  });
+});
+
+describe('Switch', () => {
+  it('is a native checkbox with role=switch, toggled by Space and by its label', async () => {
+    const u = userEvent.setup();
+    render(<Switch label="Email me" hint="Daily" />);
+    const sw = screen.getByRole('switch', { name: 'Email me' });
+    expect(sw).toHaveAttribute('type', 'checkbox');
+    expect(sw).not.toBeChecked();
+    expect(sw).toHaveAccessibleDescription('Daily');
+    sw.focus();
+    await u.keyboard(' ');
+    expect(sw).toBeChecked();
+    await u.click(screen.getByText('Email me'));
+    expect(sw).not.toBeChecked();
   });
 });
