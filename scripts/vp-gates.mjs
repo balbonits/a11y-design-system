@@ -422,13 +422,15 @@ test('CONTRAST rendered caption tokens follow data-caption-color (H-8 mapping)',
     }
   } finally { await o.ctx.close(); }
 });
-test('ACR 1.2.x rows present; 1.2.2 not Supports while the listening-pass TODO is open (CA)', 'CA ruling: ACR 1.2.x is a docs review item, plus this static check', async () => {
+// CA hardening (Nov 10): don't depend on exact TODO wording. A row can't say 'Supports' while that row carries a TODO
+// about a pending human pass (ACR_PENDING); 1.2.2 for the listening/caption pass and 4.1.3 for the screen-reader pass.
+const ACR_PENDING = /listening|screen[- ]?reader|SR pass|caption review/i;
+test('ACR 1.2.x rows present; 1.2.2 and 4.1.3 not Supports while a pending-pass TODO is open (CA)', 'CA ruling: ACR 1.2.x is a docs review item, plus this static check', async () => {
   const acr = fs.readFileSync(new URL('../docs/ACR.md', import.meta.url), 'utf8').split('\n');
   const row = (sc) => acr.find((l) => l.startsWith(`| ${sc} `));
-  for (const sc of ['1.2.1', '1.2.2', '1.2.3', '1.2.4', '1.2.5']) expect(row(sc), `docs/ACR.md has no ${sc} row`);
-  const todo = acr.some((l) => /TODO/.test(l) && /listening/i.test(l));
-  const level = (row('1.2.2') || '').split('|').map((c) => c.trim())[3];
-  expect(!(todo && level === 'Supports'), `1.2.2 says Supports while the listening-pass TODO is open`);
+  for (const sc of ['1.2.1', '1.2.2', '1.2.3', '1.2.4', '1.2.5', '4.1.3']) expect(row(sc), `docs/ACR.md has no ${sc} row`);
+  for (const sc of ['1.2.2', '4.1.3']) { const r = row(sc) || ''; const level = r.split('|').map((c) => c.trim())[3];
+    expect(!(level === 'Supports' && /TODO/.test(r) && ACR_PENDING.test(r)), `${sc} says Supports while its row has an open pending-pass TODO`); }
 });
 
 // ---------- runner ----------
