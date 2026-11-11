@@ -4,7 +4,8 @@ import { createYouTubePlayer } from './adapters/youtube';
 import { createHlsPlayer } from './adapters/hls';
 import { createNativePlayer } from './adapters/native';
 import { createVimeoPlayer } from './adapters/vimeo';
-import { DEFAULT_VIDEO_PREFS, VIDEO_PREFS_KEY, readVideoPrefs, writeVideoPrefs } from './prefs';
+import { DEFAULT_VIDEO_PREFS, VIDEO_PREFS_KEY, cleanCaptionStyle, readVideoPrefs, writeVideoPrefs } from './prefs';
+import { parseVtt, toVtt } from './vtt';
 
 const ranges = (...r: [number, number][]) => ({ length: r.length, start: (i: number) => r[i][0], end: (i: number) => r[i][1] });
 
@@ -148,5 +149,31 @@ describe('video prefs (ember:video:v1)', () => {
     expect(readVideoPrefs(VIDEO_PREFS_KEY, bad)).toEqual(DEFAULT_VIDEO_PREFS);
     expect(writeVideoPrefs({ volume: 0.3 }, VIDEO_PREFS_KEY, bad).volume).toBe(0.3);
     expect(readVideoPrefs(VIDEO_PREFS_KEY, null)).toEqual(DEFAULT_VIDEO_PREFS);
+  });
+  it('pauseWhileReading defaults false and keeps only booleans', () => {
+    const s = mem();
+    expect(DEFAULT_VIDEO_PREFS.pauseWhileReading).toBe(false);
+    expect(writeVideoPrefs({ descriptions: 'voice', pauseWhileReading: true }, VIDEO_PREFS_KEY, s).pauseWhileReading).toBe(true);
+    s.m.set(VIDEO_PREFS_KEY, JSON.stringify({ pauseWhileReading: 'yes' }));
+    expect(readVideoPrefs(VIDEO_PREFS_KEY, s).pauseWhileReading).toBe(false);
+  });
+  it('captionStyle: defaults m/white/solid/sans, each field falls back on its own, a patch changes only what it names', () => {
+    const s = mem();
+    expect(readVideoPrefs(VIDEO_PREFS_KEY, s).captionStyle).toEqual({ size: 'm', color: 'white', background: 'solid', font: 'sans' });
+    s.m.set(VIDEO_PREFS_KEY, JSON.stringify({ captionStyle: { size: 'xl', color: 'magenta', background: 'half', font: 7, extra: 1 } }));
+    expect(readVideoPrefs(VIDEO_PREFS_KEY, s).captionStyle).toEqual({ size: 'xl', color: 'white', background: 'half', font: 'sans' });
+    expect(writeVideoPrefs({ captionStyle: { color: 'black' } }, VIDEO_PREFS_KEY, s).captionStyle).toEqual({ size: 'xl', color: 'black', background: 'half', font: 'sans' });
+    s.m.set(VIDEO_PREFS_KEY, JSON.stringify({ captionStyle: null }));
+    expect(readVideoPrefs(VIDEO_PREFS_KEY, s).captionStyle).toEqual(DEFAULT_VIDEO_PREFS.captionStyle);
+    expect(cleanCaptionStyle(['l'])).toEqual(DEFAULT_VIDEO_PREFS.captionStyle);
+  });
+});
+
+describe('toVtt escaping (BED)', () => {
+  it('escapes &, < and > so the output parses back to the same text', () => {
+    const cues = [{ id: '1', start: 0, end: 1, text: 'Tom & Jerry <3 a --> b' }];
+    const out = toVtt(cues);
+    expect(out).toContain('Tom &amp; Jerry &lt;3 a --&gt; b');
+    expect(parseVtt(out)[0].text).toBe(cues[0].text);
   });
 });

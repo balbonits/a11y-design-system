@@ -97,10 +97,13 @@ export function toTxt(cues: readonly Cue[]): string {
   return cues.map((c) => c.text.replace(/\n/g, ' ')).join('\n') + '\n';
 }
 
+/** Cue text is plain (parseVtt decodes entities), so &, < and > are escaped back; this also keeps a literal "-->" out of the payload. */
+const escapeVtt = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
 export function toVtt(cues: readonly Cue[]): string {
   return (
     'WEBVTT\n\n' +
-    cues.map((c) => `${c.id}\n${formatTime(c.start)} --> ${formatTime(c.end)}\n${c.text}`).join('\n\n') +
+    cues.map((c) => `${c.id}\n${formatTime(c.start)} --> ${formatTime(c.end)}\n${escapeVtt(c.text)}`).join('\n\n') +
     '\n'
   );
 }

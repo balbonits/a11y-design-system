@@ -144,12 +144,14 @@ A missing or broken optional peer (`@vimeo/player`, or `hls.js` on browsers with
 
 **Prefs**
 
-- `readVideoPrefs(storageKey?)` and `writeVideoPrefs(patch, storageKey?)` use `VIDEO_PREFS_KEY = 'ember:video:v1'`.
-- They hold `{ volume, muted, rate, captions, descriptions, captionStyle }`:
-  - `captions` is a language, `'off'`, or `null` when never chosen.
+- `readVideoPrefs(storageKey?)` and `writeVideoPrefs(patch, storageKey?)` use `VIDEO_PREFS_KEY = 'ember:video:v1'`. Only the main player persists; demos don't call them (UX/UI).
+- They hold `{ volume, muted, rate, captions, descriptions, pauseWhileReading, captionStyle }`:
+  - `captions` is a language, `'off'`, or `null` when never chosen. With `null`, the UI shows captions on with the first track. **C** turns captions back on with the first track when the stored value is `'off'`.
   - `descriptions` is `'off'`, `'text'` or `'voice'`.
-  - `captionStyle` is an object or `null`, stored as given until the handoff defines its fields.
+  - `pauseWhileReading` is a boolean, default false. It's the sub-toggle under "Read descriptions aloud" and only counts when `descriptions` is `'voice'`. It feeds `createDescriptions({ pauseWhileSpeaking })`.
+  - `captionStyle` is `{ size: 's'|'m'|'l'|'xl', color: 'white'|'yellow'|'cyan'|'black', background: 'none'|'half'|'solid', font: 'sans'|'serif'|'mono' }`, with defaults m, white, solid and sans (`DEFAULT_CAPTION_STYLE`). Each field falls back to its default on its own (`cleanCaptionStyle`), and a `writeVideoPrefs({ captionStyle: { color } })` patch changes only the fields it names.
 - A bad field is dropped and the rest are kept. A storage error falls back to the defaults silently.
+- `toVtt` escapes `&`, `<` and `>`, so the .vtt download always parses back to the same text (BED).
 
 **Media asset**
 
