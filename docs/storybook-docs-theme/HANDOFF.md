@@ -16,13 +16,18 @@ Out of scope: the manager UI (that is #52, SB-MANAGER-AA / STORYBOOK-BRAND), com
 changed `scripts/` only. `.storybook/preview.tsx` and `.storybook/preview-head.html` are byte-identical in
 `1a57bd1`, `80f782d` and #45 (`79f89b7`), so the diff against #45 and against main is the same diff.
 
+**Re-sync (FU-SB-DOCS-NITS, 2026-11-11).** Main's `.storybook/preview.tsx` gained `import './fonts/fonts.css';` (ebfc8c3,
+vendored kinetic fonts) after this spec branched, so `mock/preview.tsx` is re-synced to main **bc84d67** (`.storybook/` is unchanged through b055b5d) and both `diffs/`
+are regenerated against it. `git apply` of the two diffs on bc84d67 gives files byte-identical to `mock/`, so either
+route in the builder steps gives the same result.
+
 ## Files in this folder
 
 | File | What it is |
 |---|---|
 | `mock/preview.tsx` | Full target `.storybook/preview.tsx` (main + docs container) |
 | `mock/preview-head.html` | Full target `.storybook/preview-head.html` (main with literals replaced by tokens + new rules) |
-| `diffs/preview.tsx.diff`, `diffs/preview-head.html.diff` | Unified diffs main 80f782d → mock, paths rewritten to `.storybook/` so `git apply` works |
+| `diffs/preview.tsx.diff`, `diffs/preview-head.html.diff` | Unified diffs main bc84d67 → mock, paths rewritten to `.storybook/` so `git apply` works |
 | `theme-map.json` | Theme field → token map per mode, plus the CSS notes |
 | `contrast.mjs` | Token-level contrast gate (46 pairs) + map check + rendered vs-main comparison |
 | `docs-check.cjs` | Rendered gate on a built Storybook (checks A–G below) |
@@ -130,19 +135,21 @@ Pages: introduction, tokens, components-button docs, components-table docs; widt
 | G | Reduced motion: 0 running animations |
 | H | Heading anchors at 320 and 1280: the 24px circle centred on each anchor (centre + 16 points at 12px) overlaps no other target |
 | I | Every Canvas bar: the story starts at or below the bar's bottom edge (no hidden content) |
+| J | Heading anchors on-canvas, every width: the icon starts at x ≥ 0, ends at or before the heading text, and the heading text starts at the content's left edge (FU-SB-DOCS-NITS c) |
 
 | Build | Pass | Fail |
 |---|---|---|
-| This design | **4133** | **0** |
-| This design, `--no-has` (fallback, below) | **268** | **0** |
+| This design | **4353** | **0** |
+| This design, `--no-has` (fallback, below) | **488** | **0** |
+| This design without the anchor-gutter rule (negative for J, `results/docs-check-nits-negative.txt`) | 4177 | 176 (all J, at 320, 375, 599 and 600: icon x -12..2) |
 | main 80f782d (negative control) | 3891 | 144 (A 37, B 12, D 2, E 30 — e.g. zoom 44×44 with probe hits `100111111`, clipped by the 40px bar) |
 
-The main run is the negative control: the gate catches every defect this card fixes.
+The main run is the negative control: the gate catches every defect this card fixes. (The main 80f782d row predates check J.)
 
 ## axe
 
-- `axe-docs.cjs`: 72 runs (12 docs pages × 375/1280 × light/dark/auto-OS-dark), **0 failing**, 156 minor/moderate (same count as main).
-- Repo `scripts/a11y.mjs` on the new build: 160 runs, **0 failing**, exit 0 (`results/a11y-full-new.txt`).
+- `axe-docs.cjs`: 78 runs (13 docs pages on main bc84d67 × 375/1280 × light/dark/auto-OS-dark), **0 failing**, 168 minor/moderate (`results/axe-docs-new.txt`).
+- Repo `scripts/a11y.mjs` on the new build: 362 runs plus 8 manager runs, **0 failing**, exit 0 (`results/a11y-full-new.txt`).
 
 ## Fallback without `:has()` (SPIKE-DOCS-2, CA ruling)
 
@@ -156,7 +163,7 @@ doesn't use `:has()`), with the far corner clipped by the 12px radius. The Canva
 story offset don't use `:has()`, so they hold. Floor, gated by `docs-check.cjs --no-has` (strips every rule whose
 selector contains `:has(` from the served preview head): every docs button at least 24x24 (they are 44 tall),
 `elementFromPoint` hits at the centre and 4 edge midpoints, no Canvas bar covering its story, the anchor circles clear,
-and no sideways scroll. Result: 268 pass, 0 fail (`results/docs-check-new-no-has.txt`). Colour checks A-C, D and G are
+the anchors on-canvas (J), and no sideways scroll. Result: 488 pass, 0 fail (`results/docs-check-new-no-has.txt`). Colour checks A-C, D and G are
 skipped in that mode; the action buttons there use Storybook's own colours, as on main.
 
 ## Version pin (Storybook 8.6.19)
@@ -169,6 +176,7 @@ These selectors depend on Storybook 8.6.19's docs DOM. On any Storybook upgrade,
 - **`.docblock-argstable td div > span[class]:not([title])`** (ArgTypes type chips: chips carry an emotion class, descriptions are a plain `<span>`; SPIKE-DOCS-1, now covered here)
 - `.sbdocs-content table tr:nth-of-type(2n)` (zebra); `.docblock-source [data-radix-scroll-area-viewport]` (focus)
 - `.sbdocs-content :is(h1, h2, h3, h4) a[aria-hidden="true"]` (heading anchors, check H)
+- `.sbdocs-content :is(h1, h2, h3, h4) > a[aria-hidden="true"]` and its `> svg` (anchor gutter fit at 640px and below, check J; depends on Storybook floating the anchor with margin-left -24px and a 14px svg)
 
 ## Known issues and rulings
 
@@ -179,6 +187,14 @@ These selectors depend on Storybook 8.6.19's docs DOM. On any Storybook upgrade,
   are `aria-hidden="true"` and `tabindex="-1"`, about 24x18 to 26. Their size passes under the 2.5.8 spacing exception
   (check H: the 24px circle overlaps no other target at 320 and 1280). Headings and content stay fully keyboard-reachable.
   Follow-up **FU-SB-DOCS-ANCHOR-KBD**: make the anchor focusable with a name like "Link to <heading>" and drop `aria-hidden`.
+  **Gutter fit (FU-SB-DOCS-NITS c, VQA's nit):** at 640px and below the docs gutter is 12px, but Storybook floats the anchor at
+  margin-left -24px (14px icon + 10px padding-right), so it sat at x -12..12 with its icon at x -12..2, mostly off-canvas. In
+  `mock/preview-head.html`, inside `@media (max-width: 640px)`: the anchor gets margin-left -12px and padding-right 2px, and its
+  svg is 10x10. It now spans x 0..12, fully in the gutter, and the heading text stays at x 12, aligned with the body. Why shrink
+  the icon instead of indenting the heading: a 14px icon can't fit a 12px gutter, and pushing every heading right would break
+  the left edge the body text shares. It's still `aria-hidden`, `tabindex="-1"` and shown on hover only, so it stays mouse-only
+  until FU-SB-DOCS-ANCHOR-KBD (which should start from these gutter values). Above 640px nothing changes (x 116..140 at 1280).
+  Check H still passes, and check J gates the fit at every width. Shots: `handoff/docs-320-{light,dark}-anchor-hover.png`.
 - Base 80f782d instead of 1a57bd1 (accepted by Creatives; the `.storybook` files are identical).
 
 ## Motion
@@ -191,6 +207,8 @@ animations under `prefers-reduced-motion: reduce`. Nothing to fall back.
 `docs-<width>-<light|dark>-<intro|canvas>.png` for 320/375/599/600/1280. Each has numbered badges and a legend
 underneath (`docs-legends.json` has the same notes as data). `intro` = h1, focused link, inline code, code block, Copy.
 `canvas` = Canvas border, 48px toolbar, zoom 44×44, Show code, ArgTypes. `main-375-*` are the baseline for comparison.
+`docs-320-{light,dark}-anchor-hover.png` (FU-SB-DOCS-NITS c, 2x, heading hovered): before and after the anchor gutter fit,
+with the 12px gutter edge dashed. The anchors only show on hover, so the other shots are unchanged.
 
 ## Builder steps (BED)
 
@@ -199,8 +217,10 @@ underneath (`docs-legends.json` has the same notes as data). `intro` = h1, focus
 2. `npm run build-storybook`, serve `storybook-static`.
 3. Gates, all must pass:
    - `node docs/storybook-docs-theme/contrast.mjs`
-   - `TOKENS=src/tokens.json node docs/storybook-docs-theme/docs-check.cjs http://127.0.0.1:<port>` → 0 fail
-   - `TOKENS=src/tokens.json node docs/storybook-docs-theme/docs-check.cjs http://127.0.0.1:<port> --no-has` → 0 fail
+   - `node docs/storybook-docs-theme/docs-check.cjs http://127.0.0.1:<port>` → 0 fail
+   - `node docs/storybook-docs-theme/docs-check.cjs http://127.0.0.1:<port> --no-has` → 0 fail
+   - Tokens default to the repo's `src/tokens.json`. To point at another file, set `TOKENS=<path>`, resolved from the
+     current directory (for example `TOKENS=./src/tokens.json` from the repo root).
    - `node docs/storybook-docs-theme/axe-docs.cjs http://127.0.0.1:<port>` → 0 failing
    - `node scripts/a11y.mjs http://127.0.0.1:<port>` → exit 0
 4. Compare against `handoff/` shots (`node docs/storybook-docs-theme/shoot.cjs <base> docs && python3 docs/storybook-docs-theme/compose.py`).
@@ -213,4 +233,9 @@ None open. SPIKE-DOCS-1 is covered by the version pin, and SPIKE-DOCS-2 by the `
 
 ## Reproduce
 
-Scratch: `git archive` main into a temp dir, copy `mock/*` to `.storybook/`, build, serve, run the gates above.
+Scratch: `git archive` main (bc84d67 or later) into a temp dir, then either `git apply` the two `diffs/` or copy
+`mock/preview.tsx` and `mock/preview-head.html` to `.storybook/` (they give byte-identical files). Build, serve, and
+run the gates above from the repo root (no `TOKENS` needed).
+
+Negative for check J: serve a copy of the build whose `iframe.html` has the `FU-SB-DOCS-NITS (c)` comment and the
+`@media (max-width: 640px)` block after it removed. docs-check then fails 176, all J, at 320, 375, 599 and 600.
