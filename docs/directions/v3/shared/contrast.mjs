@@ -1,9 +1,10 @@
 // v3 contrast gate, R-2 logic (docs/themes/r2/contrast.mjs) on a direction's tokens.json.
 // Usage: node shared/contrast.mjs <direction-dir>. Writes <dir>/CONTRAST.md (plus <dir>/contrast-notes.md, if present, appended as-is, and a generated Scrim section); exits 1 on any fail.
-import fs from 'node:fs'; import path from 'node:path';
+import fs from 'node:fs'; import path from 'node:path'; import {dialogEdge} from './dialogedge.mjs';
 const dir=path.resolve(process.argv[2]||'.');
 // A direction with its own <dir>/contrast.mjs (neo) owns its CONTRAST.md, including its Scrim section; delegate so the shared format never overwrites it.
 if(fs.existsSync(path.join(dir,'contrast.mjs'))){const {spawnSync}=await import('node:child_process');const r=spawnSync(process.execPath,['contrast.mjs'],{cwd:dir,stdio:'inherit'});process.exit(r.status??1);}
+const EDGE=dialogEdge(dir); // the drawn dialog edge: --dialog-border, or the surface if the dialog has border 0 (CA ruling on #49, BED #48 rule)
 const J=JSON.parse(fs.readFileSync(path.join(dir,'tokens.json')));
 const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(x=>x<=.03928?x/12.92:((x+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2]};
 const cr=(a,b)=>{const [x,y]=[lum(a),lum(b)].sort((p,q)=>q-p);return (x+.05)/(y+.05)};
@@ -27,7 +28,8 @@ else if(Object.values(J.semantic).some(t=>/^#[0-9a-f]{8}$/i.test(t['--scrim']||'
  const sr=[];let sf=0;
  for(const [combo,t] of Object.entries(J.semantic)){const sc=t['--scrim'];if(!/^#[0-9a-f]{8}$/i.test(sc||'')){sf++;sr.push([combo,'--scrim missing or not 8-digit','','','','FAIL']);continue}
   const comp=over(sc,t['--color-bg']);
-  const b=cr(t['--dialog-border'],comp);sr.push([combo,'--dialog-border on scrim over color-bg (1.4.11)',t['--dialog-border'],comp,'3:1',b]);if(b<3)sf++;
+  if(!/^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(t[EDGE]||'')){sf++;sr.push([combo,EDGE+' does not resolve to a color (lint)','','','','FAIL']);continue} // VQA nit: lint failure is a FAIL row, never a crash
+  const b=cr(t[EDGE],comp);sr.push([combo,EDGE+' on scrim over color-bg (1.4.11)',t[EDGE],comp,'3:1',b]);if(b<3)sf++;
   const m=cr(over(sc,t['--text-muted']),comp);sr.push([combo,'text-muted under scrim (both composited)',over(sc,t['--text-muted']),comp,'3:1',m]);if(m<3)sf++;
   if(combo.endsWith('-dark')){const ok=lum(comp)<=lum(t['--color-bg'])+1e-9;sr.push([combo,'dark scrim must not lighten color-bg',t['--color-bg'],comp,'dims',ok?'dims':'LIGHTENS']);if(!ok)sf++}}
  fail+=sf;if(sf)console.log('FAIL scrim gate',sf);

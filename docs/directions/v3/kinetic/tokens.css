@@ -98,7 +98,7 @@
   --info: var(--palette-cobalt-700);
   --highlight: var(--palette-cobalt-700);
   --highlight-contrast: var(--palette-warm-50);
-  --dialog-border: var(--border);
+  --dialog-border: var(--text);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { [data-theme="kinetic"]:not([data-mode]) {
@@ -123,7 +123,7 @@
   --info: var(--palette-cobalt-300);
   --highlight: var(--palette-cobalt-600);
   --highlight-contrast: var(--palette-warm-50);
-  --dialog-border: var(--border);
+  --dialog-border: var(--text);
   color-scheme: dark;
 } }
 [data-theme="kinetic"][data-mode="dark"] {
@@ -148,7 +148,7 @@
   --info: var(--palette-cobalt-300);
   --highlight: var(--palette-cobalt-600);
   --highlight-contrast: var(--palette-warm-50);
-  --dialog-border: var(--border);
+  --dialog-border: var(--text);
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="kinetic"] {

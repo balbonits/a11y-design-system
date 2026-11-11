@@ -38,7 +38,7 @@ Component tokens that alias a semantic color. The token layer gives each a defau
 
 | Token | Default | Light | Dark |
 |---|---|---|---|
-| `--dialog-border` | `var(--border)` | `var(--border)` <span style="display:inline-block;width:1em;height:1em;background:#1434B8;border:1px solid #777;vertical-align:middle"></span> `#1434B8` | `var(--border)` <span style="display:inline-block;width:1em;height:1em;background:#9AB0FF;border:1px solid #777;vertical-align:middle"></span> `#9AB0FF` |
+| `--dialog-border` | `var(--border)` | `var(--text)` <span style="display:inline-block;width:1em;height:1em;background:#0A1B5C;border:1px solid #777;vertical-align:middle"></span> `#0A1B5C` | `var(--text)` <span style="display:inline-block;width:1em;height:1em;background:#FBF8F1;border:1px solid #777;vertical-align:middle"></span> `#FBF8F1` |
 
 ## Primitives
 | Token | Value |
