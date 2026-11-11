@@ -15,7 +15,7 @@ D={'color-bg':'ink','surface':'ink-2','surface-muted':'ink-3','text':'cream','te
  'success':'green-300','warning':'amber-300','danger':'red-300','danger-hover':'red-200','danger-contrast':'ink','info':'sky-300',
  'highlight':'blue-600','highlight-contrast':'paper','scrim':'scrim-dark'}
 SHAPE={'--font-display':"'Archivo Black', 'Arial Black', sans-serif",'--font-body':"'Archivo', system-ui, sans-serif",'--font-mono':"'JetBrains Mono', ui-monospace, monospace",
- '--weight-display':'400','--radius-sm':'10px','--radius-md':'12px','--radius-lg':'18px','--radius-full':'999px','--border-width':'2px','--border-width-strong':'2.5px',
+ '--weight-display':'400','--radius-sm':'10px','--radius-md':'12px','--radius-lg':'18px','--radius-full':'999px','--border-width':'2px','--border-width-strong':'3px',
  '--shadow-raised':'4px 4px 0 var(--border)','--shadow-press':'1px 1px 0 var(--border)','--divider-shape':'none','--focus-ring-width':'3px','--focus-ring-offset':'3px','--focus-ring-style':'solid','--control-height':'44px','--control-padding-x':'1.15rem','--control-gap':'.5rem','--target-min':'44px',
  '--duration-fast':'120ms','--duration-base':'220ms','--duration-slow':'420ms','--duration-reveal':'520ms',
  '--ease-standard':'cubic-bezier(.2,.8,.2,1)','--ease-press':'cubic-bezier(.34,1.56,.64,1)','--duration-ticker':'28s','--parallax-scale':'0.08','--lift':'-3px','--tilt':'-1.5deg'}

@@ -88,7 +88,7 @@ The full table for light and dark, with primitives and hex, is in [TOKENS.md](TO
 | `--radius-lg` | 18px (panels, cards, dialogs, lanes) |
 | `--radius-full` | 999px (pills, tabs, nav, stickers) |
 | `--border-width` | 2px |
-| `--border-width-strong` | 2.5px (header rule, error fields) |
+| `--border-width-strong` | 3px (header rule, error fields, Tabs indicator through `--tabs-indicator-width`, Toast stripe). Was 2.5px, which Chrome draws as 2px, the same as `--border-width`, so the selected tab indicator and error border looked no thicker than the baseline (VQA; Creatives ruled 3px) |
 | `--shadow-raised` | `4px 4px 0 var(--border)` |
 | `--shadow-press` | `1px 1px 0 var(--border)` |
 | `--divider-shape` | `none` |
