@@ -39,7 +39,6 @@
   --radius-md: 12px;
   --radius-lg: 18px;
   --radius-full: 999px;
-  --radius: var(--radius-md);
   --border-width: 2px;
   --border-width-strong: 2.5px;
   --shadow-raised: 4px 4px 0 var(--border);
@@ -47,6 +46,11 @@
   --divider-shape: none;
   --focus-ring-width: 3px;
   --focus-ring-offset: 3px;
+  --focus-ring-style: solid;
+  --control-height: 44px;
+  --control-padding-x: 1.15rem;
+  --control-gap: .5rem;
+  --target-min: 44px;
   --duration-fast: 120ms;
   --duration-base: 220ms;
   --duration-slow: 420ms;
@@ -71,7 +75,6 @@
   --accent-soft: var(--palette-blue-100);
   --accent-contrast: var(--palette-paper);
   --focus-ring-color: var(--palette-pink-600);
-  --focus: var(--palette-pink-600);
   --success: var(--palette-green-700);
   --warning: var(--palette-amber-800);
   --danger: var(--palette-red-700);
@@ -95,7 +98,6 @@
   --accent-soft: var(--palette-lime-900);
   --accent-contrast: var(--palette-ink);
   --focus-ring-color: var(--palette-pink-600);
-  --focus: var(--palette-pink-600);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-red-300);
@@ -119,7 +121,6 @@
   --accent-soft: var(--palette-lime-900);
   --accent-contrast: var(--palette-ink);
   --focus-ring-color: var(--palette-pink-600);
-  --focus: var(--palette-pink-600);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-red-300);
