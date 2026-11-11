@@ -22,6 +22,7 @@
     "test:target-size": "node scripts/target-size.mjs",
     "test:press": "node scripts/press-offset.mjs",
     "test:hover": "node scripts/hover.mjs",
+    "test:vp": "node scripts/vp-gates.mjs",
     "build:lib": "npm run tokens && vite build -c vite.lib.config.ts && tsc -p tsconfig.lib.json",
     "prepare": "npm run build:lib",
     "contrast": "node scripts/contrast.mjs",
