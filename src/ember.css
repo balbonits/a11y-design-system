@@ -41,7 +41,6 @@
 .em-btn--sm { min-height: 36px; padding: 0 var(--space-3); font-size: var(--text-xs); }
 /* B-1: a control may look smaller than --target-min, but its hit area never is. */
 .em-btn::before { content: ''; position: absolute; inset: min(0px, calc((100% - var(--target-min)) / 2)); }
-.em-btn--sm::before { inset: calc((36px - var(--target-min)) / 2); }
 .em-btn--lg { min-height: 48px; padding: 0 var(--space-6); font-size: var(--text-base); }
 .em-btn--icon { padding: 0; width: var(--button-height); }
 .em-btn--sm.em-btn--icon { width: 36px; }
@@ -118,16 +117,29 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-modal-foot { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-4) var(--space-5); border-top: var(--card-border-width) solid var(--border-subtle); }
 
 /* ---------- Tabs ---------- */
-.em-tablist { display: flex; gap: var(--space-1); border-bottom: var(--border-width) solid var(--border); overflow-x: auto; }
+/* HIT-PATCH: the baseline is a background line, not a border, so tabs need no negative margin. The tablist scrolls
+   (overflow-x), which clipped the 2px a tab pushed over a real border: its hit area was 42px. Same look. */
+.em-tablist { display: flex; gap: var(--space-1); background: linear-gradient(var(--border), var(--border)) left bottom / 100% var(--border-width) no-repeat; overflow-x: auto; }
 .em-tab {
   min-height: var(--target-min); padding: 0 var(--space-4); font: inherit; font-size: var(--text-sm); font-weight: var(--weight-medium);
-  color: var(--text-muted); background: transparent; border: 0; border-bottom: var(--tabs-indicator-width) solid transparent; margin-bottom: calc(-1 * var(--border-width));
+  color: var(--text-muted); background: transparent; border: 0; border-bottom: var(--tabs-indicator-width) solid transparent;
   cursor: pointer; white-space: nowrap;
 }
 .em-tab { border-radius: var(--radius-sm) var(--radius-sm) 0 0; }
 .em-tab:hover:not(:disabled) { color: var(--text); background: var(--tabs-track); }
 .em-tab[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
 .em-tab:disabled { cursor: not-allowed; opacity: 0.55; }
+/* VQA (Creatives): the tablist scrolls (overflow-x), which also clips y, so an outer ring showed one edge. Inset ring,
+   no layout change; applies in forced colors too. */
+.em-tab:focus-visible { outline-offset: calc(-1 * var(--focus-ring-width)); }
+/* Forced colors (CA, HIT-PATCH): background images are dropped and every transparent border paints CanvasText, so the
+   baseline vanished and every tab showed the same underline. Draw the baseline as a border (no clip: it sits outside the
+   tablist's content box), hide unselected indicators with Canvas, and give the selected tab a Highlight indicator. */
+@media (forced-colors: active) {
+  .em-tablist { background: none; border-bottom: var(--border-width) solid CanvasText; }
+  .em-tab { border-bottom-color: Canvas; }
+  .em-tab[aria-selected="true"] { border-bottom-color: Highlight; }
+}
 .em-tabpanel { padding: var(--space-4) 0; }
 
 /* ---------- Table ---------- */
