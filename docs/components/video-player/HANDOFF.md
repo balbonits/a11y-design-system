@@ -1,17 +1,39 @@
-# R-4 VideoPlayer HANDOFF (neo identity)
+# R-4 VideoPlayer HANDOFF (neo, kinetic and dusk)
 
 Status: **draft for Chief Architect sign-off.** Coders build from this file plus the prototype; nothing here is final until CA signs.
 
 - Prototype: [`index.html`](index.html) (open through a server that supports HTTP Range requests, e.g. `npx serve` or GitHub Pages; Python's `http.server` can't seek video).
-- Annotated shots: [`handoff/`](handoff/), made by [`annotate.cjs`](annotate.cjs) (neo pattern).
+- Annotated shots: [`handoff/`](handoff/), made by [`annotate.cjs`](annotate.cjs) (neo pattern), named `vp-<theme>-<width>-<light|dark>[-annotated[-top]].png` for all three themes.
 - Core it is designed against: FSD's [PR #33](https://github.com/balbonits/a11y-design-system/pull/33), `feat/r4-video` at `8f4eb06` (`src/video/player.ts`, `src/video/vtt.ts`, adapters), and its current head `acd2f93` with `docs/components/video-player/CORE-API.md` sections 5a (tracks, descriptions, voicing) and 5b (`waiting`/`resumed`, `bufferedchange`, `getBuffered()` → `{ fraction, ranges }`, `canReportBuffering`, `canReportBufferedRanges`, `providerCaptions`, `VideoAdapterUnavailable`, `descriptions.setTrack`, `readVideoPrefs`/`writeVideoPrefs`). Read with `gh`/`git show` only.
 - Copy: `R4-PLAYER-COPY.md` from UI Copywriter (final, approved by Chief of Creatives). Every string in the prototype comes from it except the ones still marked `[COPY-TBD]` (see Copy).
-- Identity: neo tokens only (`docs/directions/v3/neo/tokens.css`), locked Addendum 5 and 7 names, no aliases, no new tokens. `--scrim` from `e48047a`. `--target-min` is 44px.
+- Identity: one component, three themes. It uses only the locked Addendum 5 and 7 semantic names, which neo, kinetic and dusk each define (`docs/directions/v3/<theme>/tokens.css`), with no aliases and no new tokens. The prototype loads all three and picks one with `?theme=neo|kinetic|dusk` or the Theme buttons at the top (saved as `ember:vp-theme`, a prototype-only key); neo is the default. See H-0. `--scrim` from `e48047a`. `--target-min` is 44px.
 - Media for the demo: `tools/transcribe/samples/sintel/` (52s excerpt, 1126×480, captions.vtt, ad.vtt, transcript.txt) and `media/captions-fr.vtt` (the official French Sintel subtitles from `reference/sintel_fr.srt`, re-timed to the excerpt, so the Caption language picker has two real tracks). Sintel © Blender Foundation, CC BY 3.0.
 
-Checks at this commit (from `annotate.cjs`): 320 / 375 / 768 / 1024 / 1440 × light / dark: horizontal overflow 0, axe serious+critical 0, WCAG 1.4.12 text spacing overflow 0 and clipped 0, 200% zoom (640 css px) overflow 0, targets under 44px: none, page errors: none. Keyboard smoke test passes: End, Home, arrows, J/L, `<`/`>` speed steps, Shift+M ignored, M (aria-pressed and "Muted" valuetext), D, C, T (focus to the transcript), Esc returns focus, caption language switch (French cue renders with `lang=fr`), Caption settings dialog (focus to the checked size, live preview, Reset announces "Caption settings reset.", Esc closes and focus returns to More), prefs written as one `ember:video:v1` object, a corrupt stored value falls back silently, transcript search count, Enter / Shift+Enter, no-results text, Clear search.
+Checks at this commit (from `annotate.cjs`): neo / kinetic / dusk × 320 / 375 / 768 / 1024 / 1440 × light / dark (30 runs): horizontal overflow 0, axe serious+critical 0, WCAG 1.4.12 text spacing overflow 0 and clipped 0, 200% zoom (640 css px) overflow 0 in each theme, targets under 44px: none, page errors: none. Keyboard smoke test passes: End, Home, arrows, J/L, `<`/`>` speed steps, Shift+M ignored, M (aria-pressed and "Muted" valuetext), D, C, T (focus to the transcript), Esc returns focus, caption language switch (French cue renders with `lang=fr`), Caption settings dialog (focus to the checked size, live preview, Reset announces "Caption settings reset.", Esc closes and focus returns to More), prefs written as one `ember:video:v1` object, a corrupt stored value falls back silently, transcript search count, Enter / Shift+Enter, no-results text, Clear search.
 
 ---
+
+## H-0 Themes
+
+The layout, states, keyboard, copy and targets in H-1 to H-7 are the same in every theme. Only token values change, plus each theme's own press and hover behavior. Nothing in the component names a theme except the press and hover rules in the last row.
+
+| | neo | kinetic | dusk |
+|---|---|---|---|
+| Fonts (`--font-display` / `-body` / `-mono`) | Archivo Black / Archivo / JetBrains Mono | Bricolage Grotesque / Instrument Sans / IBM Plex Mono | Young Serif / Nunito Sans / Nunito Sans |
+| Player and panel corners (`--radius-lg`) | 18px | 0px (square) | 24px |
+| Pills: big Play, status, chips (`--radius-full`) | 999px | 2px, so the big Play is a near-square block | 999px |
+| Buttons and fields (`--radius-md`) | 12px | 2px | 999px (pill buttons and search field) |
+| Elevation (`--shadow-raised` / `-press`) | 4px hard offset / 1px | none / none | soft 0 2px 6px / none |
+| Borders (`--border-width` / `-strong`) | 2px / 2.5px (3px after [PR #41](https://github.com/balbonits/a11y-design-system/pull/41)) | 2px / 3px | 1.5px / 2.5px (1px / 2px after the dusk integer PR) |
+| Error and ended dim (`--scrim`, light / dark) | `#11111173` / `#1111118c` | `#06123F66` / `#00000080` | `#1B0B1F80` / `#1B0B1F80` |
+| Motion (`--duration-fast` / `-base`, `--ease-press`) | 120 / 220ms, overshoot | 140 / 260ms, no overshoot | 200 / 420ms, slow ease |
+| `--tilt` / `--lift` on hover | -1.5deg / -3px | 0 / 0 | 0 / -2px |
+| Press and hover (copied from each direction's own `.btn` rules in `docs/directions/v3/<theme>/index.html`) | Hover lifts 1px up-left with tilt; press moves 3px into `--shadow-press` | Hover inverts to `--text` on `--color-bg`, no movement; press moves 1px down, no shadow | Hover rises by `--lift` with `--shadow-overlay`; press settles flat with no shadow |
+
+- The caption colors and bands (H-8) don't change by theme. Captions sit over video, not over a theme surface.
+- Contrast: every themed pair the player uses (text, text-muted, accent and accent-contrast, borders at 3:1 for 1.4.11, focus ring, scrim under text-muted) is a pair that theme's `CONTRAST.md` already checks. The 30 axe runs above found 0 contrast issues in any theme or mode.
+- Reduced motion: each theme's `prefers-reduced-motion` block sets its durations, `--tilt` and `--lift` to 0, and the player's own reduced-motion rule removes the press and hover transforms in every theme (H-7).
+- For the builder: press and hover belong to the theme, not to the player. If Ember's Button already carries each theme's rules, the player's buttons reuse them; if not, that's a gap to raise with Chief Architect, not something to hard-code in the player.
 
 ## H-1 Layout, mobile-first
 
@@ -186,7 +208,7 @@ Auto-hide never hides while any element has `:focus-visible`, while a panel is o
 
 ## H-8 Tokens
 
-Only these neo tokens are used (no new tokens, no aliases):
+Only these semantic tokens are used, in every theme (no new tokens, no aliases). The values below are neo's; H-0 lists kinetic's and dusk's:
 
 | Use | Token |
 |---|---|
@@ -218,9 +240,9 @@ Contrast on Solid: white, yellow and cyan on black are 21:1, 19.6:1 and 15.6:1; 
 
 ## H-9 Annotated screenshots
 
-In [`handoff/`](handoff/): `vp-<width>-<mode>.png` (full page), `-annotated.png` (full page) and `-annotated-top.png` (first screen) for widths 320, 375, 768, 1024, 1440 and modes light, dark. Labels: green dashed = landmarks and the player section, purple = headings, pink = focusable targets numbered in tab order with size, red = under 44px (none). Full screen can't be captured headless; its rules are in H-4 and H-7.
+In [`handoff/`](handoff/): `vp-<theme>-<width>-<mode>.png` (full page), `-annotated.png` (full page) and `-annotated-top.png` (first screen) for themes neo, kinetic, dusk, widths 320, 375, 768, 1024, 1440 and modes light, dark (90 shots). Labels: green dashed = landmarks and the player section, purple = headings, pink = focusable targets numbered in tab order with size, red = under 44px (none). Full screen can't be captured headless; its rules are in H-4 and H-7.
 
-Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_modules with playwright-core and @axe-core/playwright> node docs/components/video-player/annotate.cjs http://127.0.0.1:PORT/docs/components/video-player/index.html` from `docs/components/video-player/`.
+Regenerate: serve the repo root with Range support, then `NODE_PATH=<node_modules with playwright-core and @axe-core/playwright> node annotate.cjs http://127.0.0.1:PORT/docs/components/video-player/index.html` from `docs/components/video-player/` (it writes relative `handoff/` paths and adds `?theme=` itself).
 
 ---
 

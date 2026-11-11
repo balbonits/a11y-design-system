@@ -2,12 +2,15 @@
 <html lang="en" data-theme="neo">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ember VideoPlayer (R-4): neo prototype</title>
-<script>try{var m=localStorage.getItem('jdilig:mode');if(m)document.documentElement.dataset.mode=m}catch(e){}</script>
+<title>Ember VideoPlayer (R-4): neo, kinetic and dusk prototype</title>
+<script>try{var m=localStorage.getItem('jdilig:mode');if(m)document.documentElement.dataset.mode=m}catch(e){}
+(function(){var T=['neo','kinetic','dusk'],q=new URLSearchParams(location.search).get('theme'),t=null;try{t=localStorage.getItem('ember:vp-theme')}catch(e){}t=T.indexOf(q)>-1?q:(T.indexOf(t)>-1?t:'neo');document.documentElement.dataset.theme=t})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@400;500;700&family=JetBrains+Mono:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,300..800&family=Instrument+Sans:wght@400..700&family=IBM+Plex+Mono:wght@400;600&family=Young+Serif&family=Nunito+Sans:opsz,wght@6..12,400..800&display=swap" rel="stylesheet">
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="../../directions/v3/neo/tokens.css">
+<link rel="stylesheet" href="../../directions/v3/kinetic/tokens.css">
+<link rel="stylesheet" href="../../directions/v3/dusk/tokens.css">
 <style>
 *{box-sizing:border-box}
 html{background:var(--color-bg);color:var(--text);font:400 1rem/1.55 var(--font-body)}
@@ -142,6 +145,16 @@ th{font-family:var(--font-mono);font-size:.8rem;text-transform:uppercase;backgro
 kbd{font:700 .85rem var(--font-mono);border:var(--border-width) solid var(--border);border-radius:6px;padding:0 .35rem;background:var(--surface-muted)}
 footer{border-top:var(--border-width) solid var(--border);padding:1.2rem 0 2rem;margin-top:1rem}
 footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 .25rem}
+/* ===== per-theme interaction (from each direction's own index.html .btn rules) ===== */
+[data-theme=kinetic] .btn:hover,[data-theme=kinetic] .ib:hover{background:var(--text);color:var(--color-bg);transform:none}
+[data-theme=kinetic] .btn.primary:hover,[data-theme=kinetic] .bigplay:hover{background:var(--text);color:var(--color-bg);transform:none}
+[data-theme=kinetic] .btn:active,[data-theme=kinetic] .bigplay:active,[data-theme=kinetic] .ib:active{transform:translateY(1px);box-shadow:none}
+[data-theme=dusk] .btn:hover,[data-theme=dusk] .bigplay:hover{transform:translateY(var(--lift));box-shadow:var(--shadow-overlay)}
+[data-theme=dusk] .btn:hover{background:var(--surface-muted)}
+[data-theme=dusk] .btn:active,[data-theme=dusk] .bigplay:active,[data-theme=dusk] .ib:active{transform:none;box-shadow:none}
+[data-theme=dusk] .btn:active{background:var(--surface-muted)}
+.themes{display:flex;gap:.35rem;flex-wrap:wrap;align-items:center}
+.themes .btn[aria-pressed=true]{background:var(--accent);color:var(--accent-contrast)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition-duration:0s!important;scroll-behavior:auto!important}.bigplay:hover,.btn:hover,.btn:active,.ib:active{transform:none}}
 /* ===== R-4 follow-up: copy fill, captions per approved copy, dialog, tooltips, transcript tools ===== */
 /* Caption appearance follows R4-PLAYER-COPY (viewer overrides). Colors are component-local values,
@@ -228,12 +241,12 @@ footer a{display:inline-flex;align-items:center;min-height:44px;padding:0 .25rem
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
-<header class="top"><div class="wrap bar-top"><span class="logo"><span class="blob" aria-hidden="true"></span>Ember UI · VideoPlayer</span><button class="btn sm" type="button" id="mode" aria-pressed="false">Dark mode</button></div></header>
+<header class="top"><div class="wrap bar-top"><span class="logo"><span class="blob" aria-hidden="true"></span>Ember UI · VideoPlayer</span><div class="themes" role="group" aria-label="Theme"><button class="btn sm" type="button" data-theme-pick="neo" aria-pressed="false">Neo</button><button class="btn sm" type="button" data-theme-pick="kinetic" aria-pressed="false">Kinetic</button><button class="btn sm" type="button" data-theme-pick="dusk" aria-pressed="false">Dusk</button></div><button class="btn sm" type="button" id="mode" aria-pressed="false">Dark mode</button></div></header>
 <main id="main" tabindex="-1" class="wrap">
 <section aria-labelledby="h1">
- <p class="mono muted">R-4 · prototype · neo identity</p>
+ <p class="mono muted">R-4 · prototype · <span data-theme-name>neo</span> identity</p>
  <h1 id="h1">VideoPlayer</h1>
- <p class="lede">An accessible player for Ember: custom captions you can restyle, a transcript you can click to seek, an audio-description track, and keyboard control while focus is in the player. Built on neo tokens only.</p>
+ <p class="lede">An accessible player for Ember: custom captions you can restyle, a transcript you can click to seek, an audio-description track, and keyboard control while focus is in the player. Built on the <span data-theme-name>neo</span> tokens only; switch themes at the top.</p>
  <div class="vp-layout" id="live"></div>
 </section>
 <section aria-labelledby="hs">
@@ -533,6 +546,7 @@ Promise.all([fetch(SRC+'captions.vtt').then(r=>r.text()),fetch('media/captions-f
  pad();new ResizeObserver(pad).observe(G)});
 const R=document.documentElement,mb=$('#mode');
 function syncMode(){const dark=R.dataset.mode?R.dataset.mode==='dark':matchMedia('(prefers-color-scheme: dark)').matches;mb.setAttribute('aria-pressed',dark);mb.textContent=dark?'Light mode':'Dark mode'}
+document.querySelectorAll('[data-theme-pick]').forEach(b=>{const sync=()=>document.querySelectorAll('[data-theme-pick]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.themePick===R.dataset.theme));document.querySelectorAll('[data-theme-name]').forEach(n=>n.textContent=R.dataset.theme);b.onclick=()=>{R.dataset.theme=b.dataset.themePick;try{localStorage.setItem('ember:vp-theme',R.dataset.theme)}catch(e){}const u=new URL(location);u.searchParams.set('theme',R.dataset.theme);history.replaceState(null,'',u);sync()};sync()});
 mb.onclick=()=>{const dark=mb.getAttribute('aria-pressed')==='true';R.dataset.mode=dark?'light':'dark';try{localStorage.setItem('jdilig:mode',R.dataset.mode)}catch(e){}syncMode()};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',syncMode);syncMode();
 </script>
