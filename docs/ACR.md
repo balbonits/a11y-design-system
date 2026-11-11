@@ -4,7 +4,7 @@ Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-pa
 
 - **Product:** Ember UI, an accessible React design system starter (tokens, 8 components, Storybook docs). Storybook: https://jdilig.me/ux/design-system/storybook/ . Case study: https://jdilig.me/ux/design-system
 - **Version:** `main` at 757da0c (package `ember-ui` 0.2.2)
-- **Report version:** 1.3 (1.3 moves 2.4.11 Focus Not Obscured (Minimum) to Supports, citing test:focus-obscured; 1.2 is HIT-PATCH: Small buttons and Tabs now meet the 44 px bar, so the 2.5.8 exceptions are gone; 1.1 changed only the 2.5.8 and 302.7 remarks and added the target-size gate)
+- **Report version:** 1.3 (1.3 moves 2.4.11 Focus Not Obscured (Minimum) to Supports, citing test:focus-obscured, and adds the in-modal toast outlet to the 4.1.3 remark; 1.2 is HIT-PATCH: Small buttons and Tabs now meet the 44 px bar, so the 2.5.8 exceptions are gone; 1.1 changed only the 2.5.8 and 302.7 remarks and added the target-size gate)
 - **Report date:** 2026-11-10
 - **Contact:** https://github.com/balbonits/a11y-design-system/issues
 - **Standards:** Revised Section 508 (36 CFR 1194), which incorporates WCAG 2.0 A/AA (the 508 baseline). WCAG 2.1 and 2.2 A/AA criteria are extra rows, marked (2.1) or (2.2).
@@ -82,7 +82,7 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 3.3.8 Accessible Authentication (Minimum) (2.2) | AA | Not Applicable | No authentication. |
 | 4.1.1 Parsing | A | Supports | WCAG 2.2 removes this criterion; React renders valid DOM. |
 | 4.1.2 Name, Role, Value | A | Supports | Native controls, `aria-sort`, `aria-selected`, `aria-busy`, `aria-checked="mixed"` for indeterminate. Tested: axe, unit tests. Not yet verified with a screen reader. |
-| 4.1.3 Status Messages (2.1) | AA | Partially Supports | Toasts use `role="status"` (polite) and `role="alert"` for errors. Tested: unit tests. Partial until a screen-reader pass confirms the announcements. |
+| 4.1.3 Status Messages (2.1) | AA | Partially Supports | Toasts use `role="status"` (polite) and `role="alert"` for errors. In-modal toasts route to a polite status outlet inside the topmost modal (an alert outlet for errors), and each toast is announced once, where it was first shown. Tested: unit tests and `npm run test:toast-modal`. Partial until a screen-reader pass confirms the announcements. |
 
 ## Revised Section 508 Chapter 3: Functional Performance Criteria
 | Criteria | Conformance | Remarks |

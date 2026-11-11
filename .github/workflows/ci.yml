@@ -43,6 +43,10 @@ jobs:
         run: npm run test:target-size -- http://127.0.0.1:6007 --negative-control
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Toast inside a modal (FU-EMBER-TOAST-MODAL, 320/375/1280, every theme, light/dark, reduced motion)
+        run: npm run test:toast-modal -- http://127.0.0.1:6007
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
   transcribe:
     runs-on: ubuntu-latest
     steps:
