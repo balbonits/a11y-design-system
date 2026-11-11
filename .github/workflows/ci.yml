@@ -28,6 +28,18 @@ jobs:
       - run: npm run test:mobile
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - name: Target size gate calibration (synthetic boxes of known size)
+        run: npm run test:target-size -- --calibrate
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Target size gate (WCAG 2.5.8, effective hit area, every story at 320 and 1280px)
+        run: npm run test:target-size -- http://127.0.0.1:6007
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+      - name: Target size gate negative control (a shrunk button must fail)
+        run: npm run test:target-size -- http://127.0.0.1:6007 --negative-control
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
   transcribe:
     runs-on: ubuntu-latest
     steps:
