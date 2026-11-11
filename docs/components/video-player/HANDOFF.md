@@ -416,6 +416,7 @@ Track labels in the language picker ("English", "Français") come from the track
 7. ~~Caption colors aren't tokens.~~ Resolved (CA ARCH-REVIEW 9:35): `--caption-text`/`--caption-bg` from `--palette-caption-*`, unthemed (H-8).
 8. ~~Embed captions.~~ Resolved (CA): our VTT captions on every adapter; provider captions and the two fallback notes only for a source with no VTT of ours. AD placement under the frame (H-1 point 4) is approved by CA, with the assistive-tech condition on the AD row (H-3).
 9. Speech voicing uses the browser's speech engine (`speechSynthesis`); voices and timing vary by OS, so Read aloud is hidden where `canVoice()` is false.
+10. **Dusk light:** the dialog edge against the scrim is 1.22:1 (WCAG 1.4.11 needs 3:1), tracked as card DUSK-SCRIM-LIGHT (owner Chief of Creatives, CA a11y sign). Builders use the tokens as shipped and don't hand-patch. The fix lands as a dusk token change with a regenerated `docs/directions/v3/dusk/CONTRAST.md`, not in this PR. Dusk dark passes (5.80:1).
 
 ## Out of scope
 
