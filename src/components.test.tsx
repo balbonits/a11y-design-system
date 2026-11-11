@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react';
+import { render, screen, act, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { Button, Modal, Tabs, ToastProvider, useToast, Input, ThemeSwitcher, THEMES, THEME_REGISTRY, DEFAULT_THEME, PREPAINT_SCRIPT, prepaintScript } from './index';
@@ -181,6 +181,108 @@ describe('Toast', () => {
     await u.click(screen.getByRole('button', { name: 'Undo' }));
     expect(undo).toHaveBeenCalledOnce();
     expect(screen.getByRole('status')).not.toHaveTextContent('Reminder done');
+  });
+});
+
+// FU-EMBER-TOAST-MODAL: toasts render into the topmost open modal (WCAG 4.1.3; the page behind a modal is inert).
+function ToastModalDemo({ duration = 5000 }: { duration?: number }) {
+  const show = useToast();
+  const [outer, setOuter] = useState(false);
+  const [inner, setInner] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOuter(true)}>Open outer</Button>
+      <Button onClick={() => show({ tone: 'success', title: 'Page toast', duration })}>Page toast</Button>
+      <Modal open={outer} onClose={() => setOuter(false)} title="Outer">
+        <Button onClick={() => show({ tone: 'success', title: 'Saved in outer', duration })}>Toast from outer</Button>
+        <Button onClick={() => setInner(true)}>Open inner</Button>
+        <Modal open={inner} onClose={() => setInner(false)} title="Inner">
+          <Button onClick={() => show({ tone: 'error', title: 'Failed in inner' })}>Error from inner</Button>
+        </Modal>
+      </Modal>
+    </>
+  );
+}
+const statusIn = (el: HTMLElement) => within(el).getAllByRole('status', { hidden: true }).at(-1)!;
+const pageViewport = () => document.querySelector<HTMLElement>('.em-toast-viewport:not(.em-toast-viewport--modal)')!;
+
+describe('Toast inside a modal (FU-EMBER-TOAST-MODAL)', () => {
+  it('renders a toast fired with a modal open into the modal, announced and dismissable by keyboard', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastModalDemo /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const outer = screen.getByRole('dialog', { name: 'Outer' });
+    await waitFor(() => expect(outer.querySelector('.em-toast-viewport--modal')).not.toBeNull());
+    // The outlet's live region exists (empty) before the toast is added, so the addition is announced.
+    const region = outer.querySelector<HTMLElement>(':scope > .em-toast-outlet [role="status"]')!;
+    expect(region).toBeEmptyDOMElement();
+    await new Promise((r) => setTimeout(r, 150));
+    const trigger = within(outer).getByRole('button', { name: 'Toast from outer' });
+    await u.click(trigger);
+    await waitFor(() => expect(statusIn(outer)).toHaveTextContent('Saved in outer'));
+    expect(pageViewport()).not.toHaveTextContent('Saved in outer');
+    const dismiss = within(outer).getByRole('button', { name: 'Dismiss: Saved in outer', hidden: true });
+    dismiss.focus();
+    await u.keyboard('{Enter}');
+    expect(outer).not.toHaveTextContent('Saved in outer');
+    expect(outer.contains(document.activeElement)).toBe(true);
+  });
+
+  it('keeps toast buttons inside the focus trap: Tab from the last one wraps to the dialog\'s first control', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastModalDemo duration={600000} /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const outer = screen.getByRole('dialog', { name: 'Outer' });
+    await new Promise((r) => setTimeout(r, 150));
+    await u.click(within(outer).getByRole('button', { name: 'Toast from outer' }));
+    await waitFor(() => expect(statusIn(outer)).toHaveTextContent('Saved in outer'));
+    within(outer).getByRole('button', { name: 'Dismiss: Saved in outer', hidden: true }).focus();
+    await u.tab();
+    expect(document.activeElement).toBe(within(outer).getByRole('button', { name: 'Close dialog' }));
+  });
+
+  it('nested modals: the topmost wins, Esc closes only it, and a showing toast moves to the outer modal', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastModalDemo /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const outer = screen.getByRole('dialog', { name: 'Outer' });
+    await u.click(within(outer).getByRole('button', { name: 'Open inner' }));
+    const inner = screen.getByRole('dialog', { name: 'Inner' });
+    await new Promise((r) => setTimeout(r, 150));
+    await u.click(within(inner).getByRole('button', { name: 'Error from inner' }));
+    await waitFor(() => expect(inner.querySelector(':scope > .em-toast-outlet [role="alert"]')).toHaveTextContent('Failed in inner'));
+    expect(outer.querySelector(':scope > .em-toast-outlet [role="alert"]')).toBeNull(); // outer has no stack while inner is topmost
+    within(inner).getByRole('button', { name: 'Error from inner' }).focus();
+    await u.keyboard('{Escape}');
+    expect(inner).not.toHaveAttribute('open');
+    expect(outer).toHaveAttribute('open');
+    await waitFor(() => expect(outer.querySelector(':scope > .em-toast-outlet [role="alert"]')).toHaveTextContent('Failed in inner'));
+  });
+
+  it('returns a showing toast to the page toaster when the modal closes', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastModalDemo duration={600000} /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const outer = screen.getByRole('dialog', { name: 'Outer' });
+    await u.click(within(outer).getByRole('button', { name: 'Toast from outer' }));
+    await waitFor(() => expect(statusIn(outer)).toHaveTextContent('Saved in outer'));
+    await u.keyboard('{Escape}');
+    await waitFor(() => expect(within(pageViewport()).getByRole('status')).toHaveTextContent('Saved in outer'));
+    expect(document.querySelector('.em-toast-viewport--modal')).toBeNull();
+  });
+
+  it('does not auto-dismiss while the toaster is unreachable (inert page), and resumes after', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const u = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    render(<div data-testid="app"><ToastProvider><ToastModalDemo duration={1000} /></ToastProvider></div>);
+    await u.click(screen.getByRole('button', { name: 'Page toast' }));
+    await act(async () => { screen.getByTestId('app').setAttribute('inert', ''); });
+    act(() => { vi.advanceTimersByTime(10000); });
+    expect(pageViewport()).toHaveTextContent('Page toast');
+    await act(async () => { screen.getByTestId('app').removeAttribute('inert'); });
+    act(() => { vi.advanceTimersByTime(1500); });
+    await waitFor(() => expect(pageViewport()).not.toHaveTextContent('Page toast'));
+    vi.useRealTimers();
   });
 });
 
