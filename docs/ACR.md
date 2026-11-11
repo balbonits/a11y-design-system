@@ -4,7 +4,7 @@ Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-pa
 
 - **Product:** Ember UI, an accessible React design system starter (tokens, 8 components, Storybook docs). Storybook: https://jdilig.me/ux/design-system/storybook/ . Case study: https://jdilig.me/ux/design-system
 - **Version:** `main` at 757da0c (package `ember-ui` 0.2.2)
-- **Report version:** 1.0
+- **Report version:** 1.1
 - **Report date:** 2026-11-10
 - **Contact:** https://github.com/balbonits/a11y-design-system/issues
 - **Standards:** Revised Section 508 (36 CFR 1194), which incorporates WCAG 2.0 A/AA (the 508 baseline). WCAG 2.1 and 2.2 A/AA criteria are extra rows, marked (2.1) or (2.2).
