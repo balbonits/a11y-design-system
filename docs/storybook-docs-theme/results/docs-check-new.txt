@@ -30,5 +30,5 @@ Lowest UI contrast by mode and kind:
   light focus ring on page: 4.50
   light zoom icon: 10.86
 
-docs-check http://127.0.0.1:8973: 4035 pass, 0 fail
+docs-check http://127.0.0.1:8973: 4133 pass, 0 fail
 exit 0

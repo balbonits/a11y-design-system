@@ -42,16 +42,24 @@ const PAIRS = [
   ['Focus ring on code block / zebra row', '--focus-ring-color', '--surface-muted', 3],
   ['Focus ring on story canvas', '--focus-ring-color', '--color-bg', 3],
 ];
+// Syntax floor (CA ruling, 2026-11-11): every syntax-token pair on the code block must stay at or above 4.5:1 in both modes,
+// whatever min its row says. Also applied to the rendered code-block low from docs-check below.
+const SYNTAX_FLOOR = 4.5;
+const syntaxRows = PAIRS.filter(([label]) => label.startsWith('Code:'));
+if (syntaxRows.length !== 5) { fail++; console.log(`FAIL syntax floor: expected 5 syntax pairs, found ${syntaxRows.length}`); }
 const rows = [];
-for (const [label, fg, bg, min] of PAIRS) {
+for (const [label, fg, bg, min0] of PAIRS) {
+  const min = label.startsWith('Code:') ? Math.max(min0, SYNTAX_FLOOR) : min0;
   const r = ['light', 'dark'].map((m) => { const f = typeof fg === 'string' ? fg : fg[m]; const v = ratio(neo[m][f], neo[m][bg]); if (v < min) { fail++; console.log(`FAIL ${m} ${label}: ${v.toFixed(2)} < ${min}`); } return v; });
   rows.push(`| ${label} | ${typeof fg === 'string' ? fg : `${fg.light} / ${fg.dark}`} on ${bg} | ${min} | ${r[0].toFixed(2)} | ${r[1].toFixed(2)} |`);
 }
 console.log('| Pair | Tokens (light / dark) | Min | Light | Dark |\n|---|---|---|---|---|\n' + rows.join('\n'));
 // Rendered lows, this design vs main (from docs-check.cjs). On main the docs page ignores Mode, so its "dark" rows are the light page.
 const lows = (f) => { const t = fs.readFileSync(new URL(`results/${f}`, here), 'utf8'); return Object.fromEntries([...t.matchAll(/^ {2}(light|dark) (.+): ([\d.]+)$/gm)].map((m) => [`${m[1]} ${m[2]}`, +m[3]])); };
-const a = lows('docs-check-new.txt'), b = lows('docs-check-main-80f782d.txt'); let up = 0, same = 0, down = 0; const d = [];
+const a = lows('docs-check-new.txt'), b = lows('docs-check-main-80f782d.txt');
+for (const m of ['light', 'dark']) { const v = a[`${m} code block`]; if (!(v >= SYNTAX_FLOOR)) { fail++; console.log(`FAIL syntax floor: rendered ${m} code block ${v} < ${SYNTAX_FLOOR}`); } } let up = 0, same = 0, down = 0; const d = [];
 for (const k of Object.keys(a)) { if (!(k in b)) continue; const s = a[k] > b[k] + 0.005 ? 'up' : a[k] < b[k] - 0.005 ? 'DOWN' : 'same'; if (s === 'up') up++; else if (s === 'same') same++; else down++; d.push(`| ${k} | ${b[k].toFixed(2)} | ${a[k].toFixed(2)} | ${s} |`); }
 console.log('\nRendered lowest ratio by kind, main 80f782d vs this design:\n| Mode, kind | main | this | |\n|---|---|---|---|\n' + d.join('\n'));
-console.log(`\n${PAIRS.length * 2} token pairs checked, ${fail} failures; rendered kinds vs main: ${up} up, ${same} same, ${down} down`);
+console.log(`\nSyntax floor ${SYNTAX_FLOOR}: ${syntaxRows.length * 2} token pairs + 2 rendered code-block lows`);
+console.log(`${PAIRS.length * 2} token pairs checked, ${fail} failures; rendered kinds vs main: ${up} up, ${same} same, ${down} down`);
 process.exit(fail ? 1 : 0);

@@ -1,8 +1,8 @@
 diff --git a/.storybook/preview-head.html b/.storybook/preview-head.html
-index 841597a..6853ff1 100644
+index 841597a..1e8d951 100644
 --- a/.storybook/preview-head.html
 +++ b/.storybook/preview-head.html
-@@ -1,12 +1,44 @@
+@@ -1,12 +1,45 @@
  <style>
 -  /* Docs-page contrast fixes for Storybook's own chrome (links and code highlighting) so axe passes AA. */
 -  .sbdocs a:not(.em-btn) { color: #0b57a4; text-decoration: underline; }
@@ -38,8 +38,9 @@ index 841597a..6853ff1 100644
 +  /* Canvas blocks (story previews): neo's 2px border, no soft shadow. */
 +  .sbdocs-preview { border: var(--border-width) solid var(--border) !important; box-shadow: none !important; }
 +  /* The Canvas toolbar (zoom) is 40px tall with overflow-y hidden, which clips the 44px zoom buttons to 40.
-+     Make the bar 48px so the whole 44px button is tappable. The preview's padding-top matches the bar. */
-+  .sbdocs-preview:has(> .sb-bar) { padding-top: 48px !important; }
++     Make the bar 48px so the whole 44px button is tappable. The story under it moves down the extra 8px (Storybook's preview padding-top
++     is 40px for its 40px bar). A sibling selector, not a has-selector, so a browser without one still never hides the story's top 8px. */
++  .sbdocs-preview > .sb-bar + .docs-story { margin-top: 8px; }
 +  .sbdocs-preview > .sb-bar, .sbdocs-preview > .sb-bar > div, .sbdocs-preview > .sb-bar > div > div, .sbdocs-preview > .sb-bar > div > div > div { height: 48px !important; min-height: 48px; }
 +  .sbdocs-preview > .sb-bar > div > div > div { align-items: center; }
 +  /* Action bars (Copy, Show code) sit in the bottom-right corner of a box with a 12px radius and overflow hidden,

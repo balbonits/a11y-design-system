@@ -7,10 +7,19 @@
 //  E. targets: every docs button (Copy, Show code, zoom) is at least 44x44 and elementFromPoint lands on it at
 //     the centre, the 4 edge midpoints (1px inside) and the 4 corners (4px inside, past a 12px radius)
 //  F. no sideways scroll at any width; G. no running animations or transitions under prefers-reduced-motion
-// Usage: NODE_PATH=<dir with playwright-core> node docs-check.cjs <baseUrl>   exits 1 on any failure.
+//  H. heading anchors (aria-hidden, tabindex -1, under the WCAG 2.5.8 spacing exception): at 320 and 1280 the 24px circle
+//     centred on each anchor overlaps no other target (elementFromPoint at the centre and 16 points on the circle)
+//  I. Canvas bar never covers its story: the story starts at or below the bar's bottom edge, every width
+// --no-has: strips every rule whose selector uses :has() from the served preview head (a browser without :has()), then
+//     runs E, F, H and I with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
+//     centre and the 4 edge midpoints (corners may be clipped by the 12px radius there, as on main). A-D and G are skipped.
+// Usage: NODE_PATH=<dir with playwright-core> node docs-check.cjs <baseUrl> [--no-has]   exits 1 on any failure.
 const { chromium } = require('playwright-core');
 const tokens = require(process.env.TOKENS || require('path').resolve(__dirname, '../../src/tokens.json')).themes.neo;
 const base = (process.argv[2] || 'http://127.0.0.1:6007').replace(/\/$/, '');
+const NO_HAS = process.argv.includes('--no-has');
+// Removes each `selector { ... }` rule whose selector contains :has( from <style> blocks (comments must not contain that text).
+const stripHas = (html) => html.replace(/<style[\s\S]*?<\/style>/g, (st) => st.replace(/[^{}]*:has\([^{}]*\{[^{}]*\}/g, ''));
 const PAGES = ['introduction--docs', 'tokens--docs', 'components-button--docs', 'components-table--docs'];
 const WIDTHS = [320, 375, 599, 600, 1280];
 const LINK = { light: '--accent-hover', dark: '--accent' };
@@ -33,9 +42,11 @@ const PAGE_FNS = () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome' });
   const open = async (ctx, id, mode) => {
     const page = await ctx.newPage(); await page.addInitScript(PAGE_FNS);
+    if (NO_HAS) await page.route((u) => new URL(u).pathname.endsWith('/iframe.html'), async (r) => { const f = await r.fetch(); r.fulfill({ response: f, body: stripHas(await f.text()) }); });
     await page.goto(`${base}/iframe.html?id=${id}&viewMode=docs&globals=theme:neo;mode:${mode}`, { waitUntil: 'load' });
     await page.waitForSelector('#storybook-docs .sbdocs-wrapper'); await page.waitForTimeout(1200); return page;
   };
+  if (!NO_HAS) {
   // A-C at 375 and 1280, in Light, Dark, and Auto under OS light and OS dark.
   for (const [mode, scheme] of [['light', 'light'], ['dark', 'light'], ['auto', 'light'], ['auto', 'dark']]) {
     const eff = mode === 'auto' ? scheme : mode; const T = tokens[eff];
@@ -90,7 +101,8 @@ const PAGE_FNS = () => {
     await page.emulateMedia({ colorScheme: 'dark' }); ok(await bg() === hex(tokens.dark['--surface']), 'D Auto, OS flips to dark');
     await setMode('light'); ok(await bg() === hex(tokens.light['--surface']), 'D Mode -> Light while OS dark');
     await ctx.close(); }
-  // E-F at every width.
+  } // end A-D
+  // E-F (and I) at every width.
   for (const w of WIDTHS) {
     const ctx = await browser.newContext({ viewport: { width: w, height: 800 } });
     for (const id of PAGES) {
@@ -101,18 +113,29 @@ const PAGE_FNS = () => {
         await e.scrollIntoViewIfNeeded();
         const r = await e.evaluate((el) => { const b = el.getBoundingClientRect(); const P = [[b.left + b.width / 2, b.top + b.height / 2], [b.left + b.width / 2, b.top + 1], [b.left + b.width / 2, b.bottom - 1], [b.left + 1, b.top + b.height / 2], [b.right - 1, b.top + b.height / 2], [b.left + 4, b.top + 4], [b.right - 4, b.top + 4], [b.left + 4, b.bottom - 4], [b.right - 4, b.bottom - 4]];
           return { t: (el.getAttribute('aria-label') || el.title || el.textContent).trim().slice(0, 16), w: b.width, h: b.height, hits: P.map(([x, y]) => { const h = document.elementFromPoint(x, y); return h && (h === el || el.contains(h)) ? 1 : 0; }).join('') }; });
-        ok(r.w >= 44 && r.h >= 44 && r.hits === '111111111', `E ${w} ${id} "${r.t}" ${r.w.toFixed(1)}x${r.h.toFixed(1)} hits ${r.hits}`);
+        if (NO_HAS) ok(r.w >= 24 && r.h >= 24 && r.hits.slice(0, 5) === '11111', `E(no-has) ${w} ${id} "${r.t}" ${r.w.toFixed(1)}x${r.h.toFixed(1)} hits ${r.hits}`);
+        else ok(r.w >= 44 && r.h >= 44 && r.hits === '111111111', `E ${w} ${id} "${r.t}" ${r.w.toFixed(1)}x${r.h.toFixed(1)} hits ${r.hits}`);
+      }
+      for (const c of await page.evaluate(() => [...document.querySelectorAll('.sbdocs-preview > .sb-bar')].map((bar) => { const st = bar.parentElement.querySelector(':scope > .docs-story'); return st ? st.getBoundingClientRect().top - bar.getBoundingClientRect().bottom : null; })))
+        if (c !== null) ok(c >= -0.5, `I ${w} ${id} Canvas bar covers the story's top ${(-c).toFixed(1)}px`);
+      if (w === 320 || w === 1280) for (const a of await page.$$('.sbdocs-content :is(h1, h2, h3, h4) a[aria-hidden="true"]')) {
+        await a.scrollIntoViewIfNeeded();
+        const bad = await a.evaluate((el) => { const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2; const out = [];
+          const T = 'a, button, input, select, textarea, summary, [role="button"], [role="tab"], [role="link"], [tabindex]:not([tabindex="-1"])';
+          for (let i = -1; i < 16; i++) { const x = i < 0 ? cx : cx + 12 * Math.cos(i * Math.PI / 8), y = i < 0 ? cy : cy + 12 * Math.sin(i * Math.PI / 8); const h = document.elementFromPoint(x, y); const t = h && h.closest(T); if (t && t !== el) out.push((t.getAttribute('aria-label') || t.title || t.textContent).trim().slice(0, 16)); }
+          return { name: el.parentElement.textContent.trim().slice(0, 20), out }; });
+        ok(bad.out.length === 0, `H ${w} ${id} anchor "${bad.name}" 24px circle overlaps ${[...new Set(bad.out)].join(', ')}`);
       }
       await page.close();
     }
     await ctx.close();
   }
   // G. reduced motion.
-  { const ctx = await browser.newContext({ viewport: { width: 375, height: 800 }, reducedMotion: 'reduce' });
+  if (!NO_HAS) { const ctx = await browser.newContext({ viewport: { width: 375, height: 800 }, reducedMotion: 'reduce' });
     for (const id of PAGES) { const page = await open(ctx, id, 'dark'); const n = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length); ok(n === 0, `G reduce ${id}: ${n} running`); await page.close(); }
     await ctx.close(); }
   await browser.close();
   console.log('\nLowest text contrast by mode and kind:'); for (const [k, v] of Object.entries(minText).sort()) console.log(`  ${k}: ${v.toFixed(2)}`);
   console.log('Lowest UI contrast by mode and kind:'); for (const [k, v] of Object.entries(minUi).sort()) console.log(`  ${k}: ${v.toFixed(2)}`);
-  console.log(`\ndocs-check ${base}: ${passes} pass, ${fails} fail`); process.exit(fails ? 1 : 0);
+  console.log(`\ndocs-check ${base}${NO_HAS ? ' (--no-has)' : ''}: ${passes} pass, ${fails} fail`); process.exit(fails ? 1 : 0);
 })();

@@ -56,4 +56,5 @@ Rendered lowest ratio by kind, main 80f782d vs this design:
 | light focus ring on page | 4.50 | 4.50 | same |
 | light zoom icon | 3.96 | 10.86 | up |
 
+Syntax floor 4.5: 10 token pairs + 2 rendered code-block lows
 46 token pairs checked, 0 failures; rendered kinds vs main: 22 up, 4 same, 2 down
