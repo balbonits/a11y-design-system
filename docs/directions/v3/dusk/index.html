@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en" data-theme="dusk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Direction E, Soft Dusk: Ember UI v3 prototype</title>
+<script>try{var m=localStorage.getItem('jdilig:mode');if(m)document.documentElement.dataset.mode=m}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Nunito+Sans:opsz,wght@6..12,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+html{background:var(--color-bg);color:var(--text);font:400 1.0625rem/1.65 var(--font-body);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;min-height:100vh;overflow-x:hidden}
+a{color:var(--accent);text-underline-offset:.2em}
+:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--surface);color:var(--text);padding:.6rem 1.1rem;border-radius:var(--radius-pill);z-index:9}
+.skip:focus{left:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1160px;margin:0 auto;padding:0 1.2rem}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:var(--weight-display);line-height:1.08;margin:0 0 .6rem;letter-spacing:-.01em}
+h1{font-size:clamp(2.5rem,9vw,5rem)}h2{font-size:clamp(1.5rem,4.5vw,2.2rem)}h3{font-size:1.25rem}
+.muted{color:var(--text-muted)}
+.eyebrow{font-weight:700;font-size:.9rem;letter-spacing:.02em;color:var(--text-muted)}
+/* header: floating pill bar */
+header.top{position:sticky;top:0;z-index:5;padding:.6rem 0;background:linear-gradient(var(--color-bg) 70%,transparent)}
+.bar{display:flex;align-items:center;gap:.5rem .8rem;flex-wrap:wrap;background:var(--surface);border-radius:28px;padding:.45rem .6rem .45rem 1.1rem;box-shadow:var(--shadow-2)}
+.logo{font:400 1.3rem var(--font-display);text-decoration:none;color:var(--text);margin-right:auto;display:flex;align-items:center;gap:.55rem;min-height:44px}
+.sun{width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--palette-apricot-300),var(--palette-coral-400) 55%,var(--palette-plum-600))}
+nav.views{display:flex;gap:.3rem;overflow-x:auto;width:100%;order:3;padding-bottom:.15rem}
+@media(min-width:820px){nav.views{width:auto;order:0}}
+nav.views a{flex:none;text-decoration:none;color:var(--text);font-weight:700;padding:.5rem 1rem;min-height:44px;display:inline-flex;align-items:center;border-radius:var(--radius-pill);transition:background var(--duration-base) var(--ease-standard)}
+nav.views a:hover{background:var(--surface-muted)}
+nav.views a[aria-current="page"]{background:var(--accent);color:var(--accent-contrast)}
+.btn{font:700 1rem var(--font-body);min-height:48px;padding:.6rem 1.4rem;border-radius:var(--radius-control);border:var(--border-width) solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:.5rem;text-decoration:none;transition:background var(--duration-base) var(--ease-standard),transform var(--duration-base) var(--ease-standard),box-shadow var(--duration-base) var(--ease-standard)}
+.btn:hover{transform:translateY(var(--lift));box-shadow:var(--shadow-2);background:var(--surface-muted)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-contrast)}
+.btn.primary:hover{background:var(--accent-hover)}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:var(--danger-contrast)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--accent);text-decoration:underline}
+#mode{min-height:44px;padding:.4rem 1rem;font-size:.92rem}
+/* dusk sky: decorative only, text never sits on it */
+.sky{position:relative}
+.glow-clip{position:absolute;inset:0 0 auto 0;height:100vh;overflow:hidden;pointer-events:none;z-index:0}
+.glow{position:absolute;top:-8%;right:-18%;width:min(620px,95vw);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:-1;
+ background:radial-gradient(circle at 50% 50%,var(--palette-apricot-300) 0,var(--palette-coral-400) 35%,var(--palette-plum-600) 62%,transparent 70%);
+ opacity:.55;filter:blur(8px) hue-rotate(calc(var(--hp,0) * 40deg * var(--hue-shift)));transform:translateY(calc(var(--py,0) * var(--parallax-scale) * 1px))}
+[data-mode="dark"] .glow{opacity:.4}
+@media (prefers-color-scheme:dark){:root:not([data-mode]) .glow{opacity:.4}}
+main{position:relative;z-index:1}
+section[hidden]{display:none}
+main:focus{outline:none}
+.hero{padding:3rem 0 2rem;max-width:720px}
+.hero .lede{font-size:1.2rem;max-width:46ch;background:var(--color-bg);border-radius:20px}
+.row{display:flex;flex-wrap:wrap;gap:.8rem;align-items:center}
+/* curved band dividers: sections blend, no hard edges */
+.band{position:relative;background:var(--surface-muted);margin:3.5rem 0;padding:1.5rem 0 2.5rem;border-image:linear-gradient(var(--surface-muted) 0 0) fill 0/0/0 100vmax;clip-path:inset(-56px -100vmax)}
+.band::before,.band::after{content:"";position:absolute;left:calc(50% - 50vw);right:calc(50% - 50vw);height:56px;background:var(--surface-muted);
+ -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 56' preserveAspectRatio='none'%3E%3Cpath d='M0 56 C 360 0 1080 0 1440 56 Z'/%3E%3C/svg%3E") 0 0/100% 100%;
+ mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 56' preserveAspectRatio='none'%3E%3Cpath d='M0 56 C 360 0 1080 0 1440 56 Z'/%3E%3C/svg%3E") 0 0/100% 100%}
+.band::before{top:-55px}.band::after{bottom:-55px;transform:scaleY(-1)}
+.grid2{display:grid;gap:1.4rem}@media(min-width:820px){.grid2{grid-template-columns:1fr 1fr}}
+.panel{background:var(--surface);border-radius:var(--radius-surface);padding:1.6rem;box-shadow:var(--shadow-1);min-width:0}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity var(--duration-reveal) var(--ease-standard),transform var(--duration-reveal) var(--ease-standard)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}}
+label{font-weight:700;display:block;margin-bottom:.3rem}
+.field{margin-bottom:1.2rem}
+.field input,.field select{width:100%;font:inherit;min-height:52px;padding:.6rem 1.1rem;border:var(--border-width) solid var(--border);border-radius:var(--radius-field);background:var(--surface);color:var(--text)}
+.hint{font-size:.92rem;color:var(--text-muted);margin-top:.35rem}
+.check{display:flex;gap:.7rem;align-items:center;min-height:44px}
+.check input{width:24px;height:24px;accent-color:var(--accent)}
+[role=tablist]{display:inline-flex;gap:.25rem;flex-wrap:wrap;background:var(--surface-muted);padding:.3rem;border-radius:var(--radius-pill)}
+[role=tab]{font:700 .98rem var(--font-body);min-height:44px;padding:.4rem 1.1rem;border-radius:var(--radius-pill);border:0;background:transparent;color:var(--text);cursor:pointer;transition:background var(--duration-base) var(--ease-standard)}
+[role=tab][aria-selected=true]{background:var(--surface);box-shadow:var(--shadow-1);color:var(--accent)}
+[role=tabpanel]{padding-top:.9rem}
+.pill{display:inline-flex;align-items:center;gap:.4rem;font:700 .85rem var(--font-body);padding:.25rem .8rem;border-radius:var(--radius-pill);background:var(--surface-muted)}
+.pill::before{content:"";width:.55em;height:.55em;border-radius:50%;background:currentColor}
+.pill.warn::before{border-radius:2px}.pill.bad::before{border-radius:0;transform:rotate(45deg)}.pill.info::before{width:.3em;border-radius:4px}
+.panel .pill{background:var(--color-bg)}
+.ok{color:var(--success)}.warn{color:var(--warning)}.bad{color:var(--danger)}.info{color:var(--info)}
+.tscroll{overflow-x:auto;border-radius:24px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:480px}
+th,td{text-align:left;padding:.85rem 1.1rem;border-bottom:1px solid var(--border-subtle)}
+thead th{font-size:.88rem;color:var(--text-muted)}
+tbody tr:last-child>*{border-bottom:0}
+.toast{position:fixed;left:50%;bottom:1.2rem;transform:translate(-50%,180%);background:var(--text);color:var(--color-bg);padding:.85rem 1.4rem;border-radius:var(--radius-pill);font-weight:700;transition:transform var(--duration-base) var(--ease-standard);max-width:calc(100vw - 2rem);z-index:9}
+.toast.show{transform:translate(-50%,0)}
+dialog{border:0;border-radius:var(--radius-surface);background:var(--surface);color:var(--text);max-width:min(460px,calc(100vw - 2rem));padding:1.8rem;box-shadow:var(--shadow-2)}
+dialog::backdrop{background:rgb(27 11 31 / .5)}
+/* tracker */
+.trhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem;padding:2.5rem 0 1rem}
+.cue{font-weight:700;font-size:.9rem;color:var(--text-muted)}
+@media(min-width:1040px){.cue{display:none}}
+.lanes{position:relative;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(260px,84%);gap:1rem;overflow-x:auto;padding:.4rem .2rem 1.2rem;scroll-snap-type:x mandatory;border-radius:28px}
+@media(min-width:1040px){.lanes{grid-auto-flow:row;grid-template-columns:repeat(5,minmax(0,1fr));overflow:visible}}
+.lane{scroll-snap-align:start;background:var(--surface-muted);border-radius:28px;padding:1rem;min-width:0}
+.lane h2{font-size:1.25rem;display:flex;justify-content:space-between;align-items:center;gap:.4rem}
+.count{font:700 .85rem var(--font-body);background:var(--surface);border-radius:var(--radius-pill);min-width:2rem;text-align:center;padding:.1rem .5rem}
+.job{background:var(--surface);border-radius:24px;padding:1.1rem;margin-top:.8rem;box-shadow:var(--shadow-1);transition:transform var(--duration-base) var(--ease-standard),box-shadow var(--duration-base) var(--ease-standard)}
+.job:hover,.job:focus-within{transform:translateY(var(--lift));box-shadow:var(--shadow-2)}
+.job h3{font-size:1.15rem;margin:.2rem 0}
+.job .co{font-size:.9rem;color:var(--text-muted);font-weight:700}
+.job .remind{background:var(--accent-soft);border-radius:16px;padding:.45rem .8rem;font-size:.92rem;margin:.7rem 0}
+/* dashboard */
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+@media(min-width:820px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.stat{background:var(--surface);border-radius:32px 32px 32px 12px;padding:1.2rem 1.3rem;box-shadow:var(--shadow-1);min-width:0}
+.stat b{display:block;font:400 2.6rem/1 var(--font-display);margin:.35rem 0 .5rem}
+.chart{width:100%;height:150px;display:block}
+.chart .line{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
+.chart .fill{fill:var(--accent-soft)}
+.deploys{list-style:none;margin:0;padding:0;display:grid;gap:.6rem}
+.deploys li{display:flex;flex-wrap:wrap;gap:.5rem 1rem;align-items:center;justify-content:space-between;background:var(--color-bg);border-radius:var(--radius-pill);padding:.6rem 1.1rem}
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:1rem}
+.sw div{background:var(--surface);border-radius:24px;overflow:hidden;box-shadow:var(--shadow-1)}
+.sw i{display:block;height:64px}
+.sw span{display:block;padding:.5rem .8rem;font-size:.8rem}
+footer{padding:2rem 0 4.5rem;margin-top:3rem}
+footer .wrap{color:var(--text-muted);font-size:.92rem}
+footer a{display:inline-flex;align-items:center;min-height:44px}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><div class="wrap"><div class="bar">
+ <a class="logo" href="#components"><span class="sun" aria-hidden="true"></span>Ember UI <span class="eyebrow">v3 · E dusk</span></a>
+ <nav class="views" aria-label="Prototype screens">
+  <a href="#components">Components</a><a href="#tracker">Job tracker</a><a href="#dashboard">Dev dashboard</a><a href="#tokens">Tokens</a>
+ </nav>
+ <button class="btn" id="mode" type="button" aria-pressed="false"><span class="lbl">Dark mode</span></button>
+</div></div></header>
+<div class="glow-clip" aria-hidden="true"><div class="glow"></div></div>
+<main id="main" class="wrap sky" tabindex="-1">
+
+<section id="v-components" aria-labelledby="h-comp">
+ <div class="hero">
+  <p class="eyebrow">Direction E · Soft Dusk · Ember UI sampler</p>
+  <h1 id="h-comp">Calm screens for long evenings.</h1>
+  <p class="lede muted">Ember UI's components in the dusk direction: plum type on apricot paper, soft pills, deep radii and sections that flow into each other. Every pair passes AA in light and dark.</p>
+  <div class="row" style="margin-top:1.2rem"><button class="btn primary" type="button" data-toast="Saved">Save changes</button><button class="btn" type="button" id="openm">Open modal</button><button class="btn ghost" type="button">Learn more</button></div>
+ </div>
+ <div class="band reveal"><div class="grid2">
+  <div class="panel"><h2>Form</h2>
+   <div class="field"><label for="e">Email</label><input id="e" type="email" autocomplete="email" aria-describedby="eh"><div class="hint" id="eh">We'll only use this to reply to you.</div></div>
+   <div class="field"><label for="s">Role</label><select id="s"><option>Front-end engineer</option><option>UI developer</option><option>Design engineer</option></select></div>
+   <label class="check"><input type="checkbox" checked> Email me about updates</label>
+  </div>
+  <div class="panel"><h2>Tabs</h2>
+   <div role="tablist" aria-label="Example tabs">
+    <button role="tab" id="t1" aria-selected="true" aria-controls="p1">Overview</button><button role="tab" id="t2" aria-selected="false" aria-controls="p2" tabindex="-1">Details</button><button role="tab" id="t3" aria-selected="false" aria-controls="p3" tabindex="-1">History</button>
+   </div>
+   <div role="tabpanel" id="p1" aria-labelledby="t1" tabindex="0"><p>Import a component, pass it a label and it's ready.</p></div>
+   <div role="tabpanel" id="p2" aria-labelledby="t2" tabindex="0" hidden><p>Arrow keys move between tabs; Home and End jump to the ends.</p></div>
+   <div role="tabpanel" id="p3" aria-labelledby="t3" tabindex="0" hidden><p>Meets 2.1.1 Keyboard, 2.4.7 Focus visible and 4.1.2 Name, role, value.</p></div>
+   <p class="row" style="margin-top:1rem"><span class="pill ok">Passing</span><span class="pill warn">Review</span><span class="pill bad">Failing</span><span class="pill info">Info</span></p>
+  </div>
+ </div></div>
+ <div class="reveal"><h2>Table</h2>
+  <div class="tscroll" tabindex="0" role="region" aria-label="Components table, scrolls sideways"><table><caption class="sr">Ember UI components</caption><thead><tr><th scope="col">Component</th><th scope="col">Keyboard</th><th scope="col">Status</th></tr></thead>
+  <tbody><tr><th scope="row">Button</th><td>Enter, Space</td><td><span class="pill ok">Stable</span></td></tr><tr><th scope="row">Modal</th><td>Esc closes, focus trapped</td><td><span class="pill ok">Stable</span></td></tr><tr><th scope="row">Toast</th><td>Announced politely</td><td><span class="pill warn">Beta</span></td></tr></tbody></table></div>
+ </div>
+</section>
+
+<section id="v-tracker" aria-labelledby="h-tr" hidden>
+ <div class="trhead"><div><p class="eyebrow" style="margin:0">Job tracker · prototype with fictional demo data</p><h1 id="h-tr">Board</h1></div><button class="btn primary" type="button" data-toast="Role saved">Add role</button></div>
+ <p class="cue" aria-hidden="true">Swipe for more stages →</p>
+ <div class="lanes" tabindex="0" role="region" aria-label="Application stages, scrolls sideways">
+  <div class="lane"><h2>Saved <span class="count">1</span></h2><article class="job"><div class="co">Initech (fictional)</div><h3>React Developer</h3><div class="muted">Saved yesterday</div><div class="remind">Reminder: apply before the posting closes, Nov 16</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">React Developer at Initech</span></button></article></div>
+  <div class="lane"><h2>Applied <span class="count">1</span></h2><article class="job"><div class="co">Acme Corp (fictional)</div><h3>Front-end Engineer</h3><div class="muted">Applied 6 days ago</div><div class="remind">Reminder: follow up with the recruiter</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">Front-end Engineer at Acme Corp</span></button></article></div>
+  <div class="lane"><h2>Interviewing <span class="count">1</span></h2><article class="job"><div class="co">Globex Inc. (fictional)</div><h3>Senior UI Developer</h3><div class="muted">Started interviewing 3 days ago</div><div class="remind">Reminder: send a thank-you note</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">Senior UI Developer at Globex Inc.</span></button></article></div>
+  <div class="lane"><h2>Offer <span class="count">1</span></h2><article class="job"><div class="co">Hooli Labs (fictional)</div><h3>Accessibility Engineer</h3><div class="muted">Got an offer 2 days ago</div><div class="remind">Reminder: reply to the offer</div><button class="btn" type="button" style="min-height:44px">Move or edit <span class="sr">Accessibility Engineer at Hooli Labs</span></button></article></div>
+  <div class="lane"><h2>Closed <span class="count">0</span></h2><p class="muted">No roles in Closed.</p></div>
+ </div>
+</section>
+
+<section id="v-dashboard" aria-labelledby="h-db" hidden>
+ <div class="trhead"><div><p class="eyebrow" style="margin:0">Dev dashboard · example data, not real metrics</p><h1 id="h-db">Overview</h1></div></div>
+ <div class="stats">
+  <div class="stat"><span class="eyebrow">Builds today</span><b>12</b><span class="pill ok">All green</span></div>
+  <div class="stat"><span class="eyebrow">Open PRs</span><b>4</b><span class="pill info">2 need review</span></div>
+  <div class="stat"><span class="eyebrow">a11y issues</span><b>0</b><span class="pill ok">Serious or critical</span></div>
+  <div class="stat"><span class="eyebrow">Flaky tests</span><b>1</b><span class="pill warn">Watch</span></div>
+ </div>
+ <div class="band reveal"><div class="grid2">
+  <div class="panel"><h2>Build time</h2><p class="muted">Example trend over 7 days.</p>
+   <svg class="chart" viewBox="0 0 300 150" preserveAspectRatio="none" role="img" aria-label="Example line chart: build time trending down over 7 days"><path class="fill" d="M5 40 C 50 40, 60 62, 100 58 S 160 92, 200 88 S 260 118, 295 112 L295 150 L5 150Z"/><path class="line" vector-effect="non-scaling-stroke" d="M5 40 C 50 40, 60 62, 100 58 S 160 92, 200 88 S 260 118, 295 112"/></svg></div>
+  <div class="panel"><h2>Recent deploys</h2><ul class="deploys">
+   <li><span><b>ember-ui</b> v0.2.2 <span class="muted">(example)</span></span><span class="pill ok">Succeeded</span></li>
+   <li><span><b>job-tracker</b> <span class="muted">(example)</span></span><span class="pill ok">Succeeded</span></li>
+   <li><span><b>dev-dashboard</b> <span class="muted">(example)</span></span><span class="pill warn">In progress</span></li>
+  </ul></div>
+ </div></div>
+</section>
+
+<section id="v-tokens" aria-labelledby="h-tok" hidden>
+ <div class="trhead"><div><p class="eyebrow" style="margin:0">Semantic colors, current mode</p><h1 id="h-tok">Tokens</h1></div></div>
+ <p class="muted" style="max-width:60ch">The full sheet is in <a href="TOKENS.md">TOKENS.md</a> and the contrast results are in <a href="CONTRAST.md">CONTRAST.md</a>.</p>
+ <div class="sw" id="sw" style="margin-top:1.2rem"></div>
+</section>
+</main>
+<footer><div class="wrap">Ember UI v3 direction E, a prototype by John Dilig. <a href="../">All v3 directions</a></div></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog id="dlg" aria-labelledby="dh"><h2 id="dh">Delete this role?</h2><p>React Developer at Initech (fictional) and its reminders will be removed.</p><div class="row"><button class="btn" type="button" id="dno" autofocus>Cancel</button><button class="btn danger" type="button" id="dok">Delete role</button></div></dialog>
+<script src="../shared/proto.js"></script>
+<script>
+/* E only: scroll-driven hue shift and gentle parallax on the decorative glow (off when the tokens are 0). */
+(()=>{const {RM}=V3,R=document.documentElement;let q=0;
+addEventListener('scroll',()=>{if(RM.matches||q)return;q=requestAnimationFrame(()=>{q=0;const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);R.style.setProperty('--hp',(scrollY/max).toFixed(3));R.style.setProperty('--py',Math.round(scrollY))})},{passive:true});
+})();
+</script>
+</body></html>
