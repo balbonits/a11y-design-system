@@ -69,13 +69,14 @@ for (const [combo, t] of Object.entries(J.semantic)) {
   }
 
   // 1.4.11 gate: opaque dialog border against scrim composited over color-bg.
-  const borderR = cr(t['--border'], comp);
+  if (!/^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(t['--dialog-border'] || '')) throw new Error(`${combo} --dialog-border does not resolve to a color`); // lint, ARCH-REVIEW Addendum 9
+  const borderR = cr(t['--dialog-border'], comp);
   const borderOk = borderR >= 3;
   if (!borderOk) {
     fail++;
     notes.push(`FAIL ${combo} border on composite ${borderR.toFixed(2)} < 3`);
   }
-  srows.push([combo, 'border on color-bg (1.4.11, opaque border)', t['--border'], comp, '3:1', borderR.toFixed(2) + (borderOk ? '' : ' FAIL')]);
+  srows.push([combo, '--dialog-border on color-bg (1.4.11, opaque border)', t['--dialog-border'], comp, '3:1', borderR.toFixed(2) + (borderOk ? '' : ' FAIL')]);
   summary[combo].borderR = borderR;
 
   // Opaque dialog surface against the same composite: informational, not a gate.

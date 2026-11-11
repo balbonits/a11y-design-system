@@ -29,7 +29,7 @@ Gates, matching neo's method: the opaque dialog border against the scrim composi
 | kinetic-light | text-muted | `#45507A` | `#2c3762` | dims |  |
 | kinetic-light | accent | `#C21807` | `#77161d` | dims |  |
 | kinetic-light | border | `#1434B8` | `#0e2688` | dims |  |
-| kinetic-light | border on color-bg (1.4.11, opaque border) | `#1434B8` | `#999caa` | 3:1 | 3.47 |
+| kinetic-light | --dialog-border on color-bg (1.4.11, opaque border) | `#1434B8` | `#999caa` | 3:1 | 3.47 |
 | kinetic-light | surface on color-bg (opaque surface, informational) | `#FFFFFF` | `#999caa` | informational | 2.73 (below 3:1) |
 | kinetic-light | text-muted under scrim (both composited) | `#2c3762` | `#999caa` | 3:1 | 4.20 |
 | kinetic-dark | color-bg | `#070F33` | `#030719` | dims |  |
@@ -39,6 +39,6 @@ Gates, matching neo's method: the opaque dialog border against the scrim composi
 | kinetic-dark | text-muted | `#C3C9E0` | `#616470` | dims |  |
 | kinetic-dark | accent | `#FF6B57` | `#7f352b` | dims |  |
 | kinetic-dark | border | `#9AB0FF` | `#4d587f` | dims |  |
-| kinetic-dark | border on color-bg (1.4.11, opaque border) | `#9AB0FF` | `#030719` | 3:1 | 9.57 |
+| kinetic-dark | --dialog-border on color-bg (1.4.11, opaque border) | `#9AB0FF` | `#030719` | 3:1 | 9.57 |
 | kinetic-dark | surface on color-bg (opaque surface, informational) | `#0D1844` | `#030719` | informational | 1.17 (below 3:1) |
 | kinetic-dark | text-muted under scrim (both composited) | `#616470` | `#030719` | 3:1 | 3.40 |
