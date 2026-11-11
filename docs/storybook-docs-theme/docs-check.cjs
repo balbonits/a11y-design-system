@@ -7,13 +7,24 @@
 //  E. targets: every docs button (Copy, Show code, zoom) is at least 44x44 and elementFromPoint lands on it at
 //     the centre, the 4 edge midpoints (1px inside) and the 4 corners (4px inside, past a 12px radius)
 //  F. no sideways scroll at any width; G. no running animations or transitions under prefers-reduced-motion
-//  H. heading anchors (aria-hidden, tabindex -1, under the WCAG 2.5.8 spacing exception): at 320 and 1280 the 24px circle
-//     centred on each anchor overlaps no other target (elementFromPoint at the centre and 16 points on the circle)
+//  H. heading anchor targets (FU-SB-DOCS-ANCHOR-KBD): at every width each [data-eb-anchor] link is at least 44x44,
+//     elementFromPoint lands on it at the centre, 4 edge midpoints and 4 corners, and its box is inside the docs
+//     content column and the viewport (x >= 0, right edge <= viewport): no clipping, no overflow; no other interactive
+//     target (link, button, field, tabbable) intersects the box, e.g. a link in the paragraph below. Widths include
+//     641, 800, 900, 1040 and 1095, where the old gutter anchor sat at x -4..10 (VQA's follow-up on #58)
 //  I. Canvas bar never covers its story: the story starts at or below the bar's bottom edge, every width
-//  J. heading anchors on-canvas (FU-SB-DOCS-NITS c): at every width the anchor's icon starts at x >= 0, ends at or before
-//     the heading text, and the heading text starts at the content's left edge (the anchor never indents the heading)
+//  J. heading anchor placement (FU-SB-DOCS-ANCHOR-KBD, replaces the NITS gutter check): at every width the heading text
+//     starts at the content's left edge (the anchor never indents it), the link sits on the same line as the heading's
+//     last word and to its right (the target never covers letters), each heading has exactly one link, and Storybook's
+//     own anchor is not rendered; on a wrapped heading the target may reach at most 8px into the line above's text box (KI-9), and the focus ring around the icon touches none of the heading's letters. H, J and K cover every heading that has a Storybook anchor (the autodocs Title h1 has none).
+//  K. keyboard and name (FU-SB-DOCS-ANCHOR-KBD), at 375 and 1280 in light and dark: every link has
+//     aria-label "Link to <heading text>" (text read without any anchor; no '#'), is not aria-hidden, is in the Tab
+//     order, and Tab reaches the links in document order; on focus the icon is visible, the ring (drawn on the icon) is the
+//     --focus-ring-color token, solid, at least 2px, and the icon stays visible after the pointer leaves; a click lands
+//     on #<id>. An h1, h2 and h3 from the real pages and an injected h4 fixture (added after load, so the observer
+//     path is tested) are asserted by exact name.
 // --no-has: strips every rule whose selector uses :has() from the served preview head (a browser without :has()), then
-//     runs E, F, H, I and J with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
+//     runs E, F, H, I and J (K is skipped) with the fallback floor for E: at least 24x24 and elementFromPoint lands on the button at the
 //     centre and the 4 edge midpoints (corners may be clipped by the 12px radius there, as on main). A-D and G are skipped.
 // Usage: NODE_PATH=<dir with playwright-core> node docs-check.cjs <baseUrl> [--no-has]   exits 1 on any failure.
 //     Tokens default to the repo's src/tokens.json; TOKENS=<path> overrides it (resolved from the current directory).
@@ -24,7 +35,7 @@ const NO_HAS = process.argv.includes('--no-has');
 // Removes each `selector { ... }` rule whose selector contains :has( from <style> blocks (comments must not contain that text).
 const stripHas = (html) => html.replace(/<style[\s\S]*?<\/style>/g, (st) => st.replace(/[^{}]*:has\([^{}]*\{[^{}]*\}/g, ''));
 const PAGES = ['introduction--docs', 'tokens--docs', 'components-button--docs', 'components-table--docs'];
-const WIDTHS = [320, 375, 599, 600, 1280];
+const WIDTHS = [320, 375, 599, 600, 641, 800, 900, 1040, 1095, 1280]; // 641..1095: the 20px-gutter band (VQA's #58 follow-up; 641 and 900 per CA)
 const LINK = { light: '--accent-hover', dark: '--accent' };
 const hex = (h) => { const n = parseInt(h.slice(1), 16); return `rgb(${n >> 16}, ${(n >> 8) & 255}, ${n & 255})`; };
 let fails = 0, passes = 0; const minText = {}, minUi = {};
@@ -61,7 +72,7 @@ const PAGE_FNS = () => {
           const { parse, ratio, bgOf, chrome, over } = window.__dc; const out = { text: [], ui: [], fid: {} };
           const wr = document.querySelector('.sbdocs-wrapper'); out.fid.page = getComputedStyle(wr).backgroundColor;
           out.fid.h1 = getComputedStyle(document.querySelector('.sbdocs h1')).color;
-          const a = document.querySelector('.sbdocs-content a:not(.em-btn):not([aria-hidden])'); out.fid.link = a ? getComputedStyle(a).color : null;
+          const a = document.querySelector('.sbdocs-content a:not(.em-btn):not([aria-hidden]):not([data-eb-anchor])'); out.fid.link = a ? getComputedStyle(a).color : null;
           const src = document.querySelector('.docblock-source'); out.fid.code = src ? getComputedStyle(src).backgroundColor : null;
           for (const el of document.querySelectorAll('.sbdocs *')) {
             if (!chrome(el)) continue; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) continue;
@@ -121,26 +132,83 @@ const PAGE_FNS = () => {
       }
       for (const c of await page.evaluate(() => [...document.querySelectorAll('.sbdocs-preview > .sb-bar')].map((bar) => { const st = bar.parentElement.querySelector(':scope > .docs-story'); return st ? st.getBoundingClientRect().top - bar.getBoundingClientRect().bottom : null; })))
         if (c !== null) ok(c >= -0.5, `I ${w} ${id} Canvas bar covers the story's top ${(-c).toFixed(1)}px`);
-      for (const j of await page.evaluate(() => { const c = document.querySelector('.sbdocs-content').getBoundingClientRect().left;
-        return [...document.querySelectorAll('.sbdocs-content :is(h1, h2, h3, h4) > a[aria-hidden="true"]')].map((el) => { const s = (el.querySelector('svg') || el).getBoundingClientRect(), r = document.createRange();
-          r.selectNodeContents(el.parentElement); r.setStartAfter(el); const t = r.getBoundingClientRect().left;
-          return { name: el.parentElement.textContent.trim().slice(0, 20), sl: +s.left.toFixed(1), sr: +s.right.toFixed(1), t: +t.toFixed(1), c: +c.toFixed(1) }; }); }))
-        ok(j.sl >= -0.5 && j.sr <= j.t + 0.5 && Math.abs(j.t - j.c) <= 0.5, `J ${w} ${id} anchor "${j.name}" icon x ${j.sl}..${j.sr}, heading text at ${j.t}, content left ${j.c}`);
-      if (w === 320 || w === 1280) for (const a of await page.$$('.sbdocs-content :is(h1, h2, h3, h4) a[aria-hidden="true"]')) {
+      for (const j of await page.evaluate(() => { const col = document.querySelector('.sbdocs-content').getBoundingClientRect();
+        return [...document.querySelectorAll('.sbdocs-content :is(h1, h2, h3, h4)')].filter((h) => h.querySelector('a[href^="#"]')).map((h) => { const links = h.querySelectorAll('a[data-eb-anchor]'); const el = links[0];
+          const src = h.querySelector(':scope > a[data-eb-anchor-src]'); const out = { name: h.textContent.trim().slice(0, 24), n: links.length, srcShown: !!src && getComputedStyle(src).display !== 'none' };
+          if (!el) return out; const r = document.createRange(); r.selectNodeContents(h); const all = [...r.getClientRects()].filter((q) => q.width > 0);
+          const tr = document.createRange(); const tail = el.parentElement; const txt = [...tail.childNodes].find((n) => n.nodeType === 3 && n.textContent.trim());
+          const s = el.querySelector('svg').getBoundingClientRect(), b = el.getBoundingClientRect();
+          let last = null; if (txt) { tr.selectNodeContents(txt); const q = [...tr.getClientRects()]; last = q[q.length - 1]; }
+          const first = document.createRange(); first.selectNodeContents(h); const fr = [...first.getClientRects()].filter((q) => q.width > 0 && q.height > 0)[0];
+          // Text boxes of the heading's own words that the 44px target overlaps (only the line above, on wrapped headings; KI-9).
+          let ov = 0; const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+          for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (n.parentElement.closest('a') || !n.textContent.trim()) continue; const q0 = document.createRange(); q0.selectNodeContents(n);
+            for (const q of q0.getClientRects()) if (q.width > 0 && q.bottom > b.top && q.top < b.bottom && q.right > b.left && q.left < b.right) ov = Math.max(ov, Math.min(q.bottom, b.bottom) - Math.max(q.top, b.top)); }
+          out.ov = +ov.toFixed(1);
+          // The focus ring (around the icon: 2px offset + 3px ring) must not touch any of the heading's letters.
+          const R = { l: s.left - 5, r: s.right + 5, t: s.top - 5, b: s.bottom + 5 };
+          out.ringHit = 0; const tw2 = document.createTreeWalker(h, NodeFilter.SHOW_TEXT);
+          for (let n = tw2.nextNode(); n; n = tw2.nextNode()) { if (n.parentElement.closest('a') || !n.textContent.trim()) continue; const q0 = document.createRange(); q0.selectNodeContents(n);
+            for (const q of q0.getClientRects()) if (q.width > 0 && q.right > R.l + 0.5 && q.left < R.r - 0.5 && q.bottom - 4 > R.t && q.top + 4 < R.b) out.ringHit++; }
+          Object.assign(out, { t: +fr.left.toFixed(1), c: +col.left.toFixed(1), cr: +col.right.toFixed(1), bl: +b.left.toFixed(1), br: +b.right.toFixed(1), lastR: last ? +last.right.toFixed(1) : null, sameLine: last ? (s.top + s.height / 2 >= last.top && s.top + s.height / 2 <= last.bottom) : false });
+          return out; }); }))
+        ok(j.n === 1 && !j.srcShown && j.lastR !== null && Math.abs(j.t - j.c) <= 0.5 && j.bl >= j.lastR - 0.5 && j.sameLine && j.ov <= 8 && j.ringHit === 0, `J ${w} ${id} "${j.name}" links ${j.n}, storybook anchor shown ${j.srcShown}, text at ${j.t} (content ${j.c}), link ${j.bl}..${j.br} vs last word end ${j.lastR}, same line ${j.sameLine}, overlaps heading text by ${j.ov}px (max 8, KI-9), ring touches ${j.ringHit} text boxes`);
+      for (const a of await page.$$('.sbdocs-content a[data-eb-anchor]')) {
         await a.scrollIntoViewIfNeeded();
-        const bad = await a.evaluate((el) => { const b = el.getBoundingClientRect(), cx = b.left + b.width / 2, cy = b.top + b.height / 2; const out = [];
-          const T = 'a, button, input, select, textarea, summary, [role="button"], [role="tab"], [role="link"], [tabindex]:not([tabindex="-1"])';
-          for (let i = -1; i < 16; i++) { const x = i < 0 ? cx : cx + 12 * Math.cos(i * Math.PI / 8), y = i < 0 ? cy : cy + 12 * Math.sin(i * Math.PI / 8); const h = document.elementFromPoint(x, y); const t = h && h.closest(T); if (t && t !== el) out.push((t.getAttribute('aria-label') || t.title || t.textContent).trim().slice(0, 16)); }
-          return { name: el.parentElement.textContent.trim().slice(0, 20), out }; });
-        ok(bad.out.length === 0, `H ${w} ${id} anchor "${bad.name}" 24px circle overlaps ${[...new Set(bad.out)].join(', ')}`);
+        const r = await a.evaluate((el) => { const b = el.getBoundingClientRect(), col = document.querySelector('.sbdocs-content').getBoundingClientRect();
+          const P = [[b.left + b.width / 2, b.top + b.height / 2], [b.left + b.width / 2, b.top + 1], [b.left + b.width / 2, b.bottom - 1], [b.left + 1, b.top + b.height / 2], [b.right - 1, b.top + b.height / 2], [b.left + 4, b.top + 4], [b.right - 4, b.top + 4], [b.left + 4, b.bottom - 4], [b.right - 4, b.bottom - 4]];
+          return { t: el.getAttribute('aria-label'), w: b.width, h: b.height, inCol: b.left >= Math.max(0, col.left) - 0.5 && b.right <= col.right + 0.5 && b.right <= innerWidth + 0.5, hits: P.map(([x, y]) => { const h = document.elementFromPoint(x, y); return h && (h === el || el.contains(h)) ? 1 : 0; }).join(''),
+            // No other interactive target (link, button, field, tabbable) may intersect the 44px box, e.g. a link in the paragraph below.
+            near: [...document.querySelectorAll('a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter((o) => o !== el && !el.contains(o) && !o.contains(el) && o.offsetParent !== null && getComputedStyle(o).visibility !== 'hidden')
+              .flatMap((o) => [...o.getClientRects()].filter((q) => q.width > 0 && q.height > 0 && q.left < b.right - 0.5 && q.right > b.left + 0.5 && q.top < b.bottom - 0.5 && q.bottom > b.top + 0.5).map(() => `${o.tagName.toLowerCase()}${o.getAttribute('aria-label') ? '[' + o.getAttribute('aria-label') + ']' : ''}`)).slice(0, 3).join(' '),
+            miss: P.map(([x, y]) => { const h = document.elementFromPoint(x, y); return h && !(h === el || el.contains(h)) ? `${h.tagName.toLowerCase()}${h.id ? '#' + h.id : ''}.${String(h.className.baseVal ?? h.className).split(' ')[0]}@${Math.round(x)},${Math.round(y)}` : null; }).filter(Boolean).slice(0, 2).join(' ') }; });
+        ok(r.w >= 44 && r.h >= 44 && r.hits === '111111111' && r.inCol && !r.near, `H ${w} ${id} "${r.t}" ${r.w.toFixed(1)}x${r.h.toFixed(1)} hits ${r.hits} inside column ${r.inCol} overlaps targets [${r.near}] ${r.miss}`);
       }
       await page.close();
     }
     await ctx.close();
   }
+  // K. keyboard order, accessible names, focus reveal and ring.
+  if (!NO_HAS) for (const mode of ['light', 'dark']) for (const w of [375, 1280]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: 800 } }); const seen = { H1: 0, H2: 0, H3: 0, H4: 0 };
+    for (const id of PAGES) {
+      const page = await open(ctx, id, mode); const tag = `K ${mode} ${w} ${id}`;
+      if (id === 'components-button--docs') { // h4 fixture, added after load: the observer must pick it up.
+        await page.evaluate(() => { const h = document.createElement('h4'); h.id = 'eb-fixture-h4'; const a = document.createElement('a'); a.setAttribute('aria-hidden', 'true'); a.setAttribute('tabindex', '-1'); a.href = '#eb-fixture-h4';
+          a.innerHTML = '<svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 1h12v12H1z" fill="currentColor"/></svg>'; h.append(a, 'Fixture heading four'); document.querySelector('.sbdocs-content').append(h); });
+        await page.waitForTimeout(200);
+      }
+      const names = await page.evaluate(() => [...document.querySelectorAll('.sbdocs-content :is(h1, h2, h3, h4)')].filter((h) => h.querySelector('a[href^="#"]')).map((h) => { const c = h.cloneNode(true); c.querySelectorAll('a').forEach((n) => n.remove());
+        const a = h.querySelector('a[data-eb-anchor]'); return { tag: h.tagName, want: 'Link to ' + c.textContent.replace(/\s+/g, ' ').trim(), got: a && a.getAttribute('aria-label'), hidden: !!(a && a.closest('[aria-hidden="true"]')), tab: a ? a.tabIndex : null, href: a && a.getAttribute('href'), id: h.id }; }));
+      for (const n of names) { seen[n.tag]++; ok(n.got === n.want && !/#|\s$/.test(n.got) && !n.hidden && n.tab === 0 && n.href === '#' + n.id, `${tag} ${n.tag} name "${n.got}" want "${n.want}" aria-hidden ${n.hidden} tabIndex ${n.tab} href ${n.href}`); }
+      if (id === 'components-button--docs') ok(names.some((n) => n.tag === 'H4' && n.got === 'Link to Fixture heading four'), `${tag} h4 fixture not enhanced`);
+      // Tab order: from the top of the page, the anchors come in document order.
+      const order = await page.evaluate(() => [...document.querySelectorAll('.sbdocs-content a[data-eb-anchor]')].map((a) => a.getAttribute('aria-label')));
+      await page.evaluate(() => { document.activeElement && document.activeElement.blur(); window.scrollTo(0, 0); }); const got = [];
+      for (let i = 0; i < 400 && got.length < order.length; i++) { await page.keyboard.press('Tab'); const f = await page.evaluate(() => { const a = document.activeElement; return a && a.hasAttribute('data-eb-anchor') ? a.getAttribute('aria-label') : (a === document.body ? 'BODY' : null); }); if (f === 'BODY') break; if (f) got.push(f); }
+      ok(JSON.stringify(got) === JSON.stringify(order), `${tag} Tab order ${got.length}/${order.length} ${got.find((g, i) => g !== order[i]) || ''}`);
+      // Focus: ring token, icon visible, stays visible after the pointer leaves.
+      const ring = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--focus-ring-color').trim());
+      const want = hex(ring);
+      for (const a of (await page.$$('.sbdocs-content a[data-eb-anchor]')).slice(0, 6)) {
+        // Pointer over the heading first (hover reveal), then keyboard focus (a key press makes the next focus :focus-visible),
+        // then the pointer leaves: the icon must stay visible while focused.
+        await a.scrollIntoViewIfNeeded(); const box = await a.boundingBox(); await page.mouse.move(box.x - 20, box.y + box.height / 2);
+        await page.keyboard.press('Shift'); await a.focus();
+        await page.mouse.move(2, 2); await page.waitForTimeout(50);
+        const f = await a.evaluate((el) => { const cs = getComputedStyle(el.querySelector('svg')); return { fv: el.matches(':focus-visible'), vis: getComputedStyle(el.querySelector('svg')).visibility, st: cs.outlineStyle, wd: parseFloat(cs.outlineWidth), col: cs.outlineColor, n: el.getAttribute('aria-label') }; });
+        ok(f.fv && f.vis === 'visible' && f.st === 'solid' && f.wd >= 2 && f.col === want, `${tag} focus "${f.n}" focus-visible ${f.fv} icon ${f.vis} ring ${f.st} ${f.wd}px ${f.col} want ${want}`);
+      }
+      const first = await page.$('.sbdocs-content h2 > [data-eb-anchor-tail] > a[data-eb-anchor]');
+      if (first) { const hid = await first.evaluate((el) => el.closest('h2').id); await first.scrollIntoViewIfNeeded(); await first.click(); await page.waitForTimeout(200); const hash = await page.evaluate(() => location.hash); ok(hash === '#' + hid, `${tag} click goes to #${hid}, got ${hash}`); }
+      await page.close();
+    }
+    ok(seen.H1 > 0 && seen.H2 > 0 && seen.H3 > 0 && seen.H4 > 0, `K ${mode} ${w} named headings by level ${JSON.stringify(seen)}`);
+    await ctx.close();
+  }
   // G. reduced motion.
   if (!NO_HAS) { const ctx = await browser.newContext({ viewport: { width: 375, height: 800 }, reducedMotion: 'reduce' });
-    for (const id of PAGES) { const page = await open(ctx, id, 'dark'); const n = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length); ok(n === 0, `G reduce ${id}: ${n} running`); await page.close(); }
+    for (const id of PAGES) { const page = await open(ctx, id, 'dark'); const fa = await page.$('a[data-eb-anchor]'); if (fa) { await page.keyboard.press('Shift'); await fa.focus(); } const n = await page.evaluate(() => document.getAnimations().filter((a) => a.playState === 'running').length); ok(n === 0, `G reduce ${id}: ${n} running`); await page.close(); }
     await ctx.close(); }
   await browser.close();
   console.log('\nLowest text contrast by mode and kind:'); for (const [k, v] of Object.entries(minText).sort()) console.log(`  ${k}: ${v.toFixed(2)}`);

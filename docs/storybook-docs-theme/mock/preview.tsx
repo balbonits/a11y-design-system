@@ -58,7 +58,83 @@ const docsMode = (): DocsMode => {
   if (m === 'light' || m === 'dark') return m;
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
+// FU-SB-DOCS-ANCHOR-KBD: Storybook 8.6.19 renders each docs heading anchor as
+// <a aria-hidden="true" tabindex="-1" href="#id"><svg/></a> floated into the left gutter, so keyboard and
+// screen-reader users can't reach it, and narrow gutters have no room for a 44px target.
+// For each heading this adds a real link at the END of the heading, inside a nowrap wrapper with the heading's
+// last word: <span data-eb-anchor-tail>lastWord<a data-eb-anchor aria-label="Link to <heading>">svg</a></span>,
+// so the icon never sits alone on a line. Storybook's own anchor stays in the DOM (React owns it), hidden by CSS;
+// a click on the new link is forwarded to it, so Storybook's own navigation still runs.
+// The last word is split off the heading's last direct text node. If React ever rewrites that text node, the next
+// pass sees the change, removes the wrapper and redoes it, so text is never duplicated or lost.
+// Idempotent: an up-to-date heading is skipped, so the observer's own writes never loop; it disconnects on unmount.
+const HEADING_SEL = '.sbdocs-content :is(h1, h2, h3, h4)';
+const SPLIT = new WeakMap<HTMLElement, { text: Text | null; head: string }>();
+function headingName(h: HTMLElement): string {
+  const c = h.cloneNode(true) as HTMLElement;
+  c.querySelectorAll('a[href^="#"]').forEach((n) => n.remove());
+  return (c.textContent ?? '').replace(/\s+/g, ' ').trim();
+}
+function lastDirectText(h: HTMLElement): Text | null {
+  for (let n = h.lastChild; n; n = n.previousSibling) {
+    if (n.nodeType === Node.TEXT_NODE && (n.textContent ?? '').trim()) return n as Text;
+    if (n.nodeType === Node.ELEMENT_NODE && !(n as Element).matches('a[href^="#"], [data-eb-anchor-tail]') && (n.textContent ?? '').trim()) return null;
+  }
+  return null;
+}
+function undo(h: HTMLElement) {
+  h.querySelector(':scope > [data-eb-anchor-tail]')?.remove();
+  SPLIT.delete(h);
+}
+function enhanceHeading(h: HTMLElement) {
+  const src = h.querySelector<HTMLAnchorElement>(':scope > a[href^="#"]:not([data-eb-anchor])');
+  const done = SPLIT.get(h);
+  if (done) {
+    const tail = h.querySelector(':scope > [data-eb-anchor-tail]');
+    if (tail && (!done.text || (done.text.isConnected && done.text.nodeValue === done.head))) return; // up to date
+    undo(h); // React rewrote the text: rebuild below
+  }
+  if (!src) return;
+  const name = headingName(h);
+  if (!name) return;
+  const a = document.createElement('a');
+  a.setAttribute('href', src.getAttribute('href') ?? `#${h.id}`);
+  a.setAttribute('aria-label', `Link to ${name}`);
+  a.setAttribute('data-eb-anchor', '');
+  const icon = src.querySelector('svg');
+  if (icon) { const i = icon.cloneNode(true) as SVGElement; i.setAttribute('aria-hidden', 'true'); i.setAttribute('focusable', 'false'); a.append(i); }
+  a.addEventListener('click', (e) => { e.preventDefault(); src.click(); });
+  src.setAttribute('data-eb-anchor-src', '');
+  const tail = document.createElement('span');
+  tail.setAttribute('data-eb-anchor-tail', '');
+  const text = lastDirectText(h);
+  let head = '';
+  if (text) {
+    const v = text.nodeValue ?? '';
+    const m = /\S+\s*$/.exec(v);
+    const cut = m ? m.index : v.length;
+    head = v.slice(0, cut);
+    tail.append(v.slice(cut));
+    text.nodeValue = head;
+  }
+  tail.append(a);
+  h.append(tail);
+  SPLIT.set(h, { text, head });
+}
+function enhanceAnchors(root: ParentNode) {
+  root.querySelectorAll<HTMLElement>(HEADING_SEL).forEach(enhanceHeading);
+}
+function useDocsAnchors() {
+  useEffect(() => {
+    const run = () => enhanceAnchors(document);
+    const mo = new MutationObserver(run);
+    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+    run();
+    return () => mo.disconnect();
+  }, []);
+}
 function EmberDocsContainer(props: ComponentProps<typeof DocsContainer>) {
+  useDocsAnchors();
   const [mode, setMode] = useState<DocsMode>(docsMode);
   useEffect(() => {
     const update = () => setMode(docsMode());
