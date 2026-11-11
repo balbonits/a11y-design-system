@@ -20,7 +20,7 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--accent-hover` | `red-800` | <span style="display:inline-block;width:1em;height:1em;background:#9C1305;border:1px solid #777;vertical-align:middle"></span> `#9C1305` | `red-300` | <span style="display:inline-block;width:1em;height:1em;background:#FF8B7A;border:1px solid #777;vertical-align:middle"></span> `#FF8B7A` |
 | `--accent-soft` | `red-100` | <span style="display:inline-block;width:1em;height:1em;background:#FCE3DD;border:1px solid #777;vertical-align:middle"></span> `#FCE3DD` | `red-950` | <span style="display:inline-block;width:1em;height:1em;background:#3B0E12;border:1px solid #777;vertical-align:middle"></span> `#3B0E12` |
 | `--accent-contrast` | `white` | <span style="display:inline-block;width:1em;height:1em;background:#FFFFFF;border:1px solid #777;vertical-align:middle"></span> `#FFFFFF` | `night-900` | <span style="display:inline-block;width:1em;height:1em;background:#070F33;border:1px solid #777;vertical-align:middle"></span> `#070F33` |
-| `--focus` | `cobalt-700` | <span style="display:inline-block;width:1em;height:1em;background:#1434B8;border:1px solid #777;vertical-align:middle"></span> `#1434B8` | `cobalt-200` | <span style="display:inline-block;width:1em;height:1em;background:#C2CFFF;border:1px solid #777;vertical-align:middle"></span> `#C2CFFF` |
+| `--focus-ring-color` | `cobalt-700` | <span style="display:inline-block;width:1em;height:1em;background:#1434B8;border:1px solid #777;vertical-align:middle"></span> `#1434B8` | `cobalt-200` | <span style="display:inline-block;width:1em;height:1em;background:#C2CFFF;border:1px solid #777;vertical-align:middle"></span> `#C2CFFF` |
 | `--success` | `green-700` | <span style="display:inline-block;width:1em;height:1em;background:#0B6B37;border:1px solid #777;vertical-align:middle"></span> `#0B6B37` | `green-300` | <span style="display:inline-block;width:1em;height:1em;background:#6FE0A0;border:1px solid #777;vertical-align:middle"></span> `#6FE0A0` |
 | `--warning` | `amber-800` | <span style="display:inline-block;width:1em;height:1em;background:#8A4B00;border:1px solid #777;vertical-align:middle"></span> `#8A4B00` | `amber-300` | <span style="display:inline-block;width:1em;height:1em;background:#FFC861;border:1px solid #777;vertical-align:middle"></span> `#FFC861` |
 | `--danger` | `crimson-700` | <span style="display:inline-block;width:1em;height:1em;background:#A3122A;border:1px solid #777;vertical-align:middle"></span> `#A3122A` | `crimson-300` | <span style="display:inline-block;width:1em;height:1em;background:#FF93A6;border:1px solid #777;vertical-align:middle"></span> `#FF93A6` |
@@ -30,7 +30,7 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--highlight` | `cobalt-700` | <span style="display:inline-block;width:1em;height:1em;background:#1434B8;border:1px solid #777;vertical-align:middle"></span> `#1434B8` | `cobalt-600` | <span style="display:inline-block;width:1em;height:1em;background:#1D44D6;border:1px solid #777;vertical-align:middle"></span> `#1D44D6` |
 | `--highlight-contrast` | `warm-50` | <span style="display:inline-block;width:1em;height:1em;background:#FBF8F1;border:1px solid #777;vertical-align:middle"></span> `#FBF8F1` | `warm-50` | <span style="display:inline-block;width:1em;height:1em;background:#FBF8F1;border:1px solid #777;vertical-align:middle"></span> `#FBF8F1` |
 
-`--highlight` and `--highlight-contrast` are proposed additions, matching direction F: a feature-band fill and the text on it. Every other token uses Ember's existing names.
+Color names are Ember's, plus `--highlight` and `--highlight-contrast` (a feature-band fill and the text on it) and `--focus-ring-color`, all from the locked set in ARCH-REVIEW Addendum 5. There are no `--radius` or `--focus` aliases.
 
 ## Primitives
 | Token | Value |
@@ -70,6 +70,8 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--palette-crimson-200` | <span style="display:inline-block;width:1em;height:1em;background:#FFB3C0;border:1px solid #777;vertical-align:middle"></span> `#FFB3C0` |
 
 ## Shape, type and motion
+Shape names follow ARCH-REVIEW Addendum 5 (`--radius-sm/md/lg/full`, `--border-width(-strong)`, `--shadow-raised/press`, `--divider-shape`, `--focus-ring-*`, `--control-*`, `--target-min`, `--tilt`, `--lift`). Anything else in this table is a direction-local extra (fonts, motion, and `--shadow-overlay` for floating layers) and is named as such in HANDOFF.md.
+
 | Token | Value |
 |---|---|
 | `--font-display` | `'Bricolage Grotesque', 'Arial Narrow', system-ui, sans-serif` |
@@ -78,14 +80,24 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--weight-display` | `700` |
 | `--weight-display-min` | `300` |
 | `--weight-display-max` | `800` |
-| `--radius-surface` | `0px` |
-| `--radius-control` | `2px` |
-| `--radius-field` | `0px` |
-| `--radius-pill` | `2px` |
+| `--radius-lg` | `0px` |
+| `--radius-md` | `2px` |
+| `--radius-sm` | `0px` |
+| `--radius-full` | `2px` |
 | `--border-width` | `2px` |
+| `--border-width-strong` | `3px` |
+| `--divider-shape` | `none` |
+| `--focus-ring-width` | `3px` |
+| `--focus-ring-offset` | `3px` |
+| `--focus-ring-style` | `solid` |
+| `--control-height` | `48px` |
+| `--control-padding-x` | `1.3rem` |
+| `--control-gap` | `.6rem` |
+| `--target-min` | `44px` |
+| `--tilt` | `0deg` |
 | `--rule` | `1px` |
-| `--shadow-1` | `none` |
-| `--shadow-2` | `none` |
+| `--shadow-raised` | `none` |
+| `--shadow-overlay` | `none` |
 | `--shadow-press` | `none` |
 | `--blur-glass` | `0px` |
 | `--duration-fast` | `140ms` |

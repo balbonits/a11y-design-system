@@ -30,9 +30,9 @@
 | dusk-light | highlight-contrast | highlight | 4.5 | 7.44 | pass |
 | dusk-light | border | color-bg | 3 | 4.30 | pass |
 | dusk-light | border | surface | 3 | 4.59 | pass |
-| dusk-light | focus | color-bg | 3 | 5.73 | pass |
-| dusk-light | focus | surface | 3 | 6.11 | pass |
-| dusk-light | focus | surface-muted | 3 | 5.15 | pass |
+| dusk-light | focus-ring-color | color-bg | 3 | 5.73 | pass |
+| dusk-light | focus-ring-color | surface | 3 | 6.11 | pass |
+| dusk-light | focus-ring-color | surface-muted | 3 | 5.15 | pass |
 | dusk-light | accent | surface-muted | 3 | 7.72 | pass |
 | dusk-dark | text | color-bg | 4.5 | 17.65 | pass |
 | dusk-dark | text | surface | 4.5 | 16.63 | pass |
@@ -60,7 +60,7 @@
 | dusk-dark | highlight-contrast | highlight | 4.5 | 8.17 | pass |
 | dusk-dark | border | color-bg | 3 | 5.80 | pass |
 | dusk-dark | border | surface | 3 | 5.47 | pass |
-| dusk-dark | focus | color-bg | 3 | 9.88 | pass |
-| dusk-dark | focus | surface | 3 | 9.31 | pass |
-| dusk-dark | focus | surface-muted | 3 | 8.37 | pass |
+| dusk-dark | focus-ring-color | color-bg | 3 | 9.88 | pass |
+| dusk-dark | focus-ring-color | surface | 3 | 9.31 | pass |
+| dusk-dark | focus-ring-color | surface-muted | 3 | 8.37 | pass |
 | dusk-dark | accent | surface-muted | 3 | 9.04 | pass |

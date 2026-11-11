@@ -20,7 +20,7 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--accent-hover` | `plum-800` | <span style="display:inline-block;width:1em;height:1em;background:#5A1D5C;border:1px solid #777;vertical-align:middle"></span> `#5A1D5C` | `apricot-300` | <span style="display:inline-block;width:1em;height:1em;background:#FFC79E;border:1px solid #777;vertical-align:middle"></span> `#FFC79E` |
 | `--accent-soft` | `plum-100` | <span style="display:inline-block;width:1em;height:1em;background:#F5E3EF;border:1px solid #777;vertical-align:middle"></span> `#F5E3EF` | `aub-700` | <span style="display:inline-block;width:1em;height:1em;background:#412247;border:1px solid #777;vertical-align:middle"></span> `#412247` |
 | `--accent-contrast` | `white` | <span style="display:inline-block;width:1em;height:1em;background:#FFFFFF;border:1px solid #777;vertical-align:middle"></span> `#FFFFFF` | `aub-950` | <span style="display:inline-block;width:1em;height:1em;background:#1B0B1F;border:1px solid #777;vertical-align:middle"></span> `#1B0B1F` |
-| `--focus` | `coral-700` | <span style="display:inline-block;width:1em;height:1em;background:#A8402C;border:1px solid #777;vertical-align:middle"></span> `#A8402C` | `coral-300` | <span style="display:inline-block;width:1em;height:1em;background:#FFA58C;border:1px solid #777;vertical-align:middle"></span> `#FFA58C` |
+| `--focus-ring-color` | `coral-700` | <span style="display:inline-block;width:1em;height:1em;background:#A8402C;border:1px solid #777;vertical-align:middle"></span> `#A8402C` | `coral-300` | <span style="display:inline-block;width:1em;height:1em;background:#FFA58C;border:1px solid #777;vertical-align:middle"></span> `#FFA58C` |
 | `--success` | `green-700` | <span style="display:inline-block;width:1em;height:1em;background:#1F6B45;border:1px solid #777;vertical-align:middle"></span> `#1F6B45` | `green-300` | <span style="display:inline-block;width:1em;height:1em;background:#86DDB0;border:1px solid #777;vertical-align:middle"></span> `#86DDB0` |
 | `--warning` | `amber-800` | <span style="display:inline-block;width:1em;height:1em;background:#8A4A06;border:1px solid #777;vertical-align:middle"></span> `#8A4A06` | `amber-300` | <span style="display:inline-block;width:1em;height:1em;background:#FFCB7A;border:1px solid #777;vertical-align:middle"></span> `#FFCB7A` |
 | `--danger` | `rose-700` | <span style="display:inline-block;width:1em;height:1em;background:#A8243F;border:1px solid #777;vertical-align:middle"></span> `#A8243F` | `rose-300` | <span style="display:inline-block;width:1em;height:1em;background:#FF9DB2;border:1px solid #777;vertical-align:middle"></span> `#FF9DB2` |
@@ -30,7 +30,7 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--highlight` | `coral-400` | <span style="display:inline-block;width:1em;height:1em;background:#FF8A6B;border:1px solid #777;vertical-align:middle"></span> `#FF8A6B` | `coral-400` | <span style="display:inline-block;width:1em;height:1em;background:#FF8A6B;border:1px solid #777;vertical-align:middle"></span> `#FF8A6B` |
 | `--highlight-contrast` | `plum-950` | <span style="display:inline-block;width:1em;height:1em;background:#2E0F2D;border:1px solid #777;vertical-align:middle"></span> `#2E0F2D` | `aub-950` | <span style="display:inline-block;width:1em;height:1em;background:#1B0B1F;border:1px solid #777;vertical-align:middle"></span> `#1B0B1F` |
 
-`--highlight` and `--highlight-contrast` are proposed additions, matching direction F: a feature-band fill and the text on it. Every other token uses Ember's existing names.
+Color names are Ember's, plus `--highlight` and `--highlight-contrast` (a feature-band fill and the text on it) and `--focus-ring-color`, all from the locked set in ARCH-REVIEW Addendum 5. There are no `--radius` or `--focus` aliases.
 
 ## Primitives
 | Token | Value |
@@ -73,19 +73,31 @@ Live swatches for the current mode are in the prototype's [Tokens screen](index.
 | `--palette-blue-300` | <span style="display:inline-block;width:1em;height:1em;background:#A9C6FF;border:1px solid #777;vertical-align:middle"></span> `#A9C6FF` |
 
 ## Shape, type and motion
+Shape names follow ARCH-REVIEW Addendum 5 (`--radius-sm/md/lg/full`, `--border-width(-strong)`, `--shadow-raised/press`, `--divider-shape`, `--focus-ring-*`, `--control-*`, `--target-min`, `--tilt`, `--lift`). Anything else in this table is a direction-local extra (fonts, motion, and `--shadow-overlay` for floating layers) and is named as such in HANDOFF.md.
+
 | Token | Value |
 |---|---|
 | `--font-display` | `'Young Serif', Georgia, serif` |
 | `--font-body` | `'Nunito Sans', system-ui, sans-serif` |
 | `--font-mono` | `'Nunito Sans', system-ui, sans-serif` |
 | `--weight-display` | `400` |
-| `--radius-surface` | `32px` |
-| `--radius-control` | `999px` |
-| `--radius-field` | `18px` |
-| `--radius-pill` | `999px` |
+| `--radius-lg` | `32px` |
+| `--radius-md` | `999px` |
+| `--radius-sm` | `18px` |
+| `--radius-full` | `999px` |
 | `--border-width` | `1.5px` |
-| `--shadow-1` | `0 2px 6px rgb(61 19 64 / .08)` |
-| `--shadow-2` | `0 18px 48px -18px rgb(61 19 64 / .28)` |
+| `--border-width-strong` | `2.5px` |
+| `--divider-shape` | `curve` |
+| `--focus-ring-width` | `3px` |
+| `--focus-ring-offset` | `3px` |
+| `--focus-ring-style` | `solid` |
+| `--control-height` | `48px` |
+| `--control-padding-x` | `1.4rem` |
+| `--control-gap` | `.6rem` |
+| `--target-min` | `44px` |
+| `--tilt` | `0deg` |
+| `--shadow-raised` | `0 2px 6px rgb(61 19 64 / .08)` |
+| `--shadow-overlay` | `0 18px 48px -18px rgb(61 19 64 / .28)` |
 | `--shadow-press` | `none` |
 | `--blur-glass` | `0px` |
 | `--duration-fast` | `200ms` |

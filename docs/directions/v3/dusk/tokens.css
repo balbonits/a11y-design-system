@@ -42,13 +42,23 @@
   --font-body: 'Nunito Sans', system-ui, sans-serif;
   --font-mono: 'Nunito Sans', system-ui, sans-serif;
   --weight-display: 400;
-  --radius-surface: 32px;
-  --radius-control: 999px;
-  --radius-field: 18px;
-  --radius-pill: 999px;
+  --radius-lg: 32px;
+  --radius-md: 999px;
+  --radius-sm: 18px;
+  --radius-full: 999px;
   --border-width: 1.5px;
-  --shadow-1: 0 2px 6px rgb(61 19 64 / .08);
-  --shadow-2: 0 18px 48px -18px rgb(61 19 64 / .28);
+  --border-width-strong: 2.5px;
+  --divider-shape: curve;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+  --focus-ring-style: solid;
+  --control-height: 48px;
+  --control-padding-x: 1.4rem;
+  --control-gap: .6rem;
+  --target-min: 44px;
+  --tilt: 0deg;
+  --shadow-raised: 0 2px 6px rgb(61 19 64 / .08);
+  --shadow-overlay: 0 18px 48px -18px rgb(61 19 64 / .28);
   --shadow-press: none;
   --blur-glass: 0px;
   --duration-fast: 200ms;
@@ -74,7 +84,7 @@
   --accent-hover: var(--palette-plum-800);
   --accent-soft: var(--palette-plum-100);
   --accent-contrast: var(--palette-white);
-  --focus: var(--palette-coral-700);
+  --focus-ring-color: var(--palette-coral-700);
   --success: var(--palette-green-700);
   --warning: var(--palette-amber-800);
   --danger: var(--palette-rose-700);
@@ -97,7 +107,7 @@
   --accent-hover: var(--palette-apricot-300);
   --accent-soft: var(--palette-aub-700);
   --accent-contrast: var(--palette-aub-950);
-  --focus: var(--palette-coral-300);
+  --focus-ring-color: var(--palette-coral-300);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-rose-300);
@@ -120,7 +130,7 @@
   --accent-hover: var(--palette-apricot-300);
   --accent-soft: var(--palette-aub-700);
   --accent-contrast: var(--palette-aub-950);
-  --focus: var(--palette-coral-300);
+  --focus-ring-color: var(--palette-coral-300);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-rose-300);
@@ -132,5 +142,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="dusk"] {
-  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --hue-shift: 0;
+  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --parallax-scale: 0; --lift: 0px; --hue-shift: 0;
 } }

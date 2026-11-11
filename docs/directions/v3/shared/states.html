@@ -1,0 +1,16 @@
+<div class="states">
+ <div><h3>Button states</h3>
+  <div class="row"><button class="btn primary" type="button" aria-busy="true"><span class="spin" aria-hidden="true"></span>Saving…</button>
+  <span class="st-col"><button class="btn primary" type="button" disabled aria-describedby="sd-h">Save changes</button><span class="hint" id="sd-h">Fill in the required fields to save.</span></span></div>
+ </div>
+ <div><h3>Field states</h3>
+  <div class="field"><label for="se">Email <span class="req">(required)</span></label><input id="se" type="email" value="name@" required aria-invalid="true" aria-describedby="se-e"><p class="err" id="se-e"><span class="badge" aria-hidden="true">!</span>Enter an email address like name@example.com.</p></div>
+  <div class="field"><label for="sa">Account ID</label><input id="sa" type="text" disabled aria-describedby="sa-h"><div class="hint" id="sa-h">Set by your admin.</div></div>
+  <label class="check"><input type="checkbox" aria-invalid="true" aria-describedby="sc-e"> I agree to the terms</label><p class="err" id="sc-e"><span class="badge" aria-hidden="true">!</span>Check this box to continue.</p>
+ </div>
+ <div><h3>Table states</h3>
+  <p class="st-label">Loading</p><div class="skel-wrap" aria-busy="true"><span class="skel" aria-hidden="true"></span><span class="skel" aria-hidden="true"></span><span class="skel" aria-hidden="true"></span><p class="hint" role="status">Loading rows</p></div>
+  <p class="st-label">Empty</p><div class="empty"><b>No rows to show.</b></div>
+  <p class="st-label">Error</p><div class="loaderr" id="st-err"><p class="err"><span class="badge" aria-hidden="true">!</span>Couldn't load rows.</p><button class="btn" type="button" id="st-retry">Retry</button></div>
+ </div>
+</div>

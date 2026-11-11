@@ -41,14 +41,24 @@
   --weight-display: 700;
   --weight-display-min: 300;
   --weight-display-max: 800;
-  --radius-surface: 0px;
-  --radius-control: 2px;
-  --radius-field: 0px;
-  --radius-pill: 2px;
+  --radius-lg: 0px;
+  --radius-md: 2px;
+  --radius-sm: 0px;
+  --radius-full: 2px;
   --border-width: 2px;
+  --border-width-strong: 3px;
+  --divider-shape: none;
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 3px;
+  --focus-ring-style: solid;
+  --control-height: 48px;
+  --control-padding-x: 1.3rem;
+  --control-gap: .6rem;
+  --target-min: 44px;
+  --tilt: 0deg;
   --rule: 1px;
-  --shadow-1: none;
-  --shadow-2: none;
+  --shadow-raised: none;
+  --shadow-overlay: none;
   --shadow-press: none;
   --blur-glass: 0px;
   --duration-fast: 140ms;
@@ -75,7 +85,7 @@
   --accent-hover: var(--palette-red-800);
   --accent-soft: var(--palette-red-100);
   --accent-contrast: var(--palette-white);
-  --focus: var(--palette-cobalt-700);
+  --focus-ring-color: var(--palette-cobalt-700);
   --success: var(--palette-green-700);
   --warning: var(--palette-amber-800);
   --danger: var(--palette-crimson-700);
@@ -98,7 +108,7 @@
   --accent-hover: var(--palette-red-300);
   --accent-soft: var(--palette-red-950);
   --accent-contrast: var(--palette-night-900);
-  --focus: var(--palette-cobalt-200);
+  --focus-ring-color: var(--palette-cobalt-200);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-crimson-300);
@@ -121,7 +131,7 @@
   --accent-hover: var(--palette-red-300);
   --accent-soft: var(--palette-red-950);
   --accent-contrast: var(--palette-night-900);
-  --focus: var(--palette-cobalt-200);
+  --focus-ring-color: var(--palette-cobalt-200);
   --success: var(--palette-green-300);
   --warning: var(--palette-amber-300);
   --danger: var(--palette-crimson-300);
@@ -133,5 +143,5 @@
   color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) { [data-theme="kinetic"] {
-  --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0;
+  --tilt: 0deg; --lift: 0px; --duration-fast: 0ms; --duration-base: 0ms; --duration-slow: 0ms; --duration-reveal: 0ms; --stagger: 0ms; --weight-shift: 0;
 } }

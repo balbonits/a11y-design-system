@@ -1,0 +1,23 @@
+/* Shared v3 states panel (disabled, error, loading, empty). Semantic and Addendum 5 shape tokens only, so every direction themes it. */
+.states{display:grid;gap:1.6rem;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.states{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.states h3{margin:0 0 .8rem}
+.states .row{display:flex;flex-wrap:wrap;gap:var(--control-gap);align-items:flex-start}
+.st-col{display:flex;flex-direction:column;gap:.35rem}
+.st-label{margin:1rem 0 .4rem;font-weight:700;color:var(--text-muted)}
+.btn.btn:disabled{border-style:dotted;background:var(--surface-muted);color:var(--text-muted);border-color:var(--text-muted);box-shadow:none;transform:none;cursor:not-allowed}
+.btn[aria-busy=true]{cursor:progress}
+.spin{flex:none;width:1em;height:1em;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:v3spin 700ms linear infinite}
+@keyframes v3spin{to{transform:rotate(360deg)}}
+.field input[aria-invalid=true],.field select[aria-invalid=true]{border-color:var(--danger);border-width:var(--border-width-strong)}
+.field input:disabled{background:var(--surface-muted);color:var(--text-muted);border-style:dotted;cursor:not-allowed}
+.req{font-weight:400;color:var(--text-muted)}
+.err{display:flex;gap:.45rem;align-items:flex-start;color:var(--danger);font-weight:700;margin:.4rem 0 0}
+.err .badge{flex:none;display:inline-grid;place-items:center;width:1.35em;height:1.35em;border-radius:var(--radius-full);background:var(--danger);color:var(--danger-contrast);font-size:.85em}
+.skel-wrap{display:grid;gap:.5rem}
+.skel{display:block;height:1.1rem;background:var(--surface-muted);border-radius:var(--radius-sm)}
+.skel:nth-child(2){width:80%}.skel:nth-child(3){width:60%}
+.empty{border:var(--border-width) dashed var(--border-subtle);background:var(--surface-muted);border-radius:var(--radius-sm);padding:1rem 1.1rem}
+.loaderr{display:flex;flex-wrap:wrap;gap:.6rem 1rem;align-items:center}
+.loaderr .err{margin:0}
+@media (prefers-reduced-motion:reduce){.spin{animation:none;border-style:dotted;border-right-color:currentColor}}
