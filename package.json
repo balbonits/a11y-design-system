@@ -1,6 +1,6 @@
 {
   "name": "ember-ui",
-  "version": "0.3.1",
+  "version": "0.3.0",
   "private": true,
   "description": "Ember UI: a small, accessible React design system starter by John Dilig.",
   "type": "module",
@@ -32,9 +32,6 @@
     "@eslint/js": "^9.39.5",
     "@fontsource/archivo": "^5.3.0",
     "@fontsource/archivo-black": "^5.3.0",
-    "@fontsource/bricolage-grotesque": "^5.3.0",
-    "@fontsource/ibm-plex-mono": "^5.3.0",
-    "@fontsource/instrument-sans": "^5.3.0",
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@storybook/addon-a11y": "^8.6.19",
     "@storybook/addon-docs": "^8.6.19",

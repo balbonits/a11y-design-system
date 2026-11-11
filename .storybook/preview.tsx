@@ -1,18 +1,10 @@
 import type { Preview } from '@storybook/react';
-// Fonts named by the registered themes (neo: Archivo Black, Archivo, JetBrains Mono;
-// kinetic: Bricolage Grotesque 300/700/800, Instrument Sans, IBM Plex Mono).
+// Fonts named by the registered themes (neo: Archivo Black, Archivo, JetBrains Mono).
 import '@fontsource/archivo-black';
 import '@fontsource/archivo/400.css';
 import '@fontsource/archivo/500.css';
 import '@fontsource/archivo/600.css';
 import '@fontsource/jetbrains-mono';
-import '@fontsource/bricolage-grotesque/300.css';
-import '@fontsource/bricolage-grotesque/700.css';
-import '@fontsource/bricolage-grotesque/800.css';
-import '@fontsource/instrument-sans/400.css';
-import '@fontsource/instrument-sans/500.css';
-import '@fontsource/instrument-sans/600.css';
-import '@fontsource/ibm-plex-mono/400.css';
 import { addons } from '@storybook/preview-api';
 import '../src/ember.css';
 import { ToastProvider, applyTheme, DEFAULT_THEME, THEME_REGISTRY, type Theme, type Mode } from '../src';
