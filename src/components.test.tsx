@@ -131,6 +131,27 @@ describe('Toast', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Failed');
   });
 
+  it('2.4.11: marks the newest toast, offers "Show all notifications (N)" with a stable name, and reserves the stack height on the page', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastDemo /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Bad' }));
+    expect(document.documentElement).toHaveAttribute('data-em-toasts');
+    expect(screen.queryByRole('button', { name: /^Show all notifications/ })).toBeNull();
+    await u.click(screen.getByRole('button', { name: 'Bad' }));
+    await u.click(screen.getByRole('button', { name: 'Bad' }));
+    const toasts = document.querySelectorAll('.em-toast');
+    expect(toasts).toHaveLength(3);
+    expect([...toasts].filter((t) => t.hasAttribute('data-newest'))).toEqual([toasts[2]]);
+    const more = screen.getByRole('button', { name: 'Show all notifications (3)' });
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    await u.click(more);
+    expect(screen.getByRole('button', { name: 'Show all notifications (3)' })).toHaveAttribute('aria-expanded', 'true');
+    await u.click(more);
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    for (const b of screen.getAllByRole('button', { name: /^Dismiss/ })) await u.click(b);
+    expect(document.documentElement).not.toHaveAttribute('data-em-toasts');
+  });
+
   it('auto-dismisses, and pauses while hovered', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     const u = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
@@ -304,6 +325,32 @@ describe('Toast inside a modal (FU-EMBER-TOAST-MODAL)', () => {
     mo.disconnect();
     expect(fills.filter((t) => t.includes('Saved in outer'))).toHaveLength(1);
     expect(fills.filter((t) => t.includes('Page toast'))).toHaveLength(1);
+  });
+
+  it('#37 x #51: in a modal, the "Show all notifications (N)" toggle and the newest marker move with the toasts, and the page reserves no space', async () => {
+    const u = userEvent.setup();
+    render(<ToastProvider><ToastModalDemo duration={600000} /></ToastProvider>);
+    await u.click(screen.getByRole('button', { name: 'Page toast' }));
+    expect(document.documentElement).toHaveAttribute('data-em-toasts');
+    await u.click(screen.getByRole('button', { name: 'Open outer' }));
+    const outer = screen.getByRole('dialog', { name: 'Outer' });
+    await new Promise((r) => setTimeout(r, 150));
+    await u.click(within(outer).getByRole('button', { name: 'Toast from outer' }));
+    await waitFor(() => expect(statusIn(outer)).toHaveTextContent('Saved in outer'));
+    const modalViewport = outer.querySelector<HTMLElement>('.em-toast-viewport--modal')!;
+    // The collapse CSS applies to every .em-toast-viewport, so the toggle must be in the viewport that holds the toasts.
+    const more = within(modalViewport).getByRole('button', { name: 'Show all notifications (2)', hidden: true });
+    expect(within(pageViewport()).queryByRole('button', { name: /^Show all notifications/, hidden: true })).toBeNull();
+    expect(modalViewport.querySelector('[data-newest]')).toHaveTextContent('Saved in outer');
+    // The page behind the modal is inert and its viewport is empty, so it reserves nothing.
+    await waitFor(() => expect(document.documentElement).not.toHaveAttribute('data-em-toasts'));
+    expect(more).toHaveAttribute('aria-expanded', 'false');
+    await u.click(more);
+    expect(within(modalViewport).getByRole('button', { name: 'Show all notifications (2)', hidden: true })).toHaveAttribute('aria-expanded', 'true');
+    expect(modalViewport).toHaveAttribute('data-expanded');
+    await u.keyboard('{Escape}');
+    await waitFor(() => expect(within(pageViewport()).getByRole('button', { name: 'Show all notifications (2)' })).toHaveAttribute('aria-expanded', 'true'));
+    await waitFor(() => expect(document.documentElement).toHaveAttribute('data-em-toasts'));
   });
 
   it('does not auto-dismiss while the toaster is unreachable (inert page), and resumes after', async () => {

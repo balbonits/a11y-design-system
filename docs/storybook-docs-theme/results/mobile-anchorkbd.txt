@@ -1,0 +1,13 @@
+# scripts/mobile.mjs on the rev 2 build (9003), run one width at a time (WIDTHS=<w>) because the box load (10-46) made the full single run time out.
+# The full single run finished twice at 467/1: kinetic~dark components-checkbox--docs at 375, axe aria-conditional-attr on #_r_9_.
+# On its own, 375 is 52/0 on this build, on the pre-aria-label build (9001) and on #58's build (8984), so that failure depends on load/order, not on this change.
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 320 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 375 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 414 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 640 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 768 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 920 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 1024 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 1280 x 4 theme/mode combos), 0 failing
+mobile: 52 runs, each with axe, --target-min and a 1.4.12 text-spacing overflow check (13 docs pages x 1440 x 4 theme/mode combos), 0 failing
+total: 468 runs, 0 failing

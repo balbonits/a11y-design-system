@@ -1,0 +1,3 @@
+target-size: fixture themes not shipped (test-fixture; 18 files checked)
+target-size: 576 runs (72 stories x 320/1280px x 4 theme/mode combos), 1824 targets measured, 0 runs failing, 0 known under-sizes skipped, 0 stale known entries
+EXIT 0

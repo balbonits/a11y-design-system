@@ -1,0 +1,25 @@
+V11 dashboard contrast, every pair on --color-bg
+mode | kind | token | ratio | min | use | result
+kinetic-light | text | --text #0A1B5C on #FBF8F1 | 14.95:1 | 4.5:1 | stat numbers, labels, bar values, table text | pass
+kinetic-light | text | --text-muted #45507A on #FBF8F1 | 7.38:1 | 4.5:1 | stat sublines, scale line, meta, ago | pass
+kinetic-light | text | --danger #A3122A on #FBF8F1 | 7.40:1 | 4.5:1 | FAILED status word (chart, list) | pass
+kinetic-light | text | --success #0B6B37 on #FBF8F1 | 6.24:1 | 4.5:1 | SUCCEEDED status word (list) | pass
+kinetic-light | text | --info #1434B8 on #FBF8F1 | 8.95:1 | 4.5:1 | RUNNING status word (list) | pass
+kinetic-light | text | --warning #8A4B00 on #FBF8F1 | 6.41:1 | 4.5:1 | IN PROGRESS status word (prototype list) | pass
+kinetic-light | mark | --text #0A1B5C on #FBF8F1 | 14.95:1 | 3:1 | succeeded bar fill and edge | pass
+kinetic-light | mark | --danger #A3122A on #FBF8F1 | 7.40:1 | 3:1 | failed bar: 135deg hatch stripes and 2px edge | pass
+kinetic-light | mark | --text-muted #45507A on #FBF8F1 | 7.38:1 | 3:1 | canceled bar: 45deg hatch stripes and 2px edge | pass
+kinetic-light | mark | --border #1434B8 on #FBF8F1 | 8.95:1 | 3:1 | chart baseline (2px left rule), stats top rule, list top rule | pass
+kinetic-light | mark | --focus-ring-color #1434B8 on #FBF8F1 | 8.95:1 | 3:1 | focus ring on toggle, Open log, previews | pass
+kinetic-dark | text | --text #FBF8F1 on #070F33 | 17.60:1 | 4.5:1 | stat numbers, labels, bar values, table text | pass
+kinetic-dark | text | --text-muted #C3C9E0 on #070F33 | 11.33:1 | 4.5:1 | stat sublines, scale line, meta, ago | pass
+kinetic-dark | text | --danger #FF93A6 on #070F33 | 8.87:1 | 4.5:1 | FAILED status word (chart, list) | pass
+kinetic-dark | text | --success #6FE0A0 on #070F33 | 11.42:1 | 4.5:1 | SUCCEEDED status word (list) | pass
+kinetic-dark | text | --info #9AB0FF on #070F33 | 8.91:1 | 4.5:1 | RUNNING status word (list) | pass
+kinetic-dark | text | --warning #FFC861 on #070F33 | 12.16:1 | 4.5:1 | IN PROGRESS status word (prototype list) | pass
+kinetic-dark | mark | --text #FBF8F1 on #070F33 | 17.60:1 | 3:1 | succeeded bar fill and edge | pass
+kinetic-dark | mark | --danger #FF93A6 on #070F33 | 8.87:1 | 3:1 | failed bar: 135deg hatch stripes and 2px edge | pass
+kinetic-dark | mark | --text-muted #C3C9E0 on #070F33 | 11.33:1 | 3:1 | canceled bar: 45deg hatch stripes and 2px edge | pass
+kinetic-dark | mark | --border #9AB0FF on #070F33 | 8.91:1 | 3:1 | chart baseline (2px left rule), stats top rule, list top rule | pass
+kinetic-dark | mark | --focus-ring-color #C2CFFF on #070F33 | 12.14:1 | 3:1 | focus ring on toggle, Open log, previews | pass
+22 pairs, 0 fail

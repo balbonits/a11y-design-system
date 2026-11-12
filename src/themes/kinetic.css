@@ -1,6 +1,9 @@
 /* Theme "kinetic" (Kinetic Swiss). Source: Chief of Creatives, docs/directions/v3/kinetic/tokens.css (CA-signed at 938e642, PR 20).
    Copied as-is, plus --hue-shift: 0 (a unitless 0..1 multiplier, CA 8:10 PM ruling; a registered extra with its neutral default, ARCH-REVIEW Addendum 7 (a)) and
-   --parallax-scale/--hue-shift in the reduced-motion block. Register it in registry.json; no component code changes. */
+   --parallax-scale/--hue-shift in the reduced-motion block. Register it in registry.json; no component code changes.
+   Font stacks name "<Family> Fallback" second (fix/kinetic-font-fallback, CA ruling with Chief of Creatives, 2026-11-11): an app that
+   loads the web fonts defines those metric-matched local() faces so the swap doesn't shift layout. Ember ships no fonts or faces;
+   an app that doesn't define them falls through to the next family, as before. */
 :root {
   --palette-scrim: #06123F66;
   --palette-scrim-dark: #00000080;
@@ -39,9 +42,9 @@
   --palette-crimson-200: #FFB3C0;
 }
 [data-theme="kinetic"] {
-  --font-display: 'Bricolage Grotesque', 'Arial Narrow', system-ui, sans-serif;
-  --font-body: 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --font-display: 'Bricolage Grotesque', 'Bricolage Grotesque Fallback', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', 'Instrument Sans Fallback', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', 'IBM Plex Mono Fallback', ui-monospace, monospace;
   --weight-display: 700;
   --weight-display-min: 300;
   --weight-display-max: 800;

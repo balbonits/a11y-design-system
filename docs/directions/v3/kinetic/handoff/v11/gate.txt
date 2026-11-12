@@ -1,0 +1,83 @@
+320 light populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+320 light loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+320 light error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+320 light empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+320 light nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+320 light one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+320 light long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+320 light table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+320 dark populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+320 dark loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+320 dark error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+320 dark empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+320 dark nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+320 dark one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+320 dark long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+320 dark table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+375 light populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+375 light loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+375 light error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+375 light empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+375 light nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+375 light one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+375 light long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+375 light table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+375 dark populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+375 dark loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+375 dark error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+375 dark empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+375 dark nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+375 dark one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+375 dark long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+375 dark table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+768 light populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+768 light loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+768 light error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+768 light empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+768 light nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+768 light one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+768 light long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+768 light table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+768 dark populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+768 dark loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+768 dark error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+768 dark empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+768 dark nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+768 dark one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+768 dark long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+768 dark table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+1024 light populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+1024 light loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+1024 light error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+1024 light empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+1024 light nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+1024 light one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+1024 light long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+1024 light table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+1024 dark populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+1024 dark loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+1024 dark error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+1024 dark empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+1024 dark nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+1024 dark one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+1024 dark long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+1024 dark table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+1280 light populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+1280 light loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+1280 light error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+1280 light empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+1280 light nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+1280 light one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+1280 light long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+1280 light table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+1280 dark populated | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 8 table 0 list 5 alerts 0 | pass
+1280 dark loading | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats (skeleton) | (skeleton) | (skeleton) | (skeleton) | bars 0 table 0 list 3 alerts 0 | pass
+1280 dark error | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats — | — | — | — | bars 0 table 0 list 0 alerts 1 | pass
+1280 dark empty | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 0 | 0 | 0 | — | bars 0 table 0 list 0 alerts 0 | pass
+1280 dark nofin | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 2 | 0 | 2 | — | bars 0 table 0 list 2 alerts 0 | pass
+1280 dark one | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 3 | 1 | 2 | 4m 12s | bars 1 table 0 list 3 alerts 0 | pass
+1280 dark long | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12,480 | 1,245 | 35 | 3m 50s | bars 8 table 0 list 3 alerts 0 | pass
+1280 dark table | h-scroll 0 | <44px 0 | clipped 0 | axe 0 | stats 12 | 2 | 2 | 2m 38s | bars 0 table 8 list 5 alerts 0 | pass
+keyboard 320 | toggle shows table true | Open log opens drawer true | focus returns true | pass
+reduced motion | bar animation none | pass
+82 checks, 0 fail

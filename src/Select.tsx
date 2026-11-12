@@ -5,8 +5,8 @@ import { cx } from './cx';
 export type SelectProps = FieldProps & Omit<SelectHTMLAttributes<HTMLSelectElement>, 'id'>;
 
 /** A styled native select: the browser handles the listbox, keyboard and screen reader behavior. */
-export function Select({ label, hint, error, required, className, children, ...rest }: SelectProps) {
-  const f = useField({ label, hint, error });
+export function Select({ label, hint, error, required, className, 'aria-describedby': appDescribedBy, children, ...rest }: SelectProps) {
+  const f = useField({ label, hint, error }, appDescribedBy);
   return (
     <FieldShell {...f} label={label} hint={hint} error={error} required={required}>
       <select

@@ -3,8 +3,8 @@
 Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-party audited.** Assessed by the Back End Developer bot for John Dilig from the repo's own checks.
 
 - **Product:** Ember UI, an accessible React design system starter (tokens, 8 components, Storybook docs). Storybook: https://jdilig.me/ux/design-system/storybook/ . Case study: https://jdilig.me/ux/design-system
-- **Version:** `main` at 757da0c (package `ember-ui` 0.2.2)
-- **Report version:** 1.2 (1.2 is HIT-PATCH: Small buttons and Tabs now meet the 44 px bar, so the 2.5.8 exceptions are gone; 1.1 changed only the 2.5.8 and 302.7 remarks and added the target-size gate)
+- **Version:** `main` at 5e16a66 plus `fix/toast-more-label` (PR #37, which contains #21). `package.json` says 0.3.1, which is unreleased: there is no v0.3.1 tag or publish, so cite the commit SHA, not a version number.
+- **Report version:** 1.3 (1.3 moves 2.4.11 Focus Not Obscured (Minimum) to Supports, citing test:focus-obscured, and adds the in-modal toast outlet to the 4.1.3 remark; 1.2 is HIT-PATCH: Small buttons and Tabs now meet the 44 px bar, so the 2.5.8 exceptions are gone; 1.1 changed only the 2.5.8 and 302.7 remarks and added the target-size gate)
 - **Report date:** 2026-11-10
 - **Contact:** https://github.com/balbonits/a11y-design-system/issues
 - **Standards:** Revised Section 508 (36 CFR 1194), which incorporates WCAG 2.0 A/AA (the 508 baseline). WCAG 2.1 and 2.2 A/AA criteria are extra rows, marked (2.1) or (2.2).
@@ -19,7 +19,7 @@ Based on VPAT® 2.5 Rev 508 edition (Section 508). **Self-assessed, not third-pa
 - **Keyboard:** covered by the unit tests above and the per-component keyboard tables on each docs page. No separate manual keyboard pass is recorded yet.
 - **Screen reader:** **not yet evaluated.** Until a reader pass is recorded in a devlog fragment under `progress/` (naming the reader, browser and OS), criteria that depend on announcements rest on markup, unit tests and axe only.
 - **Focus not obscured (`node scripts/focus-obscured.mjs`):** the Toast/Error story with 3 sticky toasts open and 60 full-width controls added behind them, Tabbed through at 320 and 1440 px in light and dark (240 focus stops). A stop fails if every on-screen sample point on it is under a toast. Result: 26 fully hidden, all at 320 px. Limit: the controls are full width, so a narrow control under the toasts at wide widths isn't covered by this check.
-- All runs: 2026-11-10 on main 757da0c (the focus check on feat/r8-conventions, whose component and story code is unchanged from 757da0c), Chrome (`/usr/bin/google-chrome`) via Playwright on Linux.
+- All runs: 2026-11-10 on main 757da0c (the focus check on feat/r8-conventions, whose component and story code is unchanged from 757da0c), Chrome (`/usr/bin/google-chrome`) via Playwright on Linux. The 2.4.11 and 4.1.3 checks were rerun 2026-11-11 on `fix/toast-more-label` merged with main 2d59d7b.
 
 ## Terms
 Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VPAT 2.5).
@@ -60,7 +60,7 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 2.4.5 Multiple Ways | AA | Not Applicable | Owned by the consuming application; the Storybook docs site is a development tool and is not in scope of this report. |
 | 2.4.6 Headings and Labels | AA | Supports | Modal requires a title (used as `aria-labelledby`). Fields require a label. Tested: axe. |
 | 2.4.7 Focus Visible | AA | Supports | A `:focus-visible` ring on every interactive element (`src/ember.css`). Tested: code review; axe doesn't measure focus rings. |
-| 2.4.11 Focus Not Obscured (Minimum) (2.2) | AA | Partially Supports | Only the toast viewport is fixed-position. Tested (`scripts/focus-obscured.mjs`): with 3 sticky toasts open over a page of 60 full-width controls, Tabbing through every control left 0 fully hidden at 1440 px, but at 320 px 26 of 120 focus stops (light and dark) were fully hidden behind the toast stack. The fix is tracked as card FU-FSD-TOAST. |
+| 2.4.11 Focus Not Obscured (Minimum) (2.2) | AA | Supports | Only the toast viewport is fixed-position. Below 640 px the stack collapses to the newest toast plus a "Show all notifications (N)" button (stable name; `aria-expanded` carries the state), and while any toast is open the page reserves the stack's measured height as `scroll-padding-bottom`, so a focused control scrolls clear of it. Toasts never take focus. Tested (`npm run test:focus-obscured`, in CI): with 3 sticky toasts open over 90 controls (full-width buttons, inputs, and 44 px buttons pinned under the stack), Tabbing through every control at 320, 375, 768 and 1440 px in every registered theme in light and dark, collapsed and expanded, the gate's final line reads `checked 2160, fully hidden 0, partly covered 0` (FU-FSD-TOAST). |
 | 2.5.1 Pointer Gestures (2.1) | A | Supports | No multipoint or path gestures. |
 | 2.5.2 Pointer Cancellation (2.1) | A | Supports | Native click activation (up-event). |
 | 2.5.3 Label in Name (2.1) | A | Supports | Accessible names come from the visible label text. Tested: axe. |
@@ -82,7 +82,7 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 3.3.8 Accessible Authentication (Minimum) (2.2) | AA | Not Applicable | No authentication. |
 | 4.1.1 Parsing | A | Supports | WCAG 2.2 removes this criterion; React renders valid DOM. |
 | 4.1.2 Name, Role, Value | A | Supports | Native controls, `aria-sort`, `aria-selected`, `aria-busy`, `aria-checked="mixed"` for indeterminate. Tested: axe, unit tests. Not yet verified with a screen reader. |
-| 4.1.3 Status Messages (2.1) | AA | Partially Supports | Toasts use `role="status"` (polite) and `role="alert"` for errors. Tested: unit tests. Partial until a screen-reader pass confirms the announcements. |
+| 4.1.3 Status Messages (2.1) | AA | Partially Supports | Toasts use `role="status"` (polite) and `role="alert"` for errors. In-modal toasts route to a polite status outlet inside the topmost modal (an alert outlet for errors), and each toast is announced once, where it was first shown. Tested: unit tests and `npm run test:toast-modal`. Partial until a screen-reader pass confirms the announcements. |
 
 ## Revised Section 508 Chapter 3: Functional Performance Criteria
 | Criteria | Conformance | Remarks |
