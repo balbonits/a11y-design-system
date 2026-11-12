@@ -31,6 +31,9 @@ jobs:
       - run: npm run test:mobile
         env:
           CHROME_PATH: /usr/bin/google-chrome
+      - run: npm run test:focus-obscured
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
       - name: Target size gate calibration (synthetic boxes of known size)
         run: npm run test:target-size -- --calibrate
         env:

@@ -97,6 +97,15 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - **Checks:** token lint 0 failures; contrast 128 pairs (all 64 of neo's CONTRAST.md pairs plus the fixture's) and 8 contract assertions, 0 failures; 14/14 unit tests; axe 160 runs (62 stories and 12 docs pages in neo light and dark, plus the 12 docs pages in OS dark), 0 serious or critical; mobile 216 runs (12 docs pages at 320/375/414/640/768/920/1024/1280/1440 in light and dark, with 640 standing in for a 1280px window at 200% zoom), each with axe, hit areas at `--target-min` and the 1.4.12 text-spacing overflow check, 0 failing; gitleaks clean; zero hits for the retired theme names and tokens outside this log.
 
 
+## 2026-11-10 6:36 PM PT: Toast, WCAG 2.4.11 Focus Not Obscured (FU-FSD-TOAST)
+
+QA's repro on PR #15 (scripts/focus-obscured.mjs) found that with 3 sticky error toasts open at 320px, focused controls behind the stack were fully hidden; at 1440px none were. On the v0.3.0 build, before this fix, the widened check found 65 of 480 focus stops fully hidden and 207 partly covered.
+
+- **Narrow widths (480px and below):** only the newest toast shows, plus a "+N more" button (`aria-expanded`) that shows the whole stack, capped at half the viewport and scrolling inside it. Hidden toasts were already announced by their live region when they arrived.
+- **Safety net at every width:** while any toast is open, ToastProvider measures the stack with a ResizeObserver and sets `--em-toast-safe` and `data-em-toasts` on `<html>`, which applies `scroll-padding-bottom` and matching `padding-bottom`, so the browser scrolls a focused control clear of the stack, even the last one on the page. Both are removed when the last toast closes.
+- **Reduced motion:** no new motion. The check's expanded runs emulate reduced motion and fail if any animation is running.
+- **Test:** `npm run test:focus-obscured` (now in CI) tabs through 60 controls behind 3 sticky toasts at 320, 375, 768 and 1440px in every registered theme in light and dark, collapsed and expanded: 720 focus stops checked, 0 fully hidden, 0 partly covered. A unit test covers the newest marker, the "+2 more" control and the page reservation. axe 160/0 and mobile 216/0 still pass.
+
 ## 2026-11-10 6:44 PM PT: R-2 follow-ups (R-2b label, commit identity)
 
 - The proof-story fixture is now labelled "Test fixture, not a design" everywhere it appears (Theme registry story, Two registered themes story, unit tests), per ARCH-REVIEW R-2b. Its id stays `test-fixture`, and it stays out of the registry, THEMES, the Theme toolbar and the package build.
@@ -128,6 +137,14 @@ John asked for switchable themes with the components shown in each. Chief Archit
 - #16 merged as main feba533 and was tagged v0.3.0. This PR now targets main, with main merged in.
 - Chief Architect ruled that `--hue-shift` is a unitless multiplier from 0 to 1, and the consuming CSS holds the angle (`calc(var(--hue-shift) * 40deg)`). Neo and kinetic now use `0` instead of `0deg`. `npm run contrast` now rejects any unit or any value outside 0 to 1, in both the base block and the reduced-motion block. I negative-tested it with kinetic set to `0deg`, and the rule is in docs/CONTRAST.md.
 - 2026-11-10 10:37 PM PT: kinetic per-mode scrim from Creatives' #39 (8db8574, CA-confirmed): --palette-scrim #06123F66 light, --palette-scrim-dark #00000080 dark. contrast.mjs now gates, for every theme: open-modal border composited (neo 5.92/17.79, kinetic 3.47/9.57), text-muted under the scrim (both composited) >= 3 (neo 4.56/3.19, kinetic 4.20/3.40), and the scrim never lightens --color-bg. Negative control: #06123F99 fails twice (2.75, lightens). Contrast 132/0, axe 362/0, mobile 468/0.
+
+## 2026-11-10 8:50 PM PT: Toast aligned to Chief Architect's spec (FU-FSD-TOAST)
+- The collapsed stack now applies below 640px instead of at 480px and below. It shows the newest toast plus a "+N more" button that expands the list.
+- While any toast is open, the page still reserves the stack's measured height (ResizeObserver) as `scroll-padding-bottom`. Toasts never take focus: after two more toasts open at 600, 639 and 640px, focus stays on the trigger.
+- `test:focus-obscured` adds a narrow-control case: on every row, a 44px button pinned to the right edge, under the toast stack. That's 90 controls per run at 320/375/768/1440, in each registered theme in light and dark, collapsed and expanded below 640px. Result: 1080 checked, 0 fully hidden, 0 partly covered.
+
+## 2026-11-10 8:59 PM PT: ACR 2.4.11 moved to Supports
+- With #15 (the ACR) merged and the toast fix in this PR, the ACR's row 2.4.11 Focus Not Obscured (Minimum) now reads Supports. It cites `test:focus-obscured`: 1080 focus stops at 320/375/768/1440 in light and dark, collapsed and expanded, with 0 fully hidden.
 
 ## 2026-11-10 9:28 PM PT: HIT-PATCH, effective hit areas (VQA v3 finding 2)
 - Creatives' VQA hit-tested the live v0.3.0 Storybook and found small buttons at 64 by 40, toast Dismiss at 40 by 40 and toast Undo at 60 by 40, under the 44px --target-min, while the ACR claimed 44px. The cause was `.em-btn--sm::before`: its inset assumed a 36px box, but an absolute pseudo-element is placed from the padding box, so the 2px border ate 4px. The rule is deleted; the general `.em-btn::before` rule already sizes from the padding box and gives exactly 44 by 44. No visual change (pixel-identical to live in Button and Toast stories).
@@ -191,8 +208,18 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 
 **2026-11-11 follow-up (CA sign condition): each toast is announced once.** A toast is tagged with where it was first shown (the page or that modal opening). When it moves (modal opens over it, a nested modal closes, or the modal closes), it renders in a plain non-live container (`[data-em-toast-moved]`) at its new home, so it stays visible and operable but isn't spoken again. A new unit test and an e2e mutation spy on every `role=status`/`role=alert` region assert exactly one fill per toast across open, move and close; the unit test fails on the previous head. e2e now 288 checks, 0 failed; page toasts still 36/36 pixel-identical to main; axe 162/0; contrast 128/0.
 
+## 2026-11-11 1:36 AM PT: #37 reconciled with #51 (FU-EMBER-TOAST-MODAL)
+- Merged fix/toast-modal-outlet (091ffa5) into fix/toast-more-label so whichever of #51 and #37 lands second is a clean merge.
+- The collapse rules below 640px apply to every `.em-toast-viewport`, so the "Show all notifications (N)" toggle, `data-newest` and `data-expanded` now render in the modal viewport too, not just on the page.
+- The page safe area (`--em-toast-safe`, `html[data-em-toasts]`) counts only page toasts; while a modal holds the toasts the modal's own `--em-modal-toast-safe` applies.
+- New unit test covers this: toggle and newest marker inside the modal, no page reservation while the modal is open, expanded state kept when the toasts return to the page. It fails when the toggle is limited to the page viewport.
+- ACR 4.1.3 remark now names the in-modal outlet and announce-once (folded into report version 1.3).
+
 ## 2026-11-11 2:15 AM PT: #51 forward-merge of main f9f016d
 - Merged main f9f016d (#47 test:vp, #45, #52, #27 kinetic, pressed-state contrast) with a merge commit, no rebase. Conflicts were only in `package.json` scripts, `.github/workflows/ci.yml` and this file; both sides kept (test:toast-modal next to test:press, test:hover and test:vp, and all their CI steps).
+
+## 2026-11-11 3:15 AM PT: #37 picks up #51's main merge
+- Merged #51 at ee7e019 (091ffa5 plus main f9f016d, which includes 17bc888) into this branch with a merge commit. Only this file conflicted; package.json and ci.yml auto-merged with test:focus-obscured, test:toast-modal, test:press, test:hover and test:vp all kept.
 
 ## 2026-11-11 4:15 AM PT: #33 forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
 - Normal merge commit, no rebase. Only PROGRESS.md conflicted (this branch's R-4 entries against #51's toast-modal entries); both sides kept, R-4 first. package.json and ci.yml auto-merged: test:toast-modal, test:press, test:hover, test:vp and check:core-bundle are all there.
@@ -216,6 +243,12 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 ## 2026-11-11 6:00 AM PT: STORYBOOK-BRAND brand contrast in CI (CTE, HANDOFF 7.4)
 - CI runs `node docs/storybook-brand/contrast.mjs` right after `npm run contrast`; new script `npm run contrast:brand`. HANDOFF 7.4 now says it is in CI.
 - Planted negative (scratch copy): neo light `--text-muted` set to #9a9a9a gives 9 FAILs, exit 1 (e.g. muted text on #ffffff 2.81 < 4.5); clean tokens 66 pairs, 0 failures. Plant reverted.
+
+## 2026-11-11 5:50 AM PT: #37 forward-merge of main 5e16a66 (#33 R-4 video core)
+- Normal merge commit, no rebase. Conflicts only in `package.json` scripts and this file; both sides kept: `test:focus-obscured` (#37) sits next to `check:core-bundle` (#33), and #33's `./video` export and build:lib entries came in unchanged.
+
+## 2026-11-11 7:10 AM PT: #37 forward-merge of main 53b37a6 (#60 STORYBOOK-BRAND)
+- Normal merge commit, no rebase. Only this file conflicted; both sides kept, main's STORYBOOK-BRAND entries first. package.json (`contrast:brand`) and ci.yml (brand contrast step) auto-merged. The delta from 5e16a66 is the Storybook manager only (`.storybook/manager.ts`, `manager-head.html`), no `src/` change.
 
 ## 2026-11-11 4:20 AM PT: SCRIM-GATE forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
 - Normal merge commit, no rebase. Only PROGRESS.md conflicted (SCRIM-GATE entries against #51's toast-modal entries); both sides kept, SCRIM-GATE first. scripts/contrast.mjs, scripts/lib/scrim.mjs, package.json and ci.yml merged without conflict; #27's hover-pair and pressed-state sections and the scrim lib are unchanged, and test:toast-modal, test:press, test:hover and test:vp are all in package.json and CI.

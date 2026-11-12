@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from './Button';
 import { cx } from './cx';
@@ -103,6 +103,31 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const modal = top?.dialog ?? null;
   const outlet = top?.outlet ?? null;
   const inModal = Boolean(outlet);
+  // Below 640px (CSS, per Chief Architect) a viewport shows only the newest toast plus a "Show all notifications (N)"
+  // toggle (stable name; aria-expanded carries the state). One expanded state, shared by the page and modal viewports.
+  const newest = items.length ? items[items.length - 1].id : 0;
+  const [expandedState, setExpanded] = useState(false);
+  const expanded = expandedState && items.length > 1;
+  // WCAG 2.4.11 safety net on the page: while the page toaster shows toasts, the page reserves the stack's height at
+  // the bottom (scroll-padding plus matching padding), so the browser scrolls a focused control clear of the stack.
+  // While a modal is open the page viewport is empty (toasts are in the modal's outlet), so nothing is reserved.
+  const pageCount = inModal ? 0 : items.length;
+  useLayoutEffect(() => {
+    const el = viewport.current;
+    const root = typeof document !== 'undefined' ? document.documentElement : null;
+    if (!el || !root) return;
+    const sync = () => {
+      const h = pageCount ? Math.ceil(window.innerHeight - el.getBoundingClientRect().top) : 0;
+      if (h > 0) { root.style.setProperty('--em-toast-safe', `${h}px`); root.setAttribute('data-em-toasts', ''); }
+      else { root.style.removeProperty('--em-toast-safe'); root.removeAttribute('data-em-toasts'); }
+    };
+    sync();
+    if (typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(sync);
+    ro.observe(el);
+    window.addEventListener('resize', sync);
+    return () => { ro.disconnect(); window.removeEventListener('resize', sync); root.style.removeProperty('--em-toast-safe'); root.removeAttribute('data-em-toasts'); };
+  }, [pageCount]);
   // Live regions announce what is added to them, not what they mount with. The modal outlet's regions mount
   // empty first and the toasts go in a moment later (100ms; a single frame is too soon for some screen readers).
   // Keyed on this opening (a new object each time a dialog becomes topmost), so reopening the same modal waits again.
@@ -138,29 +163,34 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const moved = items.filter((t) => !fresh(t));
   const regions = (filled: boolean) => (
     <>
+      {filled && items.length > 1 && (
+        <Button variant="secondary" size="sm" className="em-toast-more" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
+          {`Show all notifications (${items.length})`}
+        </Button>
+      )}
       {/* Already announced elsewhere: visible and operable, but not in a live region. */}
       {filled && moved.length > 0 && (
         <div className="em-toast-region" data-em-toast-moved="">
-          {moved.map((t) => <Toast key={t.id} item={t} left={left} reachable={reachable} onDismiss={dismiss} />)}
+          {moved.map((t) => <Toast key={t.id} item={t} newest={t.id === newest} left={left} reachable={reachable} onDismiss={dismiss} />)}
         </div>
       )}
       {/* Live regions stay mounted so screen readers announce what is added to them. */}
       <div role="status" aria-live="polite" className="em-toast-region">
-        {filled && polite.map((t) => <Toast key={t.id} item={t} left={left} reachable={reachable} onDismiss={dismiss} />)}
+        {filled && polite.map((t) => <Toast key={t.id} item={t} newest={t.id === newest} left={left} reachable={reachable} onDismiss={dismiss} />)}
       </div>
       <div role="alert" aria-live="assertive" className="em-toast-region">
-        {filled && urgent.map((t) => <Toast key={t.id} item={t} left={left} reachable={reachable} onDismiss={dismiss} />)}
+        {filled && urgent.map((t) => <Toast key={t.id} item={t} newest={t.id === newest} left={left} reachable={reachable} onDismiss={dismiss} />)}
       </div>
     </>
   );
   return (
     <Ctx.Provider value={show}>
       {children}
-      <div ref={viewport} className="em-toast-viewport" data-count={inModal ? 0 : items.length}>
+      <div ref={viewport} className="em-toast-viewport" data-expanded={expanded || undefined} data-count={inModal ? 0 : items.length}>
         {regions(!inModal)}
       </div>
       {outlet && createPortal(
-        <div ref={modalViewport} className="em-toast-viewport em-toast-viewport--modal" data-count={ready === outlet ? items.length : 0}>
+        <div ref={modalViewport} className="em-toast-viewport em-toast-viewport--modal" data-expanded={expanded || undefined} data-count={ready === outlet ? items.length : 0}>
           {regions(ready === outlet)}
         </div>,
         outlet,
@@ -171,8 +201,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
 const FOCUSABLE = 'button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
-function Toast({ item, left, reachable, onDismiss }: {
+function Toast({ item, newest, left, reachable, onDismiss }: {
   item: ToastItem;
+  newest: boolean;
   left: Map<number, number>;
   reachable: boolean;
   onDismiss: (id: number) => void;
@@ -219,6 +250,7 @@ function Toast({ item, left, reachable, onDismiss }: {
       }}
       onBlur={() => setPaused(false)}
       data-paused={paused || undefined}
+      data-newest={newest || undefined}
     >
       <p className="em-toast-text" style={{ margin: 0 }}>
         <span className="em-toast-title">{item.title}</span>
