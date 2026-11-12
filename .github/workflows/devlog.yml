@@ -1,0 +1,21 @@
+name: Devlog
+# PROC-8 guard: a PR never edits PROGRESS.md and adds exactly one progress/ fragment (label devlog-maintenance lifts that).
+# labeled/unlabeled re-run the check when the label changes.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+jobs:
+  devlog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --test scripts/check-devlog.test.mjs
+      - run: node scripts/check-devlog.mjs --base "origin/$BASE_REF"
+        env:
+          BASE_REF: ${{ github.base_ref }}
+      - run: node scripts/devlog.mjs

@@ -169,7 +169,7 @@ The Sintel excerpt comes from BED's assets card (PR #38), served as `/media/sint
 
 The Storybook and site defaults stay strict. A page opts in only to the rows for the sources it mounts.
 
-**Verification (R-4, CA).** After each deploy, run `curl -I` on every page that mounts the player and on one page that doesn't, and paste both `Content-Security-Policy` headers into PROGRESS.md. That proves the per-path rows apply only where the player mounts and the site-wide default stayed strict.
+**Verification (R-4, CA).** After each deploy, run `curl -I` on every page that mounts the player and on one page that doesn't, and paste both `Content-Security-Policy` headers into that PR's devlog fragment (`progress/YYYY-MM-DD-<slug>.md`). That proves the per-path rows apply only where the player mounts and the site-wide default stayed strict.
 
 ## 6. Keyboard (UI layer, not the core)
 

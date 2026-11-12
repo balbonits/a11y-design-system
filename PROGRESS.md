@@ -1,5 +1,7 @@
 # Progress
 
+> **New entries go in [`progress/`](progress/README.md), one fragment per PR (PROC-8); this file is history and is not edited. `npm run devlog` renders the full log to `dist/devlog/DEVLOG.md`.**
+
 Dated log of how Ember UI was built. Screenshots are in `docs/screenshots/`.
 
 ## 2026-11-10

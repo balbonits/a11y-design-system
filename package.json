@@ -31,7 +31,10 @@
     "contrast:brand": "node docs/storybook-brand/contrast.mjs",
     "lint:colors": "node scripts/lint-colors.mjs",
     "test:focus-obscured": "node scripts/focus-obscured.mjs",
-    "check:core-bundle": "node scripts/check-core-bundle.mjs"
+    "check:core-bundle": "node scripts/check-core-bundle.mjs",
+    "devlog": "node scripts/devlog.mjs",
+    "check:devlog": "node scripts/check-devlog.mjs",
+    "test:devlog": "node --test scripts/check-devlog.test.mjs"
   },
   "dependencies": {
     "react": "^19.0.0",
