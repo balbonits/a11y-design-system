@@ -9,13 +9,14 @@ export type CheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' |
   indeterminate?: boolean;
 };
 
-export function Checkbox({ label, hint, error, indeterminate = false, disabled, className, ...rest }: CheckboxProps) {
+export function Checkbox({ label, hint, error, indeterminate = false, disabled, className, 'aria-describedby': appDescribedBy, ...rest }: CheckboxProps) {
   const id = useId();
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (ref.current) ref.current.indeterminate = indeterminate;
   }, [indeterminate]);
-  const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
+  // The app's own aria-describedby is kept, first (WCAG 1.3.1).
+  const describedBy = cx(appDescribedBy, hint && `${id}-hint`, error && `${id}-error`) || undefined;
   return (
     <div className={cx('em-check', disabled && 'em-check--disabled', className)}>
       <input
