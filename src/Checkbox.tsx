@@ -25,7 +25,6 @@ export function Checkbox({ label, hint, error, indeterminate = false, disabled, 
         disabled={disabled}
         aria-describedby={describedBy}
         aria-invalid={error ? true : undefined}
-        aria-checked={indeterminate ? 'mixed' : undefined}
         {...rest}
       />
       <span className="em-check-text">
