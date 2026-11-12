@@ -12,6 +12,26 @@ import tokens from '../src/tokens.json';
 const w = window.innerWidth;
 if (w >= 600 && w < 1024) addons.setConfig({ navSize: 0 });
 
+// FU-SB-COLLAPSED-SIDEBAR-INERT (WCAG 2.4.7 / 2.4.11): a collapsed sidebar is 0px wide but its links, search and tree
+// stayed in the Tab order, so keyboard focus went to controls nobody can see. While the sidebar is under 1px wide it
+// is `inert` (out of the Tab order and the accessibility tree); it comes back as soon as it has width again ("Show
+// sidebar", a wider window). Storybook can re-mount the sidebar, so a MutationObserver picks up each new one.
+// Selector: Storybook's own `sidebar-container` class on the <nav>, not a generated css-* class.
+const SIDEBAR = 'nav.sidebar-container';
+const sized = new WeakSet<Element>();
+const inertWhenCollapsed = new ResizeObserver((entries) => {
+  for (const { target } of entries) target.toggleAttribute('inert', target.getBoundingClientRect().width < 1);
+});
+const watchSidebar = () => {
+  const nav = document.querySelector(SIDEBAR);
+  if (nav && !sized.has(nav)) {
+    sized.add(nav);
+    inertWhenCollapsed.observe(nav);
+  }
+};
+new MutationObserver(watchSidebar).observe(document.documentElement, { childList: true, subtree: true });
+watchSidebar();
+
 // SB-MANAGER-AA: Storybook's stock manager UI fails axe color-contrast (toolbar #029cfd on #f1f3f4 2.62:1, the selected
 // sidebar item white on #029cfd 2.92:1, dark section toggles and code 3.93:1). This theme uses Ember neo values so every
 // text pair is 4.5:1 or better and every UI/focus pair 3:1 or better, in light and dark. Ratios are checked by
