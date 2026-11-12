@@ -81,7 +81,7 @@ Supports, Partially Supports, Does Not Support, Not Applicable (as defined by VP
 | 3.3.7 Redundant Entry (2.2) | A | Not Applicable | No multi-step processes. |
 | 3.3.8 Accessible Authentication (Minimum) (2.2) | AA | Not Applicable | No authentication. |
 | 4.1.1 Parsing | A | Supports | WCAG 2.2 removes this criterion; React renders valid DOM. |
-| 4.1.2 Name, Role, Value | A | Supports | Native controls, `aria-sort`, `aria-selected`, `aria-busy`, `aria-checked="mixed"` for indeterminate. Tested: axe, unit tests. Not yet verified with a screen reader. |
+| 4.1.2 Name, Role, Value | A | Supports | Native controls, `aria-sort`, `aria-selected`, `aria-busy`, the native `indeterminate` property (exposed as mixed) for Checkbox. Tested: axe, unit tests. Not yet verified with a screen reader. |
 | 4.1.3 Status Messages (2.1) | AA | Partially Supports | Toasts use `role="status"` (polite) and `role="alert"` for errors. In-modal toasts route to a polite status outlet inside the topmost modal (an alert outlet for errors), and each toast is announced once, where it was first shown. Tested: unit tests and `npm run test:toast-modal`. Partial until a screen-reader pass confirms the announcements. |
 
 ## Revised Section 508 Chapter 3: Functional Performance Criteria

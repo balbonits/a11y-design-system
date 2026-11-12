@@ -17,7 +17,7 @@ const meta: Meta<typeof Checkbox> = {
           avoid: ['Only one option can be picked. Use radio buttons or a Select.', 'The change applies right away. Use a Switch.'],
           anatomy: ['Native checkbox (20px, inside a 44px tall row)', 'Label', 'Optional hint', 'Error message', 'CheckboxGroup: `<fieldset>` with a `<legend>`'],
           variants: 'Single checkbox, indeterminate ("some selected"), and a group.',
-          states: 'Unchecked, checked, indeterminate (`aria-checked="mixed"`), hover, focus-visible, disabled, error.',
+          states: 'Unchecked, checked, indeterminate (the native `indeterminate` property, exposed as mixed), hover, focus-visible, disabled, error.',
           keyboard: [['Tab', 'Moves focus to the checkbox'], ['Space', 'Toggles checked']],
           a11y: [
             ['1.3.1 Info and Relationships', 'Group uses `<fieldset>`/`<legend>`; each label uses `for`.'],
