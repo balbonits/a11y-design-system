@@ -103,6 +103,10 @@ select.em-control { padding-right: var(--space-8); cursor: pointer; }
 .em-check input { position: relative; z-index: 1; }
 .em-check--disabled label { cursor: not-allowed; color: var(--text-muted); }
 .em-check input[aria-invalid="true"] { outline: var(--border-width) solid var(--danger); outline-offset: var(--border-width); }
+/* The error outline has the focus ring's specificity and comes later, so it replaced the ring (WCAG 2.4.7). The ring wins
+   while focused; the error text and aria-invalid stay. A positive selector, not :not(:focus-visible), which the
+   Storybook pseudo-states addon rewrites into a list that still matches. */
+.em-check input[aria-invalid="true"]:focus-visible { outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color); outline-offset: var(--focus-ring-offset); }
 .em-fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; }
 .em-legend { padding: 0; font-size: var(--text-sm); font-weight: var(--weight-semibold); margin-bottom: var(--space-1); }
 
