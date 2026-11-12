@@ -7,7 +7,10 @@ export type TabsProps = { label: string; tabs: TabItem[]; defaultTab?: string; o
 export function Tabs({ label, tabs, defaultTab, onChange }: TabsProps) {
   const base = useId();
   const enabled = tabs.filter((t) => !t.disabled);
-  const [active, setActive] = useState(defaultTab ?? enabled[0]?.id);
+  const [chosen, setActive] = useState(defaultTab);
+  // The selected tab is always an enabled one, so exactly one tab is in the Tab order (WCAG 2.1.1). A defaultTab that
+  // is disabled or unknown, or a selected tab that becomes disabled, falls back to the first enabled tab.
+  const active = enabled.some((t) => t.id === chosen) ? chosen : enabled[0]?.id;
   const refs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   function select(id: string) {
