@@ -54,16 +54,48 @@
    /* Mobile-first docs: nothing may push the page sideways. Wide tables and code scroll inside their own box. */
    .sbdocs-wrapper { overflow-x: hidden; }
    .sbdocs-content { max-width: 100%; min-width: 0; }
-@@ -20,4 +53,12 @@
+@@ -20,4 +53,44 @@
    /* Storybook's own docs buttons (Copy, Show code, zoom) get 44px targets too. */
    .sbdocs button:not(.em-btn):not(.em-sort):not([role="tab"]) { min-height: 44px; min-width: 44px; }
    @media (max-width: 640px) { .sbdocs-wrapper { padding-left: 12px !important; padding-right: 12px !important; } }
 +  /* FU-SB-DOCS-NITS (c): at 640px and below the gutter is 12px, but Storybook floats the heading copy-link anchor at margin-left -24px
 +     (14px icon + 10px padding-right), so it sat at x -12..12, mostly off-canvas. Fit it in the gutter instead: a 10px icon plus 2px
 +     padding, margin-left -12px, so it spans x 0..12 and the heading text stays at x 12, aligned with the body text. Still aria-hidden,
-+     tabindex -1 and mouse-only (Storybook default, KI-2). Keyboard access is FU-SB-DOCS-ANCHOR-KBD. */
++     tabindex -1 (Storybook default). Now only the no-JS fallback: with JS, the FU-SB-DOCS-ANCHOR-KBD rules below hide this anchor and add a keyboard link. */
 +  @media (max-width: 640px) {
 +    .sbdocs-content :is(h1, h2, h3, h4) > a[aria-hidden="true"] { margin-left: -12px !important; padding-right: 2px !important; }
 +    .sbdocs-content :is(h1, h2, h3, h4) > a[aria-hidden="true"] > svg { width: 10px; height: 10px; }
++  }
++  /* FU-SB-DOCS-ANCHOR-KBD: keyboard-reachable heading links (enhancer in preview.tsx; the NITS (c) rule above is the
++     no-JS fallback for Storybook's own anchor). One layout at every width, no breakpoint: the link sits at the END of the
++     heading's last line, in a nowrap wrapper with the last word ([data-eb-anchor-tail]), so it never wraps alone and never needs the gutter.
++     Box 44x44 (the target), starting 6px after the text, icon 14px 3px into it: the target extends right and vertically only,
++     never left over the letters. margin-block -20px keeps every heading's height unchanged (only 4px of the box counts toward the line).
++     Reveal: Storybook's heading :hover rule still reveals the icon (mouse and touch unchanged); keyboard focus reveals it
++     too and keeps it shown while focused, pointer or not. The swap is instant (visibility, no transition), so
++     prefers-reduced-motion has nothing to drop; the gate asserts 0 running animations.
++     Ring: the same 3px --focus-ring-color ring at offset 2px (#54 token, as #57), drawn around the visible icon instead of
++     the invisible 44px box. The box is taller than a heading line (26px at 24px type), so a ring on the box would cut
++     into the line above on a wrapped heading; around the icon it stays on its own line, clear of every letter. */
++  .sbdocs-content :is(h1, h2, h3, h4) > a[data-eb-anchor-src] { display: none !important; }
++  /* Storybook's docs reset gives a bare span its body font (Archivo 16px); the tail must look exactly like the heading. */
++  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] { white-space: nowrap; font: inherit !important; letter-spacing: inherit !important; text-transform: inherit !important; color: inherit !important; }
++  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor] {
++    display: inline-flex !important; align-items: center; justify-content: flex-start; vertical-align: middle;
++    float: none !important; position: relative; box-sizing: border-box;
++    width: 44px; height: 44px; margin: -20px 0 -20px 6px !important; padding: 0 0 0 3px !important; line-height: 1;
++  }
++  /* Two headings stacked with nothing between (the autodocs "Stories" h2, then the first story's h3 in its .sb-anchor):
++     their lines are ~34px apart, so the two 44px targets overlapped by ~8px. 10px more space above the second heading
++     keeps the targets apart. Plain sibling selector (no has-selector), so it holds in the docs-check --no-has fallback too. */
++  .sbdocs-content :is(h1, h2, h3, h4) + .sb-anchor > :is(h2, h3, h4):first-child { padding-top: 10px !important; }
++  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor] > svg { width: 14px; height: 14px; flex: none; }
++  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor]:focus-visible { outline: none !important; }
++  .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor]:focus-visible > svg {
++    visibility: visible !important; outline: var(--focus-ring-width) var(--focus-ring-style) var(--focus-ring-color) !important; outline-offset: 2px; }
++  /* Touch (Creatives' condition 4): with (hover: none) nothing can reveal the icon, so it shows at rest in --text-muted
++     (gated 3:1 against the docs background, check L). Keyboard focus there still gets the ring and the link colour. */
++  @media (hover: none) {
++    .sbdocs-content :is(h1, h2, h3, h4) > [data-eb-anchor-tail] > a[data-eb-anchor]:not(:focus-visible) > svg { visibility: visible !important; color: var(--text-muted) !important; }
 +  }
  </style>
