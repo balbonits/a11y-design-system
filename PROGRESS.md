@@ -191,6 +191,14 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 - VP_GATES stays `fixme`; FSD flips it in the player PR. The 33 #47 tests are listed in the PR body by group.
 - New `src/video/entry.test.ts`: `ember-ui/video` imports by package name through `exports` and lands on build:lib's `dist/video.js`. Plant: with `dist/video.js` moved away, the suite fails. The other three core items already had direct vitest tests (PR body table).
 - Normal merge of main b055b5d (no rebase); only PROGRESS.md conflicted, resolved by keeping both sides.
+
+## 2026-11-11 12:40 AM PT: SCRIM-GATE, one scrim gate in scripts/lib/scrim.mjs (CTE ruling X)
+- Built on #27 (feat/switch d963cbd); merges after #27. #27's inline scrim check in contrast.mjs moved into scripts/lib/scrim.mjs, so there is one scrim gate. Same numbers as before for neo and kinetic.
+- New: a missing or non-8-digit `--scrim` fails; the dialog border token is a parameter (default `--border`; contrast.mjs passes #27's card tokens, and CA Addendum 9's `--dialog-border` is a one-line change in FSD's #30); scripts/contrast.known.json (empty) pins known fails, which fail again when stale, changed or orphaned; docs/CONTRAST.md gets a `## Scrim (dialog backdrop)` table.
+- Parity with the #43 design scripts is exact for neo, kinetic and dusk. Dusk isn't registered yet, so it has no entry; dusk light at 1.22:1 is DUSK-SCRIM-LIGHT in #30. The stories-only test fixture is out of scope.
+
+## 2026-11-11 2:35 AM PT: main f9f016d (#27) merged into SCRIM-GATE (CA condition 1)
+- Normal merge, no rebase. Conflicts in scripts/contrast.mjs, docs/CONTRAST.md and PROGRESS.md were resolved by keeping both sides: #27's inline scrim rows stay in scripts/lib/scrim.mjs (the Scrim table), and main's focus-ring, hover-pair and pressed-state sections are kept unchanged. `npm run contrast`: 182 pairs plus 12 scrim rows, 0 known, 0 failures. Main reports 190 pairs, and the difference is exactly its 8 inline scrim rows (same ratios), which are now the Scrim table's border and text-muted rows. scripts/lib/scrim.mjs is unchanged by the merge. --dialog-border isn't in main yet (FSD's #30), so the border stays --card-border-color.
 ## 2026-11-11: FU-EMBER-TOAST-MODAL, toasts inside a modal
 - Problem: a modal `<dialog>` makes everything outside it inert, so a toast fired while a modal was open was hidden from screen readers, unreachable by keyboard and could time out unseen (WCAG 4.1.3 and 2.2.1). Chief Architect ruled that popover or the top layer does not fix this.
 - Fix: `ToastProvider` watches for open modal dialogs. While one is open, toasts render into a `role="status"`/`role="alert"` outlet inside the topmost modal (nested modals: the last opened wins), and they move back to the page toaster when it closes. Ember `Modal` carries the outlet (`data-em-modal`, `.em-toast-outlet`); for any other modal dialog the provider adds one. The outlet's live regions mount empty and toasts arrive 100ms later so they are announced. Each toast keeps its remaining time across moves, and the timer pauses while the toast can't be reached (page inert or tab hidden).
@@ -241,3 +249,33 @@ CA confirmed that press restores each variant's own fill and label (HANDOFF:57),
 
 ## 2026-11-11 7:10 AM PT: #37 forward-merge of main 53b37a6 (#60 STORYBOOK-BRAND)
 - Normal merge commit, no rebase. Only this file conflicted; both sides kept, main's STORYBOOK-BRAND entries first. package.json (`contrast:brand`) and ci.yml (brand contrast step) auto-merged. The delta from 5e16a66 is the Storybook manager only (`.storybook/manager.ts`, `manager-head.html`), no `src/` change.
+
+## 2026-11-11 4:20 AM PT: SCRIM-GATE forward-merge of main 2d59d7b (#51 FU-EMBER-TOAST-MODAL)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (SCRIM-GATE entries against #51's toast-modal entries); both sides kept, SCRIM-GATE first. scripts/contrast.mjs, scripts/lib/scrim.mjs, package.json and ci.yml merged without conflict; #27's hover-pair and pressed-state sections and the scrim lib are unchanged, and test:toast-modal, test:press, test:hover and test:vp are all in package.json and CI.
+
+## 2026-11-11 5:55 AM PT: SCRIM-GATE forward-merge of main 5e16a66 (#33 R-4 core)
+- Normal merge commit, no rebase. Only PROGRESS.md conflicted (2 hunks: SCRIM-GATE entries against #33 R-4 entries); both sides kept, main first. No code file changed.
+
+## 2026-11-11 1:30 AM PT: FOCUS-RING-GATE, focus ring gate in scripts/lib/focus-ring.mjs (CTE card, moved from FSD)
+- Stacked on SCRIM-GATE (#48, daa49c2) and merges after it. It goes in the same gate family in scripts/lib, so there's no third edit to contrast.mjs that could conflict.
+- `--focus-ring-color` needs 3:1 against `--color-bg` and `--tabs-track` (the Tabs and ThemeSwitcher track, a component token resolved through src/tokens/components.css) in every registered theme and mode (WCAG 1.4.11, 2.4.13). A ring or background that is missing or doesn't resolve fails. Known fails pin in scripts/contrast.known.json `focusRing` (empty), with the same stale, changed and orphan failures as the scrim gate. docs/CONTRAST.md gets a `## Focus ring` table.
+- Today: neo 4.24/3.80 light and 4.20/3.32 dark; kinetic 8.95/8.20 light and 12.14/9.82 dark (bg/tabs-track). The CLI on the design tokens gives the same numbers, plus dusk 5.73/5.15 light and 9.88/8.37 dark (not registered yet). 8 rows, 0 failures, 0 known.
+- Negative controls (missing ring, missing or unresolved tabs-track, non-6-digit, low contrast, pinned, changed, stale, orphan) all behave as expected.
+
+## 2026-11-11 1:55 AM PT: FOCUS-RING-GATE, Chief Architect review fixes
+- The gate now also covers `--surface`, which cards, the dialog and the toast paint (all read `--card-bg`, which is var(--surface)). A `--card-bg` row is added automatically when it resolves differently from `--surface`, so the dialog surface stays covered.
+- Optional `--hover-fill` (Addendum 10) gets a row only where a theme defines it, at 3:1 or better, because a focused and hovered control draws the ring over the fill. Absent means no row; defined but unresolved fails. No registered theme defines it yet.
+- Citation fixed: WCAG 1.4.11 Non-text Contrast (AA) is the requirement, and 2.4.13 Focus Appearance (AAA) is the house aim, in the code comments, the CONTRAST.md text and the fail lines. Min now prints the bare `3`, matching the pair table and FSD's #27 row.
+- Today, by bg/surface/tabs-track: neo light 4.24/4.50/3.80 and dark 4.20/3.79/3.32; kinetic light 8.95/9.49/8.20 and dark 12.14/11.10/9.82; dusk CLI light 5.73/6.11/5.15 and dark 9.88/9.31/8.37. 12 rows, 0 failures, 0 known.
+- Negative controls are 19 of 19 as expected, adding surface missing and low, hover-fill absent, passing, low and unresolved, a dialog-differs card-bg row, and the 1.4.11 citation in fail lines. The end-to-end plant in a scratch copy, kinetic.light `--hover-fill` equal to the ring, fails at 1.00; set to white, it passes at 9.49.
+
+## 2026-11-11 3:35 AM PT: FOCUS-RING-GATE, CA ruling on --hover-fill (option 1)
+- Merged gate/scrim-contrast f874272 (main f9f016d, #27). CA ruling (a): scripts/lib/focus-ring.mjs is the only owner of the focus ring rows, so FSD's inline focusRows block and its CONTRAST.md section from f9f016d (contrast.mjs:94-111, :161-162) are removed; main's hover-pair and pressed-state sections stay as they are.
+- CA option 1: `--hover-fill` is out of the lib. Main's optional hover-pair section (Addendum 10 c) is the only place that checks the ring against the fill: gated at `--focus-ring-offset` 0 or less, otherwise recorded, and a theme that defines the pair fails outright with an offset under 2px. Kinetic (offset 3px) records ring on hover-fill as informational: 1.67 light, 1.45 dark.
+- `npm run contrast`: 178 pairs, 12 scrim rows, 12 focus ring rows (bg, surface and tabs-track for neo and kinetic, light and dark), 0 failures. Plant in a scratch copy: kinetic `--focus-ring-offset: 1px` gives 2 failures ("defines the hover pair but --focus-ring-offset 1px is under 2px"), exit 1.
+
+## 2026-11-11 4:50 AM PT: FOCUS-RING-GATE carries the new SCRIM-GATE head 63b02fa (main 2d59d7b, #51)
+- Normal merge commit, no rebase, so the stack stays #48 then #53. Only PROGRESS.md conflicted (#51's and SCRIM-GATE's new entries against the FOCUS-RING-GATE entries); both sides kept, FOCUS-RING-GATE entries last. scripts/contrast.mjs, scripts/lib/focus-ring.mjs, scripts/lib/scrim.mjs, package.json and ci.yml merged cleanly; CA's option 1 (3bd3b06) is unchanged.
+
+## 2026-11-11 6:35 AM PT: FOCUS-RING-GATE carries the new SCRIM-GATE head 72be779 (main 5e16a66, #33)
+- Normal merge commit, no rebase; stack stays #48 then #53. Only PROGRESS.md conflicted (1 hunk); both sides kept, FOCUS-RING-GATE entries last. No code conflict.
