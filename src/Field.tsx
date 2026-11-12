@@ -1,13 +1,14 @@
 import { useId, type ReactNode } from 'react';
+import { cx } from './cx';
 
 export type FieldProps = { label: string; hint?: string; error?: string; required?: boolean };
 
-/** Shared label / hint / error wiring for Input and Select. */
-export function useField({ hint, error }: FieldProps) {
+/** Shared label / hint / error wiring for Input and Select. `appDescribedBy` (the app's own aria-describedby) is kept, first. */
+export function useField({ hint, error }: FieldProps, appDescribedBy?: string) {
   const id = useId();
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
-  const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
+  const describedBy = cx(appDescribedBy, hintId, errorId) || undefined;
   return { id, hintId, errorId, describedBy };
 }
 
