@@ -7,11 +7,11 @@ export type SwitchProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | '
 };
 
 /** An on/off setting that applies right away. A native checkbox with role="switch", so Space toggles it and forms read it. */
-export function Switch({ label, hint, disabled, className, ...rest }: SwitchProps) {
+export function Switch({ label, hint, disabled, className, 'aria-describedby': appDescribedBy, ...rest }: SwitchProps) {
   const id = useId();
   return (
     <div className={cx('em-toggle', disabled && 'em-toggle--disabled', className)}>
-      <input id={id} type="checkbox" role="switch" className="em-toggle-input" disabled={disabled} aria-describedby={hint ? `${id}-hint` : undefined} {...rest} />
+      <input id={id} type="checkbox" role="switch" className="em-toggle-input" disabled={disabled} aria-describedby={cx(appDescribedBy, hint && `${id}-hint`) || undefined} {...rest} />
       <span className="em-check-text">
         <label htmlFor={id}>{label}</label>
         {hint && <span className="em-hint" id={`${id}-hint`}>{hint}</span>}
