@@ -29,6 +29,7 @@
     "contrast": "node scripts/contrast.mjs",
     "contrast:brand": "node docs/storybook-brand/contrast.mjs",
     "lint:colors": "node scripts/lint-colors.mjs",
+    "test:focus-obscured": "node scripts/focus-obscured.mjs",
     "check:core-bundle": "node scripts/check-core-bundle.mjs"
   },
   "dependencies": {
